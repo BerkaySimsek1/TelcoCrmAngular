@@ -1,0 +1,143 @@
+<div class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full border-2 border-orange-300">
+    <h2 class="text-2xl font-bold text-orange-600 mb-6">Demographic Info</h2>
+
+    <form [formGroup]="formGroup" (ngSubmit)="submit()" class="space-y-6">
+      <!-- First Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex items-start">
+          <label class="font-semibold text-gray-800 w-32 pt-2">First Name*</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              formControlName="firstName"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+            />
+            @if (f['firstName'].touched && f['firstName'].errors?.['required']) {
+              <p class="text-sm text-red-600 mt-1">First name zorunlu.</p>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <label class="font-semibold text-gray-800 w-32 pt-2">Middle Name</label>
+          <input
+            type="text"
+            formControlName="middleName"
+            class="flex-1 px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+      </div>
+
+      <!-- Second Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex items-start">
+          <label class="font-semibold text-gray-800 w-32 pt-2">Last Name*</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              formControlName="lastName"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+            />
+            @if (f['lastName'].touched && f['lastName'].errors?.['required']) {
+              <p class="text-sm text-red-600 mt-1">Last name zorunlu.</p>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <label class="font-semibold text-gray-800 w-32 pt-2">Birth Date*</label>
+          <div class="flex-1">
+            <input
+              type="date"
+              formControlName="dateOfBirth"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+            />
+            @if (f['dateOfBirth'].touched && f['dateOfBirth'].errors?.['required']) {
+              <p class="text-sm text-red-600 mt-1">Doğum tarihi zorunlu.</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Third Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex items-start">
+          <label class="font-semibold text-gray-800 w-32 pt-2">Mother Name</label>
+          <input
+            type="text"
+            formControlName="motherName"
+            class="flex-1 px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+        <div class="flex items-start">
+          <label class="font-semibold text-gray-800 w-32 pt-2">Father Name</label>
+          <input
+            type="text"
+            formControlName="fatherName"
+            class="flex-1 px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+      </div>
+
+      <!-- Fourth Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex items-start">
+          <label class="font-semibold text-gray-800 w-32 pt-2">Gender*</label>
+          <select
+            formControlName="gender"
+            class="flex-1 px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          >
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+
+        <div class="flex items-start">
+          <label class="font-semibold text-gray-800 w-32 pt-2">Nat ID*</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              formControlName="nationalId"
+              maxlength="11"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+            />
+            @if (f['nationalId'].touched && f['nationalId'].errors?.['required']) {
+              <p class="text-sm text-red-600 mt-1">TCKN zorunlu.</p>
+            }
+            @if (f['nationalId'].touched && f['nationalId'].errors?.['pattern']) {
+              <p class="text-sm text-red-600 mt-1">TCKN 11 haneli sayısal olmalı.</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-center gap-4 mt-8">
+        <button
+          type="button"
+          (click)="cancel()"
+          class="px-8 py-2 bg-orange-100 hover:bg-orange-200 text-gray-800 font-semibold rounded-full border-2 border-orange-300 transition-colors"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="submitting()"
+          class="px-8 py-2 bg-orange-100 hover:bg-orange-200 text-gray-800 font-semibold rounded-full border-2 border-orange-300 transition-colors disabled:opacity-60"
+        >
+          {{ submitting() ? 'Saving...' : 'Create' }}
+        </button>
+      </div>
+    </form>
+
+    @if (createdCustomerResponse(); as res) {
+      <div class="mt-6 p-4 border rounded bg-green-50">
+        <p class="font-semibold text-green-700">Customer created!</p>
+        <pre class="text-sm text-green-800 overflow-auto">{{ res | json }}</pre>
+      </div>
+    }
+  </div>
+</div>
