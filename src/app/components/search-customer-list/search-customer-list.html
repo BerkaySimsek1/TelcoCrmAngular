@@ -1,0 +1,21 @@
+<app-search-customer-card (search)="onSearch($event)"></app-search-customer-card>
+
+<div *ngIf="loading">🔍 Aranıyor...</div>
+<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+<ul *ngIf="!loading && customers.length > 0" class="customer-list">
+  <li *ngFor="let c of customers">
+    <div class="card">
+      <h3>{{ c.firstName }} {{ c.lastName }}</h3>
+      <p><strong>Müşteri No:</strong> {{ c.customerNumber }}</p>
+      <p><strong>TCKN:</strong> {{ c.nationalId }}</p>
+      <p><strong>Cinsiyet:</strong> {{ c.gender || '-' }}</p>
+      <p><strong>Doğum Tarihi:</strong> {{ c.dateOfBirth || '-' }}</p>
+    </div>
+  </li>
+</ul>
+
+<div *ngIf="!loading && customers.length === 0 && !errorMessage">
+  🔎 Arama sonucu bulunamadı.
+</div>
+

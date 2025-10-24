@@ -1,0 +1,91 @@
+<div class="address-list-container">
+  <!-- Header -->
+  <div class="header">
+    <h2 class="title">Address Info</h2>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading addresses...</p>
+      </div>
+    }
+
+    <!-- Empty State - No Addresses -->
+    @else if (addresses().length === 0) {
+      <div class="empty-state-container">
+        <div class="empty-state">
+          <button (click)="addNewAddress()" class="add-new-btn">
+            Add New Address
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Address List with Add Button -->
+    @else {
+      <div class="address-content">
+        <!-- Address List -->
+        <div class="address-list">
+          @for (address of addresses(); track address.id) {
+            <div class="address-card">
+              <div class="address-header">
+                <span class="address-title">{{ address.street }}</span>
+                <div class="address-actions">
+                  <button 
+                    (click)="editAddress(address.id)" 
+                    class="action-btn edit-btn"
+                    title="Edit"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                    </svg>
+                  </button>
+                  <button 
+                    (click)="deleteAddress(address.id)" 
+                    class="action-btn delete-btn"
+                    title="Delete"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 6h18"/>
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="address-details">
+                <p>{{ address.houseNumber }}</p>
+                @if (address.description) {
+                  <p class="description">{{ address.description }}</p>
+                }
+                @if (address.default) {
+                  <span class="default-badge">Default</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Add New Address Button -->
+        <div class="add-button-container">
+          <button (click)="addNewAddress()" class="add-new-btn">
+            Add New Address
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="navigation-buttons">
+    <button (click)="goToPrevious()" class="nav-btn prev-btn">
+      Previous
+    </button>
+    <button (click)="goToNext()" class="nav-btn next-btn">
+      Next
+    </button>
+  </div>
+</div>

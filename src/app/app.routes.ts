@@ -3,6 +3,9 @@ import { CreateCustomer } from './pages/customer/create-customer/create-customer
 import { CustomerInfo } from './pages/customer/customer-info/customer-info';
 import { UpdateCustomer } from './pages/customer/update-customer/update-customer';
 import { CreateAddress } from './pages/address/create-address/create-address';
+import { AddressList } from './pages/address/address-info-list/address-info-list';
+import { Search } from './pages/search/search';
+
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'create-customer' },
@@ -16,5 +19,13 @@ export const routes: Routes = [
    {
     path: 'create-address/:customerId',
     component: CreateAddress, 
+  },
+  {
+  path: 'address-list/:customerId',
+  component: AddressList
+  },
+  {
+   path: 'search-list',
+  component: Search
   },
 ];

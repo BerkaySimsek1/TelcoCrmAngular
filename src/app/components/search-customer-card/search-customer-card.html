@@ -1,0 +1,14 @@
+<div class="search-card">
+  <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+    <label for="keyword">Arama Terimi:</label>
+    <input
+      id="keyword"
+      type="text"
+      formControlName="keyword"
+      placeholder="Ad, Soyad, TCKN veya Müşteri No girin..."
+    />
+
+    <button type="submit">Ara</button>
+  </form>
+</div>
+
