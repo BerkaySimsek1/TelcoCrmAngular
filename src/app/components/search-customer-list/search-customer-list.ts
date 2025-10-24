@@ -1,40 +1,41 @@
-import { Component } from '@angular/core';
-import { SearchCustomerResponse } from '../../models/searchCustomerResponse';
-import { SearchService } from '../../services/search-service';
-import { SearchCustomerCard } from "../search-customer-card/search-customer-card";
+import { Component, EventEmitter, Input, Output, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { SearchCustomerResponse } from '../../models/searchCustomerResponse';
 
 @Component({
   selector: 'app-search-customer-list',
-  templateUrl: './search-customer-list.html',
-  styleUrls: ['./search-customer-list.scss'],
-  imports: [CommonModule,SearchCustomerCard]
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './search-customer-list.html'
 })
-export class SearchCustomerList {
+export class SearchCustomerListComponent {
+  @Input({ required: true }) results: SearchCustomerResponse[] = [];
+  @Input() loading = false;
+  @Input() searched = false;
 
-  customers: SearchCustomerResponse[] = [];
-  loading = false;
-  errorMessage = '';
+  @Output() createCustomer = new EventEmitter<void>();
 
-  constructor(private searchService: SearchService) {}
+  pageSize = 20;
+  currentPage = signal(1);
 
-  onSearch(keyword: string) {
-    this.loading = true;
-    this.errorMessage = '';
-    this.customers = [];
+  totalPages = computed(() => Math.max(1, Math.ceil((this.results?.length ?? 0) / this.pageSize)));
 
-    this.searchService.search(keyword).subscribe({
-      next: (data) => {
-        this.customers = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.errorMessage = 'Arama sırasında bir hata oluştu.';
-        console.error(err);
-        this.loading = false;
-      }
-    });
+  get pageSlice(): SearchCustomerResponse[] {
+    const start = (this.currentPage() - 1) * this.pageSize;
+    return (this.results ?? []).slice(start, start + this.pageSize);
+  }
+
+  go(p: number) {
+    const t = this.totalPages();
+    if (p < 1 || p > t) return;
+    this.currentPage.set(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ACC-8: Customer Info ekranına yönlendir
+  constructor(private router: Router) {}
+  openCustomerInfo(item: SearchCustomerResponse) {
+    this.router.navigate(['/customer-info', item.id]);
   }
 }
-
-

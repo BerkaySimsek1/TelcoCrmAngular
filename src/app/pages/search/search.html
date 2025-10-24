@@ -1,2 +1,15 @@
-<app-search-customer-list></app-search-customer-list>
-<app-search-customer-card></app-search-customer-card>
+<div class="min-h-[calc(100vh-120px)] w-full bg-gradient-to-br from-orange-50 to-white p-4 md:p-6">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[320px,1fr] gap-4">
+    <app-search-customer-card
+      (searchClicked)="onSearch($event)"
+      (cleared)="onCleared()">
+    </app-search-customer-card>
+
+    <app-search-customer-list
+      [results]="results"
+      [loading]="loading()"
+      [searched]="searched()"
+      (createCustomer)="goCreate()">
+    </app-search-customer-list>
+  </div>
+</div>
