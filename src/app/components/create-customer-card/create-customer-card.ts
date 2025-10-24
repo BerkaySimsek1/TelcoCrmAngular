@@ -80,7 +80,7 @@ submitting = signal(false);
 
            const id = (response as any).customerId ?? (response as any).id;
         if (id) {
-          this.router.navigate(['/customer-info', id]); // /customer-info/:customerId
+          this.router.navigate(['/create-address', id]); // /customer-info/:customerId
         } else {
           console.error('createCustomer response customerId içermiyor.');
         }
