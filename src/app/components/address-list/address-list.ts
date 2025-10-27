@@ -53,11 +53,9 @@ export class AddressListComponent implements OnInit {
     this.router.navigate(['/create-address', this.customerId]);
   }
 
-  editAddress(addressId: number) {
-    // Edit sayfasına yönlendir (varsa)
-    console.log('Edit address:', addressId);
-    // this.router.navigate(['/edit-address', addressId]);
-  }
+ editAddress(addressId: number) {
+  this.router.navigate(['/address-update', this.customerId, addressId]);
+}
 
   deleteAddress(addressId: number) {
     // Delete işlemi (API'de varsa)

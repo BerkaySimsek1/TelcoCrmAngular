@@ -1,0 +1,162 @@
+<div class="update-address-container">
+  <div class="form-card">
+    <h2 class="form-title">Update Address</h2>
+    
+    <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <!-- City -->
+      <div class="form-group">
+        <label for="cityId">
+          City<span class="required">*</span>
+        </label>
+        <select 
+          id="cityId" 
+          formControlName="cityId"
+          class="form-control"
+          [class.invalid]="f['cityId'].invalid && f['cityId'].touched"
+        >
+          <option [ngValue]="null" disabled>Select City</option>
+          @for (city of cities; track city.id) {
+            <option [ngValue]="city.id">{{ city.name }}</option>
+          }
+        </select>
+        @if (f['cityId'].invalid && f['cityId'].touched) {
+          <span class="error-message">City is required</span>
+        }
+      </div>
+
+      <!-- District -->
+      <div class="form-group">
+        <label for="districtId">
+          District<span class="required">*</span>
+        </label>
+        <select 
+          id="districtId" 
+          formControlName="districtId"
+          class="form-control"
+          [class.invalid]="f['districtId'].invalid && f['districtId'].touched"
+        >
+          <option [ngValue]="null" disabled>Select District</option>
+          @for (district of districts; track district.id) {
+            <option [ngValue]="district.id">{{ district.name }}</option>
+          }
+        </select>
+        @if (f['districtId'].invalid && f['districtId'].touched) {
+          <span class="error-message">District is required</span>
+        }
+      </div>
+
+      <!-- Street -->
+      <div class="form-group">
+        <label for="street">
+          Street<span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="street" 
+          formControlName="street"
+          class="form-control"
+          placeholder="Enter street name"
+          [class.invalid]="f['street'].invalid && f['street'].touched"
+        />
+        @if (f['street'].invalid && f['street'].touched) {
+          <span class="error-message">
+            @if (f['street'].errors?.['required']) {
+              Street is required
+            }
+            @if (f['street'].errors?.['maxlength']) {
+              Street cannot exceed 200 characters
+            }
+          </span>
+        }
+      </div>
+
+      <!-- House/Flat Number -->
+      <div class="form-group">
+        <label for="houseNumber">
+          House/Flat Number<span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="houseNumber" 
+          formControlName="houseNumber"
+          class="form-control"
+          placeholder="Enter house/flat number"
+          [class.invalid]="f['houseNumber'].invalid && f['houseNumber'].touched"
+        />
+        @if (f['houseNumber'].invalid && f['houseNumber'].touched) {
+          <span class="error-message">
+            @if (f['houseNumber'].errors?.['required']) {
+              House/Flat number is required
+            }
+            @if (f['houseNumber'].errors?.['maxlength']) {
+              House number cannot exceed 50 characters
+            }
+          </span>
+        }
+      </div>
+
+      <!-- Address Description -->
+      <div class="form-group">
+        <label for="description">Address Description:</label>
+        <textarea 
+          id="description" 
+          formControlName="description"
+          class="form-control textarea"
+          placeholder="Enter additional address details (optional)"
+          rows="4"
+          [class.invalid]="f['description'].invalid && f['description'].touched"
+        ></textarea>
+        @if (f['description'].invalid && f['description'].touched) {
+          <span class="error-message">
+            @if (f['description'].errors?.['maxlength']) {
+              Description cannot exceed 500 characters
+            }
+          </span>
+        }
+      </div>
+
+      <!-- Default Checkbox -->
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            formControlName="default"
+            class="checkbox-input"
+          />
+          <span>Set as default address</span>
+        </label>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button 
+          type="button" 
+          (click)="cancel()" 
+          class="btn btn-secondary"
+          [disabled]="submitting()"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="submitting()"
+        >
+          @if (submitting()) {
+            <span class="spinner-small"></span>
+            Updating...
+          } @else {
+            Update Address
+          }
+        </button>
+      </div>
+    </form>
+
+    <!-- Success Message -->
+    @if (updatedAddressResponse()) {
+      <div class="success-message">
+        ✓ Address updated successfully!
+      </div>
+    }
+  </div>
+</div>

@@ -5,6 +5,7 @@ import { UpdateCustomer } from './pages/customer/update-customer/update-customer
 import { CreateAddress } from './pages/address/create-address/create-address';
 import { AddressList } from './pages/address/address-info-list/address-info-list';
 import { Search } from './pages/search/search';
+import { UpdateAddress } from './pages/address/update-address/update-address';
 
 
 export const routes: Routes = [
@@ -25,7 +26,11 @@ export const routes: Routes = [
   component: AddressList
   },
   {
+    path: 'address-update/:customerId/:addressId',
+    component: UpdateAddress, 
+  },
+  {
    path: 'search-list',
   component: Search
-  },
+  }
 ];

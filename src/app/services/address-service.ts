@@ -6,6 +6,8 @@ import { AddressResponse } from '../models/addressResponse';
 import { CreatedAddressResponse } from '../models/createdAddressResponse';
 import { DistrictResponse } from '../models/districtResponse';
 import { CityResponse } from '../models/cityResponse';
+import { UpdateAddressRequest } from '../models/updateAddressRequest';
+import { UpdatedAddressResponse } from '../models/updatedAddressResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -33,4 +35,7 @@ export class AddressService {
     return this.httpClient.get<CityResponse>(`${this.baseUrl}/api/cities`);
   }
 
+  updateAddress(id: number, req: UpdateAddressRequest): Observable<UpdatedAddressResponse> {
+      return this.httpClient.put<UpdatedAddressResponse>(`${this.baseUrl}/api/addresses/${id}`, req);
+  }
 }
