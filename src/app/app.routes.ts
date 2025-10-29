@@ -6,6 +6,9 @@ import { CreateAddress } from './pages/address/create-address/create-address';
 import { AddressList } from './pages/address/address-info-list/address-info-list';
 import { Search } from './pages/search/search';
 import { UpdateAddress } from './pages/address/update-address/update-address';
+import { UpdateContactmedium } from './pages/contactmedium/update-contactmedium/update-contactmedium';
+import { ContactmediumInfo } from './pages/contactmedium/contactmedium-info/contactmedium-info';
+import { CreateContactmedium } from './pages/contactmedium/create-contactmedium/create-contactmedium';
 
 
 export const routes: Routes = [
@@ -32,5 +35,16 @@ export const routes: Routes = [
   {
    path: 'search-list',
   component: Search
+  },
+   
+  { path: 'create-contactmedium/:customerId', component: CreateContactmedium },
+  {
+    path: 'contactmedium-update/:customerId',
+    component: UpdateContactmedium
+  },
+  {
+  path: 'contactmedium-info/:customerId',
+  component: ContactmediumInfo
   }
+   
 ];
