@@ -20,8 +20,8 @@ export class CreateAddressCard implements OnInit {
   formGroup!: FormGroup;
   submitting = signal(false);
  
-  cities: CityResponse[] = [];
-  districts: DistrictResponse[] = [];
+  cities = signal<CityResponse[]>([])
+  districts = signal<DistrictResponse[]>([]);
  
   createdAddressResponse = signal<CreatedAddressResponse | undefined>(undefined);
   private customerId!: string;
@@ -65,7 +65,8 @@ export class CreateAddressCard implements OnInit {
     this.addressService.getCity().subscribe({
       next: (res) => {
         // API tek obje dönerse de diziye çevir.
-        this.cities = Array.isArray(res) ? res : [res];
+        const cityArray = Array.isArray(res) ? res : [res]
+        this.cities.set(cityArray)
       },
       error: (err) => console.error('Şehirler alınamadı:', err),
     });
@@ -74,8 +75,8 @@ export class CreateAddressCard implements OnInit {
   private loadDistricts(cityId: number) {
     this.addressService.getDistrictByCityId(cityId).subscribe({
       next: (res) => {
-        this.districts = Array.isArray(res) ? res : [res];
-        // District'leri yükledikten sonra enable et
+        const districtArray = Array.isArray(res) ? res : [res];
+        this.districts.set(districtArray);
         this.f['districtId'].enable();
       },
       error: (err) => {
@@ -90,7 +91,7 @@ export class CreateAddressCard implements OnInit {
       // City değişince district reset + disable
       this.f['districtId'].setValue(null);
       this.f['districtId'].disable();
-      this.districts = [];
+      this.districts.set([]);
       
       if (val != null) {
         this.loadDistricts(val);
@@ -149,7 +150,7 @@ export class CreateAddressCard implements OnInit {
       default: false,
     });
     this.f['districtId'].disable();
-    this.districts = [];
+    this.districts.set([]);
     this.createdAddressResponse.set(undefined);
   }
 }

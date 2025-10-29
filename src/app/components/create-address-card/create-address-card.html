@@ -24,7 +24,7 @@
           [class.error]="f['cityId'].invalid && f['cityId'].touched"
         >
           <option [value]="null" disabled>Select city</option>
-          @for (city of cities; track city.id) {
+          @for (city of cities(); track city.id) {
             <option [value]="city.id">{{ city.name }}</option>
           }
         </select>
@@ -46,7 +46,7 @@
           [class.error]="f['districtId'].invalid && f['districtId'].touched"
         >
           <option [value]="null" disabled>Select district</option>
-          @for (district of districts; track district.id) {
+          @for (district of districts(); track district.id) {
             <option [value]="district.id">{{ district.name }}</option>
           }
         </select>

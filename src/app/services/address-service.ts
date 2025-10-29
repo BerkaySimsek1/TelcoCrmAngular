@@ -38,4 +38,8 @@ export class AddressService {
   updateAddress(id: number, req: UpdateAddressRequest): Observable<UpdatedAddressResponse> {
       return this.httpClient.put<UpdatedAddressResponse>(`${this.baseUrl}/api/addresses/${id}`, req);
   }
+
+  softDeleteAddress(id: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.baseUrl}/api/addresses/${id}/soft`);
+  }
 }
