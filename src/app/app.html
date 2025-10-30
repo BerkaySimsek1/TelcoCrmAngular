@@ -1,21 +1,17 @@
 <div class="flex h-screen overflow-hidden">
-  <!-- Sidebar -->
-  <app-sidebar 
-    [isOpen]="sidebarOpen()"
-    (toggle)="toggleSidebar()">
-  </app-sidebar>
 
-  <!-- Main Content Area -->
-  <div class="flex-1 flex flex-col min-w-0 bg-[#3d4159]">
-    <!-- Header -->
-    <app-header 
-      [currentUser]="currentUser()"
-      (logout)="handleLogout()">
-    </app-header>
+  @if (isLoggedIn()) { <app-sidebar
+      [isOpen]="sidebarOpen()"
+      (toggle)="toggleSidebar()">
+    </app-sidebar>
+  }
 
-    <!-- Page Content with background -->
-    <main class="flex-1 overflow-auto p-6">
+  <div class="flex-1 flex flex-col min-w-0 bg-gray-50"> @if (isLoggedIn()) { <app-header
+        [currentUser]="currentUser()"> </app-header>
+    }
+
+    <main class="flex-1 overflow-auto">
       <router-outlet></router-outlet>
     </main>
-  </div>
-</div>
+
+  </div> </div>

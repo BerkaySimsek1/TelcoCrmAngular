@@ -6,45 +6,28 @@ import { CreateAddress } from './pages/address/create-address/create-address';
 import { AddressList } from './pages/address/address-info-list/address-info-list';
 import { Search } from './pages/search/search';
 import { UpdateAddress } from './pages/address/update-address/update-address';
+import { Login } from './pages/login/login';
+import { authGuard } from './guards/auth.guard';
 import { UpdateContactmedium } from './pages/contactmedium/update-contactmedium/update-contactmedium';
 import { ContactmediumInfo } from './pages/contactmedium/contactmedium-info/contactmedium-info';
 import { CreateContactmedium } from './pages/contactmedium/create-contactmedium/create-contactmedium';
 
-
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'create-customer' },
-  { path: 'create-customer', component: CreateCustomer },
-  // 🔽 paramlı route
-  { path: 'customer-info/:customerId', component: CustomerInfo },
-  {
-    path: 'customer-update/:customerId',
-    component: UpdateCustomer, // içinde <app-update-customer-card> var
-  },
-   {
-    path: 'create-address/:customerId',
-    component: CreateAddress, 
-  },
-  {
-  path: 'address-list/:customerId',
-  component: AddressList
-  },
-  {
-    path: 'address-update/:customerId/:addressId',
-    component: UpdateAddress, 
-  },
-  {
-   path: 'search-list',
-  component: Search
-  },
-   
-  { path: 'create-contactmedium/:customerId', component: CreateContactmedium },
-  {
-    path: 'contactmedium-update/:customerId',
-    component: UpdateContactmedium
-  },
-  {
-  path: 'contactmedium-info/:customerId',
-  component: ContactmediumInfo
-  }
-   
+
+  // Başlangıçta login'e gitsin veya korumalı bir sayfaya yönlensin (guard halleder)
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: Login }, // Login sayfası - Guard YOK
+
+  // --- Korumalı Sayfalar ---
+  { path: 'search-list', component: Search, canActivate: [authGuard] }, // Guard eklendi
+  { path: 'create-customer', component: CreateCustomer, canActivate: [authGuard] }, // Guard eklendi
+  { path: 'customer-info/:customerId', component: CustomerInfo, canActivate: [authGuard] }, // Guard eklendi
+  { path: 'customer-update/:customerId', component: UpdateCustomer, canActivate: [authGuard] }, // Guard eklendi
+  { path: 'create-address/:customerId', component: CreateAddress, canActivate: [authGuard] }, // Guard eklendi
+  { path: 'address-list/:customerId', component: AddressList, canActivate: [authGuard] }, // Guard eklendi
+  { path: 'address-update/:customerId/:addressId', component: UpdateAddress, canActivate: [authGuard] }, // Guard eklendi
+  { path: 'create-contactmedium/:customerId', component: CreateContactmedium,canActivate: [authGuard] },
+  {path: 'contactmedium-update/:customerId', component: UpdateContactmedium,canActivate: [authGuard]},
+  {path: 'contactmedium-info/:customerId',component: ContactmediumInfo,canActivate: [authGuard]}
+
 ];

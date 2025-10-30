@@ -30,4 +30,13 @@ export class CustomerService {
   updateCustomer(id: string, req: UpdateCustomerRequest): Observable<UpdatedCustomerResponse> {
     return this.httpClient.put<UpdatedCustomerResponse>(`${this.baseUrl}/api/individual-customers/${id}`, req);
   }
+
+  softDeleteCustomer(id: string): Observable<void> {
+    return this.httpClient.delete<void>(`${this.baseUrl}/api/individual-customers/${id}/soft`);
+  }
+
+existsByNationalId(nationalId: string): Observable<boolean> {
+  return this.httpClient.get<boolean>(`${this.baseUrl}/api/individual-customers/existsByNationalId/${nationalId}`);
+}
+
 }

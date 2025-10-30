@@ -5,6 +5,7 @@ import { CustomerService } from '../../services/customer-service';
 import { CommonModule } from '@angular/common';
 import { CreateCustomerRequest } from '../../models/createCustomerRequest';
 import { Router } from '@angular/router';
+import { lettersOnlyValidator, nationalIdRulesValidator, nationalIdUniqueAsyncValidator } from '../../validators/customer-validators';
 
 @Component({
   selector: 'app-create-customer-card',
@@ -17,6 +18,8 @@ formGroup!: FormGroup;
 submitting = signal(false);
   createdCustomerResponse = signal<CreatedCustomerRespose | undefined>(undefined);
 
+  showCancelModal = signal<boolean>(false);
+
     constructor(private customerService: CustomerService, private formBuilder: FormBuilder, private router: Router) {
     }
 
@@ -27,19 +30,21 @@ submitting = signal(false);
 
     buildForm() {
       this.formGroup = this.formBuilder.group({
-        firstName: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(50)] }),
-      middleName: new FormControl<string | null>(null, { validators: [Validators.maxLength(50)] }),
-      lastName: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(50)] }),
+        firstName: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, lettersOnlyValidator(2, 50)] }),
+      middleName: new FormControl<string | null>(null, { validators: lettersOnlyValidator(2, 50) }),
+      lastName: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, lettersOnlyValidator(2, 50)] }),
       dateOfBirth: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-      motherName: new FormControl<string | null>(null, { validators: [Validators.maxLength(50)] }),
-      fatherName: new FormControl<string | null>(null, { validators: [Validators.maxLength(50)] }),
+      motherName: new FormControl<string | null>(null, { validators: [lettersOnlyValidator(2, 50)] }),
+      fatherName: new FormControl<string | null>(null, { validators: [lettersOnlyValidator(2, 50)] }),
       gender: new FormControl<'MALE' | 'FEMALE' | 'OTHER'>('OTHER', { nonNullable: true, validators: [Validators.required] }),
       nationalId: new FormControl<string>('', {
         nonNullable: true,
         validators: [
           Validators.required,
-          Validators.pattern(/^\d{11}$/),
+          nationalIdRulesValidator(),
         ],
+        asyncValidators: [nationalIdUniqueAsyncValidator(this.customerService)],
+        updateOn: 'blur',
       }),
       })
     }
@@ -55,6 +60,13 @@ submitting = signal(false);
         this.formGroup.markAllAsTouched();
         return;
       }
+
+      if (this.f['nationalId'].errors?.['nationalIdTaken']) {
+      // FR4 mesajını göstermek için küçük bir bayrak/alan kullanabiliriz.
+      // Burada form hatalarında göstereceğiz (HTML’de ayrı blok var).
+      this.formGroup.markAllAsTouched();
+      return;
+    }
 
       const dobDate: string = this.f['dateOfBirth'].value; // "2025-10-08"
 
@@ -95,7 +107,11 @@ submitting = signal(false);
     }
 
     cancel() {
-      this.formGroup.reset({
+    this.showCancelModal.set(true);
+  }
+  confirmCancel() {
+    // formu sıfırla
+    this.formGroup.reset({
       firstName: '',
       middleName: null,
       lastName: '',
@@ -106,5 +122,17 @@ submitting = signal(false);
       nationalId: '',
     });
     this.createdCustomerResponse.set(undefined);
+    this.showCancelModal.set(false);
+    // Arama ekranına dön
+    this.router.navigate(['/search-list']);
   }
+  closeCancelModal() {
+    this.showCancelModal.set(false);
+  }
+
+  has(name: keyof typeof this.formGroup.controls, error: string) {
+  const c = this.formGroup.get(name as string);
+  return !!(c && c.touched && c.hasError(error));
+  }
+
 }

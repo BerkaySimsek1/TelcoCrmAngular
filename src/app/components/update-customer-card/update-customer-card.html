@@ -23,10 +23,9 @@
         @if (f['firstName'].invalid && f['firstName'].touched) {
           <span class="text-xs text-red-500 mt-1">
             @if (f['firstName'].errors?.['required']) {
-              First name is required
-            }
-            @if (f['firstName'].errors?.['maxlength']) {
-              Maximum 50 characters allowed
+              Please enter a valid value
+            } @else if (f['firstName'].errors?.['lettersOnly']) {
+              Only letters (2–50 chars)
             }
           </span>
         }
@@ -42,7 +41,7 @@
           [class.border-red-500]="f['middleName'].invalid && f['middleName'].touched"
           placeholder="Enter middle name">
         @if (f['middleName'].invalid && f['middleName'].touched) {
-          <span class="text-xs text-red-500 mt-1">Maximum 50 characters allowed</span>
+          <span class="text-xs text-red-500 mt-1">Only letters (2–50 chars)</span>
         }
       </div>
 
@@ -59,11 +58,10 @@
           placeholder="Enter last name">
         @if (f['lastName'].invalid && f['lastName'].touched) {
           <span class="text-xs text-red-500 mt-1">
-            @if (f['lastName'].errors?.['required']) {
-              Last name is required
-            }
-            @if (f['lastName'].errors?.['maxlength']) {
-              Maximum 50 characters allowed
+            @if (has('lastName', 'required')) {
+              Please enter a valid value
+            } @else if (has('lastName', 'lettersOnly')) {
+              Only letters (2–50 chars)
             }
           </span>
         }
@@ -87,8 +85,14 @@
             </svg>
           </span>
         </div>
-        @if (f['dateOfBirth'].invalid && f['dateOfBirth'].touched) {
-          <span class="text-xs text-red-500 mt-1">Birth date is required</span>
+        @if (f['dateOfBirth'].touched && f['dateOfBirth'].errors) {
+          <span class="text-xs text-red-500 mt-1">
+            @if (has('dateOfBirth', 'required')) {
+              Please enter a valid value
+            } @else if (has('dateOfBirth', 'futureDate')) {
+              Date cannot be in the future
+            }
+          </span>
         }
       </div>
 
@@ -101,8 +105,8 @@
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
           [class.border-red-500]="f['motherName'].invalid && f['motherName'].touched"
           placeholder="Enter mother's name">
-        @if (f['motherName'].invalid && f['motherName'].touched) {
-          <span class="text-xs text-red-500 mt-1">Maximum 50 characters allowed</span>
+        @if (f['motherName'].touched && f['motherName'].errors?.['lettersOnly']) {
+          <span class="text-xs text-red-500 mt-1">Only letters (2–50 chars)</span>
         }
       </div>
 
@@ -115,8 +119,8 @@
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
           [class.border-red-500]="f['fatherName'].invalid && f['fatherName'].touched"
           placeholder="Enter father's name">
-        @if (f['fatherName'].invalid && f['fatherName'].touched) {
-          <span class="text-xs text-red-500 mt-1">Maximum 50 characters allowed</span>
+        @if (f['fatherName'].touched && f['fatherName'].errors?.['lettersOnly']) {
+          <span class="text-xs text-red-500 mt-1">Only letters (2–50 chars)</span>
         }
       </div>
 
@@ -140,8 +144,8 @@
             </svg>
           </span>
         </div>
-        @if (f['gender'].invalid && f['gender'].touched) {
-          <span class="text-xs text-red-500 mt-1">Gender is required</span>
+        @if (f['gender'].touched && f['gender'].errors?.['required']) {
+          <span class="text-xs text-red-500 mt-1">Please enter a valid value</span>
         }
       </div>
 
@@ -158,13 +162,22 @@
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
           [class.border-red-500]="f['nationalId'].invalid && f['nationalId'].touched"
           placeholder="11-digit National ID">
-        @if (f['nationalId'].invalid && f['nationalId'].touched) {
+        @if (f['nationalId'].touched && f['nationalId'].errors) {
           <span class="text-xs text-red-500 mt-1">
-            @if (f['nationalId'].errors?.['required']) {
-              National ID is required
+            @if (has('nationalId', 'required')) {
+              Please enter a valid value
             }
-            @if (f['nationalId'].errors?.['pattern']) {
-              Must be exactly 11 digits
+            @if (has('nationalId', 'nationalIdFormat')) {
+              Must be 11 digits
+            }
+            @if (has('nationalId', 'nationalIdStartsWithZero')) {
+              Cannot start with 0
+            }
+            @if (has('nationalId', 'nationalIdNotEven')) {
+              Must end with an even number
+            }
+            @if (has('nationalId', 'nationalIdTaken')) {
+              A customer already exists with this Nationality ID
             }
           </span>
         }
@@ -175,7 +188,8 @@
     <div class="mt-10 flex items-center justify-between pt-6 border-t border-gray-200">
       <button 
         type="button"
-        (click)="cancel()"
+        (click)="cancel()
+"
         class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all">
         Cancel
       </button>

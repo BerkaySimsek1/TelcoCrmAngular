@@ -15,7 +15,7 @@
           [class.invalid]="f['cityId'].invalid && f['cityId'].touched"
         >
           <option [ngValue]="null" disabled>Select City</option>
-          @for (city of cities; track city.id) {
+          @for (city of cities(); track city.id) {
             <option [ngValue]="city.id">{{ city.name }}</option>
           }
         </select>
@@ -36,7 +36,7 @@
           [class.invalid]="f['districtId'].invalid && f['districtId'].touched"
         >
           <option [ngValue]="null" disabled>Select District</option>
-          @for (district of districts; track district.id) {
+          @for (district of districts(); track district.id) {
             <option [ngValue]="district.id">{{ district.name }}</option>
           }
         </select>

@@ -22,8 +22,8 @@ export class UpdateAddressCard implements OnInit {
   formGroup!: FormGroup;
   submitting = signal(false);
 
-  cities: CityResponse[] = [];
-  districts: DistrictResponse[] = [];
+  cities = signal<CityResponse[]>([]);
+  districts = signal<DistrictResponse[]>([]);
 
   updatedAddressResponse = signal<UpdatedAddressResponse | undefined>(undefined);
   private addressId!: string;
@@ -57,8 +57,9 @@ export class UpdateAddressCard implements OnInit {
       addresses: this.addressService.getAddressByCustomerId(this.customerId)
     }).subscribe({
       next: ({ cities, addresses }) => {
-        // Şehirleri kaydet
-        this.cities = Array.isArray(cities) ? cities : [cities];
+        // Şehirleri signal ile kaydet
+        const cityArray = Array.isArray(cities) ? cities : [cities];
+        this.cities.set(cityArray);
         
         // Adresleri filtrele
         const addressList = Array.isArray(addresses) ? addresses : [addresses];
@@ -107,7 +108,7 @@ export class UpdateAddressCard implements OnInit {
 
     // cityName ile city listesinden city'yi bul
     if (res.cityName) {
-      const matchedCity = this.cities.find(c => c.name === res.cityName);
+      const matchedCity = this.cities().find(c => c.name === res.cityName);
       if (matchedCity) {
         this.formGroup.patchValue({ cityId: matchedCity.id });
         this.loadDistricts(matchedCity.id, districtId);
@@ -117,19 +118,13 @@ export class UpdateAddressCard implements OnInit {
     }
   }
 
-  private loadCities() {
-    this.addressService.getCity().subscribe({
-      next: (res) => {
-        this.cities = Array.isArray(res) ? res : [res];
-      },
-      error: (err) => console.error('Şehirler alınamadı:', err),
-    });
-  }
-
   private loadDistricts(cityId: number, preselectedDistrictId?: number | null) {
     this.addressService.getDistrictByCityId(cityId).subscribe({
       next: (res) => {
-        this.districts = Array.isArray(res) ? res : [res];
+        // Districts'i signal ile set et
+        const districtArray = Array.isArray(res) ? res : [res];
+        this.districts.set(districtArray);
+        
         // District'leri yükledikten sonra enable et
         this.f['districtId'].enable();
         
@@ -140,6 +135,7 @@ export class UpdateAddressCard implements OnInit {
       },
       error: (err) => {
         console.error('İlçeler alınamadı:', err);
+        this.districts.set([]);
         this.f['districtId'].disable();
       },
     });
@@ -150,7 +146,7 @@ export class UpdateAddressCard implements OnInit {
       // City değişince district reset + disable
       this.f['districtId'].setValue(null);
       this.f['districtId'].disable();
-      this.districts = [];
+      this.districts.set([]);
       
       if (val != null) {
         this.loadDistricts(val);

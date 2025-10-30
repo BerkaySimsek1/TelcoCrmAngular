@@ -1,4 +1,5 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
+import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-header',
@@ -9,9 +10,11 @@ import { Component, input, output } from '@angular/core';
 export class Header {
   currentUser = input<string>('JOHN');
   
-  logout = output<void>();
-
+  // constructor(private authService: AuthService) {}
+  //aynı işlevi gören modern inject kullanımı
+  private authService = inject(AuthService);
+  
   onLogout() {
-    this.logout.emit();
+    this.authService.logout();
   }
 }
