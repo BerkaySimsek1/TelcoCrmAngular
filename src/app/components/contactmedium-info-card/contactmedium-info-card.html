@@ -1,0 +1,63 @@
+<div class="contactmedium-info-card">
+  <div class="card-header">
+    <h2 class="card-title">Contact Medium</h2>
+    @if (!loading() && contactMediums().length > 0) {
+      <a 
+        [routerLink]="['/contactmedium-update', customerId()]" 
+        class="edit-button"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </a>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading contact mediums...</p>
+    </div>
+  }
+
+  @if (!loading() && contactMediums().length === 0) {
+    <div class="empty-state">
+      <p>No contact mediums found for this customer.</p>
+      <a [routerLink]="['/create-contactmedium', customerId()]" class="btn-create">
+        Create Contact Mediums
+      </a>
+    </div>
+  }
+
+  @if (!loading() && contactMediums().length > 0) {
+    <div class="info-content">
+      <div class="info-grid">
+        <!-- Email -->
+        <div class="info-row">
+          <div class="info-item">
+            <label>Email :</label>
+            <span class="value">{{ getEmail() || '-' }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Home Phone :</label>
+            <span class="value">{{ getHomePhone() || '-' }}</span>
+          </div>
+        </div>
+
+        <!-- Mobile Phone & Fax -->
+        <div class="info-row">
+          <div class="info-item">
+            <label>Mobile Phone :</label>
+            <span class="value">{{ getMobilePhone() || '-' }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Fax:</label>
+            <span class="value">{{ getFax() || '-' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

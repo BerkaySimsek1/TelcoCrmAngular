@@ -1,0 +1,133 @@
+.contactmedium-info-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #ff8c42;
+
+    .card-title {
+      color: #ff8c42;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .edit-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      color: #2c3e50;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+
+      &:hover {
+        background-color: #ff8c42;
+        color: #ffffff;
+        transform: scale(1.1);
+      }
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  .loading-state,
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #7f8c8d;
+
+    p {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+    }
+  }
+
+  .empty-state {
+    .btn-create {
+      display: inline-block;
+      padding: 10px 24px;
+      background-color: #ff8c42;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 20px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #ff7a29;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 140, 66, 0.3);
+      }
+    }
+  }
+
+  .info-content {
+    .info-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #2c3e50;
+        min-width: 120px;
+        white-space: nowrap;
+
+        @media (max-width: 480px) {
+          min-width: 100px;
+        }
+      }
+
+      .value {
+        flex: 1;
+        padding: 10px 16px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #2c3e50;
+        border: 1px solid #e9ecef;
+        word-break: break-all;
+
+        &:empty::before {
+          content: '-';
+          color: #95a5a6;
+        }
+      }
+    }
+  }
+}
