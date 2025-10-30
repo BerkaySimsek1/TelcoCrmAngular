@@ -13,7 +13,7 @@ import { authGuard } from './guards/auth.guard';
 export const routes: Routes = [
 
   // Başlangıçta login'e gitsin veya korumalı bir sayfaya yönlensin (guard halleder)
-  
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: Login }, // Login sayfası - Guard YOK
 
   // --- Korumalı Sayfalar ---
