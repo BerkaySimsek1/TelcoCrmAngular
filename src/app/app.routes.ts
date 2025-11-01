@@ -1,42 +1,67 @@
 import { Routes } from '@angular/router';
+import { Login } from './pages/login/login';
+import { Search } from './pages/search/search';
 import { CreateCustomer } from './pages/customer/create-customer/create-customer';
 import { CustomerInfo } from './pages/customer/customer-info/customer-info';
 import { UpdateCustomer } from './pages/customer/update-customer/update-customer';
-import { CreateAddress } from './pages/address/create-address/create-address';
-import { AddressList } from './pages/address/address-info-list/address-info-list';
-import { Search } from './pages/search/search';
-import { UpdateAddress } from './pages/address/update-address/update-address';
-import { Login } from './pages/login/login';
-import { authGuard } from './guards/auth.guard';
-import { UpdateContactmedium } from './pages/contactmedium/update-contactmedium/update-contactmedium';
-import { ContactmediumInfo } from './pages/contactmedium/contactmedium-info/contactmedium-info';
-import { CreateContactmedium } from './pages/contactmedium/create-contactmedium/create-contactmedium';
-import { CustomerAddressCreateCard } from './components/customer-address-create-card/customer-address-create-card';
 import { AddressListComponent } from './components/address-list/address-list';
+import { CustomerAddressCreateCard } from './components/customer-address-create-card/customer-address-create-card';
+import { UpdateAddressCard } from './components/update-address-card/update-address-card';
+import { ContactmediumInfo } from './pages/contactmedium/contactmedium-info/contactmedium-info';
+import { UpdateContactmedium } from './pages/contactmedium/update-contactmedium/update-contactmedium';
+import { CreateContactmedium } from './pages/contactmedium/create-contactmedium/create-contactmedium';
+import { authGuard } from './guards/auth.guard';
+import { CustomerNavbarComponent } from './components/customer-navbar-component/customer-navbar-component';
 
 export const routes: Routes = [
-
-  // Başlangıçta login'e gitsin veya korumalı bir sayfaya yönlensin (guard halleder)
+  // Login
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: Login }, // Login sayfası - Guard YOK
+  { path: 'login', component: Login },
 
-  // --- Korumalı Sayfalar ---
-  { path: 'search-list', component: Search, canActivate: [authGuard] }, // Guard eklendi
-  { path: 'create-customer', component: CreateCustomer, canActivate: [authGuard] }, // Guard eklendi
-  { path: 'customer-info/:customerId', component: CustomerInfo, canActivate: [authGuard] }, // Guard eklendi
-  { path: 'customer-update/:customerId', component: UpdateCustomer, canActivate: [authGuard] }, // Guard eklendi
-  { path: 'create-address/:customerId', component: CreateAddress, canActivate: [authGuard] }, // Guard eklendi
-  { path: 'address-list/:customerId', component: AddressList, canActivate: [authGuard] }, // Guard eklendi
-  { path: 'address-update/:customerId/:addressId', component: UpdateAddress, canActivate: [authGuard] }, // Guard eklendi
-  { path: 'create-contactmedium', component: CreateContactmedium,canActivate: [authGuard] },
-  {path: 'contactmedium-update/:customerId', component: UpdateContactmedium,canActivate: [authGuard]},
-  {path: 'contactmedium-info/:customerId',component: ContactmediumInfo,canActivate: [authGuard]},
-  {path: 'customer-address-create', component: CustomerAddressCreateCard, canActivate: [authGuard] }, // Diğer tüm bilinmeyen yolları arama sayfasına yönlendir
-  
-{ path: 'onboarding/addresses', component: AddressList, data: { mode: 'wizard' }, canActivate: [authGuard] },
-{ path: 'onboarding/addresses/new', component: CustomerAddressCreateCard, data: { mode: 'wizard' }, canActivate: [authGuard] },
+  // Search
+  { path: 'search-list', component: Search, canActivate: [authGuard] },
 
-{ path: 'customers/:customerId/addresses', component: AddressList, data: { mode: 'standalone' }, canActivate: [authGuard] },
-{ path: 'customers/:customerId/addresses/new', component: CustomerAddressCreateCard, data: { mode: 'standalone' }, canActivate: [authGuard] },
+  // Create Customer (standalone)
+  { path: 'create-customer', component: CreateCustomer, canActivate: [authGuard] },
+  { path: 'create-contactmedium', component: CreateContactmedium, canActivate: [authGuard] },
+  // Update pages (navbar dışında - standalone)
+  { path: 'customer-update/:customerId', component: UpdateCustomer, canActivate: [authGuard] },
+  { path: 'address-update/:customerId/:addressId', component: UpdateAddressCard, canActivate: [authGuard] },
+  { path: 'contactmedium-update/:customerId', component: UpdateContactmedium, canActivate: [authGuard] },
 
+  // Customer Detail with navbar (sadece info ve list sayfaları)
+  {
+    path: 'customer/:customerId',
+    component: CustomerNavbarComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: '', redirectTo: 'info', pathMatch: 'full' },
+      { path: 'info', component: CustomerInfo },
+      { path: 'addresses', component: AddressListComponent, data: { mode: 'standalone' } },
+      { path: 'contact', component: ContactmediumInfo }
+    ]
+  },
+
+  // Onboarding wizard
+  { 
+    path: 'onboarding/addresses', 
+    component: AddressListComponent, 
+    data: { mode: 'wizard' }, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'onboarding/addresses/new', 
+    component: CustomerAddressCreateCard, 
+    data: { mode: 'wizard' }, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'onboarding/addresses/:tmpId/edit', 
+    component: UpdateAddressCard, 
+    data: { mode: 'wizard' }, 
+    canActivate: [authGuard] 
+  },
+
+  // Fallback
+  { path: '**', redirectTo: '/search-list' }
 ];

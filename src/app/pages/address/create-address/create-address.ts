@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CreateAddressCard } from '../../../components/create-address-card/create-address-card';
+import { CustomerAddressCreateCard } from '../../../components/customer-address-create-card/customer-address-create-card';
 
 @Component({
   selector: 'app-create-address',
-  imports: [CreateAddressCard],
+  imports: [],
   templateUrl: './create-address.html',
   styleUrl: './create-address.scss',
 })

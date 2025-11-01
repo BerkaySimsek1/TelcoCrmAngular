@@ -26,28 +26,28 @@ export class ContactmediumInfoCard implements OnInit {
   }
 
   getContactMediumInfo() {
-    const customerIdFromRoute = this.route.snapshot.paramMap.get('customerId');
-
-    if (!customerIdFromRoute) {
-      console.error('customerId paramı bulunamadı.');
-      this.loading.set(false);
-      return;
-    }
-
-    this.customerId.set(customerIdFromRoute);
-
-    this.contactMediumService.getContactMediumsById(customerIdFromRoute).subscribe({
-      next: (response) => {
-        // Backend liste döndürüyor
-        this.contactMediums.set(Array.isArray(response) ? response : [response]);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        console.error('Error fetching contact mediums:', error);
-        this.loading.set(false);
-      }
-    });
+  // ✅ Parent route'tan customerId al
+  const customerIdFromRoute = this.route.parent?.snapshot.paramMap.get('customerId')
+                            || this.route.snapshot.paramMap.get('customerId');
+  if (!customerIdFromRoute) {
+    console.error('customerId paramı bulunamadı.');
+    this.loading.set(false);
+    return;
   }
+
+  this.customerId.set(customerIdFromRoute);
+
+  this.contactMediumService.getContactMediumsById(customerIdFromRoute).subscribe({
+    next: (response) => {
+      this.contactMediums.set(Array.isArray(response) ? response : [response]);
+      this.loading.set(false);
+    },
+    error: (error) => {
+      console.error('Error fetching contact mediums:', error);
+      this.loading.set(false);
+    }
+  });
+}
 
   // Helper metodlar - Contact medium type'ları formatlamak için
   getEmail(): string {

@@ -208,7 +208,7 @@ export class UpdateContactmediumCard implements OnInit {
         this.submitting.set(false);
 
         // Güncelleme sonrası contact medium info sayfasına dön
-        this.router.navigate(['/contactmedium-info', this.customerId]);
+        this.router.navigate(['/customer', this.customerId, 'contact']);
       },
       error: (error) => {
         console.error('İletişim bilgileri güncellenirken hata:', error);
@@ -220,7 +220,8 @@ export class UpdateContactmediumCard implements OnInit {
   cancel() {
     // Cancel ile contact medium info sayfasına dön
     if (this.customerId) {
-      this.router.navigate(['/contactmedium-info', this.customerId]);
+      this.router.navigate(['/customer', this.customerId, 'contact']);
+
     } else {
       this.router.navigate(['/customers']);
     }

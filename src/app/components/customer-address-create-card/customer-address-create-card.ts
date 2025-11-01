@@ -109,12 +109,13 @@ export class CustomerAddressCreateCard implements OnInit {
     }
 
     const addrItem: CreateAddressItem = {
-      street: this.f['street'].value,
-      houseNumber: this.f['houseNumber'].value,
-      description: this.f['description'].value ?? '',
-      districtId: this.f['districtId'].value!,
-      default: this.f['default'].value,
-    };
+  cityId: this.f['cityId'].value!,                // ✅ eklendi
+  street: this.f['street'].value,
+  houseNumber: this.f['houseNumber'].value,
+  description: this.f['description'].value ?? '',
+  districtId: this.f['districtId'].value!,
+  default: this.f['default'].value,
+};
 
     this.submitting.set(true);
 

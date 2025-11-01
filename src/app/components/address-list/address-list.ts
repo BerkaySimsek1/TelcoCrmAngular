@@ -48,32 +48,39 @@ ngOnInit(): void {
     );
     this.loading.set(false);
   } else {
-    // ✅ customerId’yi instance alanına ATA
-    const customerIdFromRoute = this.route.snapshot.paramMap.get('customerId');
-    if (!customerIdFromRoute) {
-      console.error('customerId paramı bulunamadı.');
-      this.loading.set(false);
-      return;
+     const customerIdFromRoute = this.route.parent?.snapshot.paramMap.get('customerId')
+                              || this.route.snapshot.paramMap.get('customerId');
+    if (!customerIdFromRoute) { 
+      console.error('customerId yok'); 
+      this.loading.set(false); 
+      return; 
     }
-    this.customerId = customerIdFromRoute;            // <<<<<<  önemli
-    this.loadAddresses(this.customerId);              // instance’ı kullan
+    this.customerId = customerIdFromRoute;
+    this.loadAddresses(this.customerId);
   }
 }
 
   private loadAddresses(customerId: string) {
-    this.loading.set(true);
-    this.addressService.getAddressByCustomerId(customerId).subscribe({
-      next: (res) => {
-        this.addresses.set(Array.isArray(res) ? res : [res]);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Adresler alınamadı:', err);
-        this.addresses.set([]);
-        this.loading.set(false);
-      },
-    });
-  }
+  this.loading.set(true);
+  this.addressService.getAddressByCustomerId(customerId).subscribe({
+    next: (res) => {
+      const list = Array.isArray(res) ? res : [res];
+      // id alanını normalize et
+      const normalized = list.map(a => ({
+        ...a,
+        id: (a as any).id ?? (a as any).addressId   // ✅
+      }));
+      this.addresses.set(normalized);
+      this.loading.set(false);
+    },
+    error: (err) => {
+      console.error('Adresler alınamadı:', err);
+      this.addresses.set([]);
+      this.loading.set(false);
+    },
+  });
+}
+
 
   addNewAddress() {
     if (this.mode === 'wizard') {
@@ -83,14 +90,17 @@ ngOnInit(): void {
     }
   }
 
-  editAddress(addressId: number) {
-    if (this.mode === 'wizard') {
-      // Wizard’da editi basit tut: istersen state içinden sile/sun ve /new’e yönlendir
-      this.router.navigate(['/onboarding/addresses/new'], { queryParams: { edit: addressId } });
-    } else {
-      this.router.navigate(['/customers', this.customerId, 'addresses', addressId]);
-    }
+  // address-list.ts
+editAddress(idOrIndex: number) {
+  if (this.mode === 'wizard') {
+    this.router.navigate(['/onboarding/addresses', idOrIndex, 'edit']); // rota ile birebir
+  } else {
+    if (!this.customerId) return;
+    this.router.navigate(['/address-update', this.customerId, idOrIndex]);
   }
+}
+
+
 
   deleteAddress(addressId: number) {
     if (this.mode === 'wizard') {
@@ -146,7 +156,7 @@ ngOnInit(): void {
 
   goToPrevious() {
     if (this.mode === 'wizard') {
-      this.router.navigate(['/create-customerr']);
+      this.router.navigate(['/create-customer']);
     } else {
       this.router.navigate(['/customer-info', this.customerId]);
     }

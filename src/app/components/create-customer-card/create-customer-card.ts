@@ -26,6 +26,20 @@ submitting = signal(false);
 
     ngOnInit(): void {
         this.buildForm();
+
+        const st = this.fullCustomerCreation.state();
+  if (st.individual) {
+    this.formGroup.patchValue({
+      firstName: st.individual.firstName ?? '',
+      middleName: st.individual.middleName ?? null,
+      lastName: st.individual.lastName ?? '',
+      dateOfBirth: (st.individual.dateOfBirth ?? '').slice(0,10), // "YYYY-MM-DD"
+      motherName: st.individual.motherName ?? null,
+      fatherName: st.individual.fatherName ?? null,
+      gender: st.individual.gender ?? 'OTHER',
+      nationalId: st.individual.nationalId ?? '',
+    }, { emitEvent: false });
+  }
     }
 
 
@@ -69,28 +83,21 @@ submitting = signal(false);
       return;
     }
 
-      const dobDate: string = this.f['dateOfBirth'].value; // "2025-10-08"
+      const dobDate: string = this.f['dateOfBirth'].value;
+  const request: CreateCustomerRequest = {
+    firstName: this.f['firstName'].value,
+    middleName: this.f['middleName'].value ?? null,
+    lastName: this.f['lastName'].value,
+    dateOfBirth: `${dobDate}T00:00:00`,
+    motherName: this.f['motherName'].value ?? null,
+    fatherName: this.f['fatherName'].value ?? null,
+    gender: this.f['gender'].value,
+    nationalId: this.f['nationalId'].value,
+  };
 
-      const dateTime = `${dobDate}T00:00:00`; 
-
-      const request: CreateCustomerRequest = {
-      firstName: this.f['firstName'].value,
-      middleName: this.f['middleName'].value ?? null,
-      lastName: this.f['lastName'].value,
-      dateOfBirth: dateTime, // backend LocalDate istiyorsa "YYYY-MM-DD" tamam; LocalDateTime istiyorsa ISO'ya çevir.
-      motherName: this.f['motherName'].value ?? null,
-      fatherName: this.f['fatherName'].value ?? null,
-      gender: this.f['gender'].value,
-      nationalId: this.f['nationalId'].value,
-      };
-
-      this.submitting.set(true);
-      const cur = this.fullCustomerCreation.state();
-      this.fullCustomerCreation.state.set({
-        ...cur,
-        individual: request,
-      });
-      this.router.navigate(['/onboarding/addresses']);
+  this.submitting.set(true);
+  this.fullCustomerCreation.setIndividual(request);  // 🔑 kalıcı state
+  this.router.navigate(['/onboarding/addresses']);
     }
 
     cancel() {

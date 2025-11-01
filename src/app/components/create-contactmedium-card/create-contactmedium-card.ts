@@ -42,6 +42,26 @@ export class CreateContactmediumCard implements OnInit {
   ngOnInit(): void {
 
     this.buildForm();
+
+
+    // 🔹 Var olan state’ten doldur
+  const st = this.fullCustomerCreation.state();
+  const existing = st.contactMediums ?? [];
+  const email = existing.find(x => x.type === 'email');
+  const mobile = existing.find(x => x.type === 'mobile_phone');
+  const home = existing.find(x => x.type === 'home_phone');
+  const fax = existing.find(x => x.type === 'fax');
+
+  this.formGroup.patchValue({
+    email: email?.value ?? '',
+    emailPrimary: email?.isPrimary ?? false,
+    mobilePhone: mobile?.value ?? '',
+    mobilePhonePrimary: mobile?.isPrimary ?? false,
+    homePhone: home?.value ?? '',
+    homePhonePrimary: home?.isPrimary ?? false,
+    fax: fax?.value ?? '',
+    faxPrimary: fax?.isPrimary ?? false,
+  }, { emitEvent: false });
   }
 
   private buildForm() {
@@ -85,94 +105,48 @@ export class CreateContactmediumCard implements OnInit {
   }
 
   submit() {
-    if (this.formGroup.invalid) {
-      this.formGroup.markAllAsTouched();
-      return;
-    }
+  if (this.formGroup.invalid) { this.formGroup.markAllAsTouched(); return; }
 
-    
+  const contactMediums = this.buildContactMediumsFromForm();
+  const cur = this.fullCustomerCreation.state();
+  this.fullCustomerCreation.setContactMediums(contactMediums); // 🔑
 
-    // ContactMedium array'i oluştur
-    const contactMediums: ContactMedium[] = [];
-
-    // Email (zorunlu)
-    contactMediums.push({
-      type: 'email',
-      value: this.f['email'].value,
-      isPrimary: this.f['emailPrimary'].value
-    });
-
-    // Mobile Phone (zorunlu)
-    contactMediums.push({
-      type: 'mobile_phone',
-      value: this.f['mobilePhone'].value,
-      isPrimary: this.f['mobilePhonePrimary'].value
-    });
-
-    // Home Phone (opsiyonel)
-    if (this.f['homePhone'].value) {
-      contactMediums.push({
-        type: 'home_phone',
-        value: this.f['homePhone'].value,
-        isPrimary: this.f['homePhonePrimary'].value
-      });
-    }
-
-    // Fax (opsiyonel)
-    if (this.f['fax'].value) {
-      contactMediums.push({
-        type: 'fax',
-        value: this.f['fax'].value,
-        isPrimary: this.f['faxPrimary'].value
-      });
-    }
-
-    const cur = this.fullCustomerCreation.state();
-    const next = { ...cur, contactMediums: contactMediums };
-    this.fullCustomerCreation.state.set(next);
-
-    // FINAL: tek API çağrısı
-    if (!next.individual) {
-      console.error('Wizard state individual yok.');
-      return;
-    }
-
-    const req: CreateFullCustomerRequest = {
-      individualCustomer: next.individual,
-      addresses: next.addresses,
-      contactMediums: next.contactMediums,
-    };
-
-    this.submitting.set(true);
-    this.api.createFull(req).subscribe({
-      next: (res) => {
-        this.submitting.set(false);
-        // Başarılı – istersen müşteri detayına yönlendir
-        this.router.navigate(['/customer-info', res.customerId]);
-        // ya da arama sayfasına dön:
-        // this.router.navigate(['/search-list']);
-        // State'i temizle:
-        this.fullCustomerCreation.reset();
-      },
-      error: (err) => {
-        console.error('Full customer create failed:', err);
-        this.submitting.set(false);
-      },
-    });
+  if (!cur.individual) {
+    console.error('Wizard state individual yok.');
+    return;
   }
+
+  const req = {
+    individualCustomer: cur.individual,
+    addresses: cur.addresses,
+    contactMediums: contactMediums,
+  };
+
+  this.submitting.set(true);
+  this.api.createFull(req).subscribe({
+    next: (res) => {
+      this.submitting.set(false);
+      this.router.navigate(['/customer', res.customerId]);
+      this.fullCustomerCreation.reset(); // 🔑 wizard’ı temizle
+    },
+    error: (err) => { this.submitting.set(false); console.error(err); }
+  });
+}
 
   cancel() {
-    this.formGroup.reset({
-      email: '',
-      emailPrimary: false,
-      mobilePhone: '',
-      mobilePhonePrimary: false,
-      homePhone: '',
-      homePhonePrimary: false,
-      fax: '',
-      faxPrimary: false,
-    });
+    const contactMediums = this.buildContactMediumsFromForm();
+  this.fullCustomerCreation.setContactMediums(contactMediums);
+  this.router.navigate(['/onboarding/addresses']);
   }
+
+  private buildContactMediumsFromForm(): ContactMedium[] {
+  const cms: ContactMedium[] = [];
+  cms.push({ type: 'email', value: this.f['email'].value, isPrimary: this.f['emailPrimary'].value });
+  cms.push({ type: 'mobile_phone', value: this.f['mobilePhone'].value, isPrimary: this.f['mobilePhonePrimary'].value });
+  if (this.f['homePhone'].value) cms.push({ type: 'home_phone', value: this.f['homePhone'].value, isPrimary: this.f['homePhonePrimary'].value });
+  if (this.f['fax'].value) cms.push({ type: 'fax', value: this.f['fax'].value, isPrimary: this.f['faxPrimary'].value });
+  return cms;
+}
 
   // Helper metodlar - validation mesajları için
   getEmailErrorMessage(): string {
