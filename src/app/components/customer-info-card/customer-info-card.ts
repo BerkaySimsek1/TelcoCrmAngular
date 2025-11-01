@@ -26,18 +26,19 @@ export class CustomerInfoCard implements OnInit {
   }
 
   getCustomerInfo() {
-    const customerId = this.route.snapshot.paramMap.get('customerId');
-    
-    if (!customerId) {
-      console.error('customerId paramı bulunamadı.');
-      return;
-    }
-    
-    this.customerService.getCustomerById(customerId).subscribe({
-      next: (response) => this.customerResponse.set(response),
-      error: (error) => console.error('Error fetching customer:', error)
-    }); 
+  // ✅ Parent route'tan customerId al
+ const customerId = this.route.parent?.snapshot.paramMap.get('customerId') 
+                  || this.route.snapshot.paramMap.get('customerId');
+  if (!customerId) {
+    console.error('customerId paramı bulunamadı.');
+    return;
   }
+  
+  this.customerService.getCustomerById(customerId).subscribe({
+    next: (response) => this.customerResponse.set(response),
+    error: (error) => console.error('Error fetching customer:', error)
+  }); 
+}
 
   openDeleteConfirmation() {
     this.showDeleteModal.set(true);

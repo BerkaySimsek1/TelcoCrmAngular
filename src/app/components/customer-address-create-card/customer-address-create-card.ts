@@ -7,15 +7,18 @@ import { CityResponse } from '../../models/cityResponse';
 import { DistrictResponse } from '../../models/districtResponse';
 import { CreateAddressRequest } from '../../models/createAddressRequest';
 import { CreatedAddressResponse } from '../../models/createdAddressResponse';
+import { FullCustomerCreationService } from '../../services/full-customer-creation-service';
+import { CreateAddressItem } from '../../models/createFullCustomerModels/createAddressItem';
+import { CreateFlowMode } from '../../shared/create-flow-mode';
  
 @Component({
   selector: 'app-create-address-card',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './create-address-card.html',
-  styleUrl: './create-address-card.scss',
+  templateUrl: './customer-address-create-card.html',
+  styleUrls: ['./customer-address-create-card.scss'],
 })
-export class CreateAddressCard implements OnInit {
+export class CustomerAddressCreateCard implements OnInit {
  
   formGroup!: FormGroup;
   submitting = signal(false);
@@ -24,27 +27,26 @@ export class CreateAddressCard implements OnInit {
   districts = signal<DistrictResponse[]>([]);
  
   createdAddressResponse = signal<CreatedAddressResponse | undefined>(undefined);
-  private customerId!: string;
+
+  mode!: CreateFlowMode;
+  customerId: string | null = null;
   
   constructor(
     private fb: FormBuilder,
-    private addressService: AddressService,
+    private fullCustomerCreation: FullCustomerCreationService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private addressService: AddressService,
   ) {}
  
   ngOnInit(): void {
-    // URL'den :customerId al
-    const idFromRoute = this.route.snapshot.paramMap.get('customerId');
-    if (!idFromRoute) {
-      console.error('customerId paramı bulunamadı.');
-      return;
-    }
-    this.customerId = idFromRoute;
+    this.mode = (this.route.snapshot.data['mode'] as CreateFlowMode) ?? 'standalone';
+    this.customerId = this.route.snapshot.paramMap.get('customerId');
     this.buildForm();
     this.loadCities();
     this.handleCityChanges();
   }
+
  
   private buildForm() {
     this.formGroup = this.fb.group({
@@ -99,39 +101,54 @@ export class CreateAddressCard implements OnInit {
     });
   }
  
-  submit() {
-    // District disabled ise enable et ki validation çalışsın
-    if (this.f['districtId'].disabled) {
-      this.f['districtId'].enable();
-    }
-    
+    submit() {
+    if (this.f['districtId'].disabled) this.f['districtId'].enable();
     if (this.formGroup.invalid) {
       this.formGroup.markAllAsTouched();
       return;
     }
- 
-    if (!this.customerId) {
-      console.error('customerId bulunamadı. CreateAddressRequest için zorunlu.');
+
+    const addrItem: CreateAddressItem = {
+  cityId: this.f['cityId'].value!,                // ✅ eklendi
+  street: this.f['street'].value,
+  houseNumber: this.f['houseNumber'].value,
+  description: this.f['description'].value ?? '',
+  districtId: this.f['districtId'].value!,
+  default: this.f['default'].value,
+};
+
+    this.submitting.set(true);
+
+    if (this.mode === 'wizard') {
+      // STATE’e ekle, backend’e YOLLAMA
+      const cur = this.fullCustomerCreation.state();
+      this.fullCustomerCreation.state.set({ ...cur, addresses: [...cur.addresses, addrItem] });
+      this.submitting.set(false);
+      this.router.navigate(['/onboarding/addresses']); // listeye dön (state’ten görünür)
       return;
     }
- 
+
+    // STANDALONE: direkt backend’e POST
+    if (!this.customerId) {
+      console.error('customerId yok (standalone).');
+      this.submitting.set(false);
+      return;
+    }
+
     const req: CreateAddressRequest = {
-      street: this.f['street'].value,
-      houseNumber: this.f['houseNumber'].value,
-      description: this.f['description'].value ?? '',
-      districtId: this.f['districtId'].value!,
+      street: addrItem.street,
+      houseNumber: addrItem.houseNumber,
+      description: addrItem.description,
+      districtId: addrItem.districtId,
       customerId: this.customerId,
-      default: this.f['default'].value,
+      default: addrItem.default,
     };
- 
-    this.submitting.set(true);
+
     this.addressService.createAddress(req).subscribe({
       next: (response) => {
         this.createdAddressResponse.set(response);
         this.submitting.set(false);
- 
-        // Adres kaydı sonrası istersen müşteri info sayfasına dön
-        // this.router.navigate(['/customer-info', this.customerId]);
+        this.router.navigate(['/customers', this.customerId, 'addresses']); // listeye dön
       },
       error: (error) => {
         console.error('Adres oluşturulurken hata:', error);
@@ -139,18 +156,13 @@ export class CreateAddressCard implements OnInit {
       },
     });
   }
+
  
   cancel() {
-    this.formGroup.reset({
-      cityId: null,
-      districtId: null,
-      street: '',
-      houseNumber: '',
-      description: null,
-      default: false,
-    });
-    this.f['districtId'].disable();
-    this.districts.set([]);
-    this.createdAddressResponse.set(undefined);
+    if (this.mode === 'wizard') {
+      this.router.navigate(['/onboarding/addresses']);
+    } else {
+      this.router.navigate(['/customers', this.customerId, 'addresses']);
+    }
   }
 }

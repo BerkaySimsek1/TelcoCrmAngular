@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AddressService } from '../../services/address-service';
 import { AddressResponse } from '../../models/addressResponse';
+import { FullCustomerCreationService } from '../../services/full-customer-creation-service';
+import { CreateFlowMode } from '../../shared/create-flow-mode';
 
 @Component({
   selector: 'app-address-list',
@@ -19,49 +21,100 @@ export class AddressListComponent implements OnInit {
   showErrorModal = signal<boolean>(false);
   errorMessage = signal<string>('');
   addressToDelete = signal<number | null>(null);
+  mode!: CreateFlowMode;
 
   constructor(
     private addressService: AddressService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private fullCustomer: FullCustomerCreationService
   ) {}
 
-  ngOnInit(): void {
-    const idFromRoute = this.route.snapshot.paramMap.get('customerId');
-    if (!idFromRoute) {
-      console.error('customerId paramı bulunamadı.');
-      return;
-    }
-    this.customerId = idFromRoute;
-    this.loadAddresses();
-  }
+ngOnInit(): void {
+  this.mode =
+    (this.route.snapshot.data['mode'] as 'wizard' | 'standalone') ??
+    (this.route.snapshot.paramMap.get('customerId') ? 'standalone' : 'wizard');
 
-  private loadAddresses() {
-    this.loading.set(true);
-    this.addressService.getAddressByCustomerId(this.customerId).subscribe({
-      next: (res) => {
-        // API tek obje dönerse de diziye çevir
-        this.addresses.set(Array.isArray(res) ? res : [res]);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Adresler alınamadı:', err);
-        this.addresses.set([]);
-        this.loading.set(false);
-      },
-    });
+  if (this.mode === 'wizard') {
+    const wizardAddrs = this.fullCustomer.state().addresses || [];
+    this.addresses.set(
+      wizardAddrs.map((a, idx) => ({
+        id: idx + 1,
+        street: a.street,
+        houseNumber: a.houseNumber,
+        description: a.description,
+        default: a.default
+      } as AddressResponse))
+    );
+    this.loading.set(false);
+  } else {
+     const customerIdFromRoute = this.route.parent?.snapshot.paramMap.get('customerId')
+                              || this.route.snapshot.paramMap.get('customerId');
+    if (!customerIdFromRoute) { 
+      console.error('customerId yok'); 
+      this.loading.set(false); 
+      return; 
+    }
+    this.customerId = customerIdFromRoute;
+    this.loadAddresses(this.customerId);
   }
+}
+
+  private loadAddresses(customerId: string) {
+  this.loading.set(true);
+  this.addressService.getAddressByCustomerId(customerId).subscribe({
+    next: (res) => {
+      const list = Array.isArray(res) ? res : [res];
+      // id alanını normalize et
+      const normalized = list.map(a => ({
+        ...a,
+        id: (a as any).id ?? (a as any).addressId   // ✅
+      }));
+      this.addresses.set(normalized);
+      this.loading.set(false);
+    },
+    error: (err) => {
+      console.error('Adresler alınamadı:', err);
+      this.addresses.set([]);
+      this.loading.set(false);
+    },
+  });
+}
+
 
   addNewAddress() {
-    // Create address sayfasına yönlendir
-    this.router.navigate(['/create-address', this.customerId]);
+    if (this.mode === 'wizard') {
+      this.router.navigate(['/onboarding/addresses/new']);
+    } else {
+      this.router.navigate(['/customers', this.customerId, 'addresses', 'new']);
+    }
   }
 
-  editAddress(addressId: number) {
-    this.router.navigate(['/address-update', this.customerId, addressId]);
+  // address-list.ts
+editAddress(idOrIndex: number) {
+  if (this.mode === 'wizard') {
+    this.router.navigate(['/onboarding/addresses', idOrIndex, 'edit']); // rota ile birebir
+  } else {
+    if (!this.customerId) return;
+    this.router.navigate(['/address-update', this.customerId, idOrIndex]);
   }
+}
+
+
 
   deleteAddress(addressId: number) {
+    if (this.mode === 'wizard') {
+      // state’ten çıkar
+      const current = this.fullCustomer.state();
+      const newList = (current.addresses || []).filter((_, idx) => idx + 1 !== addressId);
+      this.fullCustomer.state.set({ ...current, addresses: newList });
+
+      // UI’ı güncelle
+      this.addresses.set(this.addresses().filter(a => a.id !== addressId));
+      return;
+    }
+
+    // standalone: API soft delete
     this.addressToDelete.set(addressId);
     this.showDeleteModal.set(true);
   }
@@ -78,17 +131,19 @@ export class AddressListComponent implements OnInit {
 
   confirmDelete() {
     const addressId = this.addressToDelete();
-    
-    if (addressId === null) {
-      console.error('Address ID bulunamadı.');
+    if (addressId === null) return;
+
+    if (this.mode === 'wizard') {
+      // zaten deleteAddress içinde state’ten sildik; modal’ı sadece kapat
+      this.closeDeleteModal();
       return;
     }
 
+    // standalone
     this.addressService.softDeleteAddress(addressId).subscribe({
       next: () => {
         this.closeDeleteModal();
-        // Listeyi yeniden yükle
-        this.loadAddresses();
+        this.loadAddresses(this.customerId!);
       },
       error: (error) => {
         this.closeDeleteModal();
@@ -100,12 +155,20 @@ export class AddressListComponent implements OnInit {
   }
 
   goToPrevious() {
-    // Önceki sayfaya dön
-    this.router.navigate(['/customer-info', this.customerId]);
+    if (this.mode === 'wizard') {
+      this.router.navigate(['/create-customer']);
+    } else {
+      this.router.navigate(['/customer-info', this.customerId]);
+    }
   }
 
   goToNext() {
-    // Sonraki sayfaya geç
-    this.router.navigate(['/next-step', this.customerId]);
+    if (this.mode === 'wizard') {
+      // wizard’da sonraki adım contact medium
+      this.router.navigate(['/create-contactmedium']);
+    } else {
+      // standalone’da next yok; istersen gizle
+      this.router.navigate(['/customer-info', this.customerId]);
+    }
   }
 }

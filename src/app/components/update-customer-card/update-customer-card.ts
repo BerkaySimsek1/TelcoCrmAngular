@@ -157,7 +157,7 @@ export class UpdateCustomerCard implements OnInit {
         this.submitting.set(false);
 
         const id = (response as any).customerId ?? (response as any).id ?? this.customerId;
-        this.router.navigate(['/customer-info', id]);
+        this.router.navigate(['/customer', this.customerId, 'info']);
       },
       error: (error) => {
         console.error('Müşteri güncellenirken hata oluştu:', error);
@@ -167,7 +167,7 @@ export class UpdateCustomerCard implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['/customers']);
+    this.router.navigate(['/customer', this.customerId, 'info']);
   }
 
   has(name: keyof typeof this.formGroup.controls, error: string) {

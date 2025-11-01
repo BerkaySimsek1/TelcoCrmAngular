@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { CreateCustomerRequest } from '../../models/createCustomerRequest';
 import { Router } from '@angular/router';
 import { lettersOnlyValidator, nationalIdRulesValidator, nationalIdUniqueAsyncValidator } from '../../validators/customer-validators';
+import { FullCustomerCreationService } from '../../services/full-customer-creation-service';
 
 @Component({
   selector: 'app-create-customer-card',
@@ -20,11 +21,25 @@ submitting = signal(false);
 
   showCancelModal = signal<boolean>(false);
 
-    constructor(private customerService: CustomerService, private formBuilder: FormBuilder, private router: Router) {
+    constructor(private customerService: CustomerService, private fullCustomerCreation: FullCustomerCreationService, private formBuilder: FormBuilder, private router: Router) {
     }
 
     ngOnInit(): void {
         this.buildForm();
+
+        const st = this.fullCustomerCreation.state();
+  if (st.individual) {
+    this.formGroup.patchValue({
+      firstName: st.individual.firstName ?? '',
+      middleName: st.individual.middleName ?? null,
+      lastName: st.individual.lastName ?? '',
+      dateOfBirth: (st.individual.dateOfBirth ?? '').slice(0,10), // "YYYY-MM-DD"
+      motherName: st.individual.motherName ?? null,
+      fatherName: st.individual.fatherName ?? null,
+      gender: st.individual.gender ?? 'OTHER',
+      nationalId: st.individual.nationalId ?? '',
+    }, { emitEvent: false });
+  }
     }
 
 
@@ -68,42 +83,21 @@ submitting = signal(false);
       return;
     }
 
-      const dobDate: string = this.f['dateOfBirth'].value; // "2025-10-08"
+      const dobDate: string = this.f['dateOfBirth'].value;
+  const request: CreateCustomerRequest = {
+    firstName: this.f['firstName'].value,
+    middleName: this.f['middleName'].value ?? null,
+    lastName: this.f['lastName'].value,
+    dateOfBirth: `${dobDate}T00:00:00`,
+    motherName: this.f['motherName'].value ?? null,
+    fatherName: this.f['fatherName'].value ?? null,
+    gender: this.f['gender'].value,
+    nationalId: this.f['nationalId'].value,
+  };
 
-      const dateTime = `${dobDate}T00:00:00`; 
-
-      const request: CreateCustomerRequest = {
-      firstName: this.f['firstName'].value,
-      middleName: this.f['middleName'].value ?? null,
-      lastName: this.f['lastName'].value,
-      dateOfBirth: dateTime, // backend LocalDate istiyorsa "YYYY-MM-DD" tamam; LocalDateTime istiyorsa ISO'ya çevir.
-      motherName: this.f['motherName'].value ?? null,
-      fatherName: this.f['fatherName'].value ?? null,
-      gender: this.f['gender'].value,
-      nationalId: this.f['nationalId'].value,
-      };
-
-      this.submitting.set(true);
-      this.customerService.createCustomer(request).subscribe({
-        next: (response) => {
-          this.createdCustomerResponse.set(response);
-
-          this.submitting.set(false);
-
-           const id = (response as any).customerId ?? (response as any).id;
-        if (id) {
-          this.router.navigate(['/create-address', id]); 
-        } else {
-          console.error('createCustomer response customerId içermiyor.');
-        }
-
-        },
-        error: (error) => {
-          console.error('Müşteri oluşturulurken hata oluştu:', error);
-          this.submitting.set(false);
-        }
-      });
-
+  this.submitting.set(true);
+  this.fullCustomerCreation.setIndividual(request);  // 🔑 kalıcı state
+  this.router.navigate(['/onboarding/addresses']);
     }
 
     cancel() {

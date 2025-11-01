@@ -36,6 +36,6 @@ export class SearchCustomerListComponent {
   // ACC-8: Customer Info ekranına yönlendir
   constructor(private router: Router) {}
   openCustomerInfo(item: SearchCustomerResponse) {
-    this.router.navigate(['/customer-info', item.id]);
+    this.router.navigate(['/customer', item.id]);
   }
 }
