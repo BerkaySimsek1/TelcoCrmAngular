@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { CreateCustomerRequest } from '../../models/createCustomerRequest';
 import { Router } from '@angular/router';
 import { lettersOnlyValidator, nationalIdRulesValidator, nationalIdUniqueAsyncValidator } from '../../validators/customer-validators';
+import { FullCustomerCreationService } from '../../services/full-customer-creation-service';
 
 @Component({
   selector: 'app-create-customer-card',
@@ -20,7 +21,7 @@ submitting = signal(false);
 
   showCancelModal = signal<boolean>(false);
 
-    constructor(private customerService: CustomerService, private formBuilder: FormBuilder, private router: Router) {
+    constructor(private customerService: CustomerService, private fullCustomerCreation: FullCustomerCreationService, private formBuilder: FormBuilder, private router: Router) {
     }
 
     ngOnInit(): void {
@@ -84,26 +85,12 @@ submitting = signal(false);
       };
 
       this.submitting.set(true);
-      this.customerService.createCustomer(request).subscribe({
-        next: (response) => {
-          this.createdCustomerResponse.set(response);
-
-          this.submitting.set(false);
-
-           const id = (response as any).customerId ?? (response as any).id;
-        if (id) {
-          this.router.navigate(['/create-address', id]); 
-        } else {
-          console.error('createCustomer response customerId içermiyor.');
-        }
-
-        },
-        error: (error) => {
-          console.error('Müşteri oluşturulurken hata oluştu:', error);
-          this.submitting.set(false);
-        }
+      const cur = this.fullCustomerCreation.state();
+      this.fullCustomerCreation.state.set({
+        ...cur,
+        individual: request,
       });
-
+      this.router.navigate(['/onboarding/addresses']);
     }
 
     cancel() {

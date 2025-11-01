@@ -84,9 +84,9 @@
     <button (click)="goToPrevious()" class="nav-btn prev-btn">
       Previous
     </button>
-    <button (click)="goToNext()" class="nav-btn next-btn">
-      Next
-    </button>
+    @if (mode === 'wizard') {
+    <button (click)="goToNext()" class="nav-btn next-btn">Next</button>
+  }
   </div>
 
   <!-- Delete Confirmation Modal -->

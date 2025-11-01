@@ -31,7 +31,7 @@ export class SearchService {
 
     if (filters.natId)         clauses.push(`nationalId:${this.escapeQS(filters.natId)}`);
     if (filters.customerId)    clauses.push(`customerNumber:${this.escapeQS(filters.customerId)}`);
-    if (filters.accountNumber) clauses.push(`accountNumber:${this.escapeQS(filters.accountNumber)}`);
+    if (filters.accountNumber)  clauses.push(`billingAccounts.accountNumber:${this.escapeQS(filters.accountNumber)}`);
     if (filters.orderNumber)   clauses.push(`orderNumber:${this.escapeQS(filters.orderNumber)}`);
 
     if (filters.gsmNumber) {

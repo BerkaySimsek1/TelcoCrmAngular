@@ -1,0 +1,152 @@
+<div class="address-card-container">
+  <form [formGroup]="formGroup" (ngSubmit)="submit()" class="address-form">
+    
+    <!-- Title & City Row -->
+    <div class="form-row">
+      <!-- Title Field (Optional, not in CreateAddressRequest) -->
+      <div class="form-field">
+        <label for="title">Title:</label>
+        <input 
+          type="text" 
+          id="title" 
+          class="input-field"
+          placeholder="Enter title"
+        />
+      </div>
+
+      <!-- City Field -->
+      <div class="form-field">
+        <label for="cityId">City:<span class="required">*</span></label>
+        <select 
+          id="cityId" 
+          formControlName="cityId" 
+          class="select-field"
+          [class.error]="f['cityId'].invalid && f['cityId'].touched"
+        >
+          <option [value]="null" disabled>Select city</option>
+          @for (city of cities(); track city.id) {
+            <option [value]="city.id">{{ city.name }}</option>
+          }
+        </select>
+        @if (f['cityId'].invalid && f['cityId'].touched) {
+          <span class="error-message">City is required</span>
+        }
+      </div>
+    </div>
+
+    <!-- District & Street Row -->
+    <div class="form-row">
+      <!-- District Field -->
+      <div class="form-field">
+        <label for="districtId">District:<span class="required">*</span></label>
+        <select 
+          id="districtId" 
+          formControlName="districtId" 
+          class="select-field"
+          [class.error]="f['districtId'].invalid && f['districtId'].touched"
+        >
+          <option [value]="null" disabled>Select district</option>
+          @for (district of districts(); track district.id) {
+            <option [value]="district.id">{{ district.name }}</option>
+          }
+        </select>
+        @if (f['districtId'].invalid && f['districtId'].touched) {
+          <span class="error-message">District is required</span>
+        }
+      </div>
+
+      <!-- Street Field -->
+      <div class="form-field">
+        <label for="street">Street:<span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="street" 
+          formControlName="street"
+          class="input-field"
+          [class.error]="f['street'].invalid && f['street'].touched"
+          placeholder="Enter street"
+          maxlength="200"
+        />
+        @if (f['street'].invalid && f['street'].touched) {
+          <span class="error-message">Street is required</span>
+        }
+      </div>
+    </div>
+
+    <!-- House/Flat Number Row -->
+    <div class="form-row">
+      <div class="form-field form-field-full">
+        <label for="houseNumber">House/Flat Number:<span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="houseNumber" 
+          formControlName="houseNumber"
+          class="input-field"
+          [class.error]="f['houseNumber'].invalid && f['houseNumber'].touched"
+          placeholder="Enter house/flat number"
+          maxlength="50"
+        />
+        @if (f['houseNumber'].invalid && f['houseNumber'].touched) {
+          <span class="error-message">House/Flat number is required</span>
+        }
+      </div>
+    </div>
+
+    <!-- Address Description -->
+    <div class="form-row">
+      <div class="form-field form-field-full">
+        <label for="description">Address Description:</label>
+        <textarea 
+          id="description" 
+          formControlName="description"
+          class="textarea-field"
+          placeholder="Enter additional details"
+          rows="4"
+          maxlength="500"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Default Address Checkbox -->
+    <div class="form-row">
+      <div class="checkbox-field">
+        <input 
+          type="checkbox" 
+          id="default" 
+          formControlName="default"
+          class="checkbox-input"
+        />
+        <label for="default" class="checkbox-label">Set as default address</label>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="button-container">
+      <button 
+        type="button" 
+        (click)="cancel()" 
+        class="btn btn-cancel"
+      >
+        Cancel
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-save"
+      >
+        @if (submitting()) {
+          <span>Saving...</span>
+        } @else {
+          <span>Next</span>
+        }
+      </button>
+    </div>
+
+    <!-- Success Message -->
+    @if (createdAddressResponse()) {
+      <div class="success-message">
+        Address created successfully! ID: {{ createdAddressResponse()?.id }}
+      </div>
+    }
+
+  </form>
+</div>

@@ -5,6 +5,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CreateContactMediumRequest, ContactMedium } from '../../models/createContactMediumRequest';
 import { CreatedContactMediumResponse } from '../../models/createdContactMediumResponse';
 import { ContactMediumService } from '../../services/contactmedium-service';
+import { FullCustomerCreationService } from '../../services/full-customer-creation-service';
+import { CustomerOnboardingApi } from '../../services/customer-onboarding-api';
+import { CreateFullCustomerRequest } from '../../models/createFullCustomerModels/createFullCustomerRequest';
 
 @Component({
   selector: 'app-create-contactmedium-card',
@@ -18,7 +21,6 @@ export class CreateContactmediumCard implements OnInit {
   submitting = signal(false);
 
   createdContactMediumResponses = signal<CreatedContactMediumResponse[] | undefined>(undefined);
-  private customerId!: string;
 
   // Contact medium types
   contactMediumTypes = [
@@ -32,17 +34,13 @@ export class CreateContactmediumCard implements OnInit {
     private fb: FormBuilder,
     private contactMediumService: ContactMediumService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private fullCustomerCreation: FullCustomerCreationService,
+    private api: CustomerOnboardingApi
   ) {}
 
   ngOnInit(): void {
-    // URL'den :customerId al
-    const idFromRoute = this.route.snapshot.paramMap.get('customerId');
-    if (!idFromRoute) {
-      console.error('customerId paramı bulunamadı.');
-      return;
-    }
-    this.customerId = idFromRoute;
+
     this.buildForm();
   }
 
@@ -92,10 +90,7 @@ export class CreateContactmediumCard implements OnInit {
       return;
     }
 
-    if (!this.customerId) {
-      console.error('customerId bulunamadı. CreateContactMediumRequest için zorunlu.');
-      return;
-    }
+    
 
     // ContactMedium array'i oluştur
     const contactMediums: ContactMedium[] = [];
@@ -132,23 +127,35 @@ export class CreateContactmediumCard implements OnInit {
       });
     }
 
-    const req: CreateContactMediumRequest = {
-      customerId: this.customerId,
-      contactMediums: contactMediums
+    const cur = this.fullCustomerCreation.state();
+    const next = { ...cur, contactMediums: contactMediums };
+    this.fullCustomerCreation.state.set(next);
+
+    // FINAL: tek API çağrısı
+    if (!next.individual) {
+      console.error('Wizard state individual yok.');
+      return;
+    }
+
+    const req: CreateFullCustomerRequest = {
+      individualCustomer: next.individual,
+      addresses: next.addresses,
+      contactMediums: next.contactMediums,
     };
 
     this.submitting.set(true);
-    this.contactMediumService.createContactMedium(req).subscribe({
-      next: (response) => {
-        // Backend liste döndüğü için array olarak set et
-        this.createdContactMediumResponses.set(Array.isArray(response) ? response : [response]);
+    this.api.createFull(req).subscribe({
+      next: (res) => {
         this.submitting.set(false);
-
-        // İletişim bilgisi kaydı sonrası istersen müşteri info sayfasına dön
-        // this.router.navigate(['/customer-info', this.customerId]);
+        // Başarılı – istersen müşteri detayına yönlendir
+        this.router.navigate(['/customer-info', res.customerId]);
+        // ya da arama sayfasına dön:
+        // this.router.navigate(['/search-list']);
+        // State'i temizle:
+        this.fullCustomerCreation.reset();
       },
-      error: (error) => {
-        console.error('İletişim bilgileri oluşturulurken hata:', error);
+      error: (err) => {
+        console.error('Full customer create failed:', err);
         this.submitting.set(false);
       },
     });
@@ -165,7 +172,6 @@ export class CreateContactmediumCard implements OnInit {
       fax: '',
       faxPrimary: false,
     });
-    this.createdContactMediumResponses.set(undefined);
   }
 
   // Helper metodlar - validation mesajları için
