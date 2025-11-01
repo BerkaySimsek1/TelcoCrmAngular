@@ -148,7 +148,7 @@ export class CustomerAddressCreateCard implements OnInit {
       next: (response) => {
         this.createdAddressResponse.set(response);
         this.submitting.set(false);
-        this.router.navigate(['/customers', this.customerId, 'addresses']); // listeye dön
+        this.router.navigate(['/customer', this.customerId, 'addresses']); // listeye dön
       },
       error: (error) => {
         console.error('Adres oluşturulurken hata:', error);
@@ -162,7 +162,7 @@ export class CustomerAddressCreateCard implements OnInit {
     if (this.mode === 'wizard') {
       this.router.navigate(['/onboarding/addresses']);
     } else {
-      this.router.navigate(['/customers', this.customerId, 'addresses']);
+      this.router.navigate(['/customer', this.customerId, 'addresses']);
     }
   }
 }

@@ -28,7 +28,7 @@ export const routes: Routes = [
   { path: 'customer-update/:customerId', component: UpdateCustomer, canActivate: [authGuard] },
   { path: 'address-update/:customerId/:addressId', component: UpdateAddressCard, canActivate: [authGuard] },
   { path: 'contactmedium-update/:customerId', component: UpdateContactmedium, canActivate: [authGuard] },
-
+  { path: 'customers/:customerId/addresses/new', component: CustomerAddressCreateCard, canActivate: [authGuard] },
   // Customer Detail with navbar (sadece info ve list sayfaları)
   {
     path: 'customer/:customerId',
