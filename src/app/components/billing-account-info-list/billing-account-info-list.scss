@@ -1,0 +1,230 @@
+.billing-account-container {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header-section {
+  margin-bottom: 20px;
+}
+
+.create-button {
+  padding: 10px 20px;
+  background-color: #d0d0d0;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #c0c0c0;
+  }
+
+  &:active {
+    background-color: #b0b0b0;
+  }
+}
+
+.error-message {
+  padding: 12px;
+  background-color: #fee;
+  color: #c33;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.table-container {
+  background-color: white;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.billing-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background-color: #e0e0e0;
+  }
+
+  .header-cell {
+    padding: 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 2px solid #d0d0d0;
+
+    &.action-header {
+      text-align: center;
+    }
+  }
+
+  .table-row {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #f9f9f9;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .cell {
+    padding: 16px;
+    font-size: 14px;
+    color: #555;
+
+    &.action-cell {
+      text-align: center;
+    }
+  }
+
+  .status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .chevron {
+      color: #999;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .status-active {
+      color: #333;
+      font-weight: 500;
+    }
+
+    .status-inactive {
+      color: #999;
+      font-weight: 500;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .action-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &.delete-btn {
+      background-color: #f5f5f5;
+      color: #666;
+
+      &:hover {
+        background-color: #fee;
+        color: #c33;
+      }
+    }
+
+    &.edit-btn {
+      background-color: #f5f5f5;
+      color: #666;
+
+      &:hover {
+        background-color: #e8f4fd;
+        color: #2196f3;
+      }
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.no-account-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  background-color: white;
+
+  p {
+    background-color: #ff8c42;
+    color: #000;
+    padding: 20px 60px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 4px;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 16px;
+
+  .page-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #d0d0d0;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: #f5f5f5;
+      border-color: #999;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .page-info {
+    font-size: 14px;
+    color: #666;
+  }
+}

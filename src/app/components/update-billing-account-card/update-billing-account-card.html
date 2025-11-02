@@ -1,0 +1,99 @@
+<div class="update-billing-container">
+  <div class="form-card">
+    <h2 class="form-title">Customer Billing Accounts</h2>
+
+    @if (errorMessage()) {
+      <div class="alert alert-error">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    @if (successMessage()) {
+      <div class="alert alert-success">
+        {{ successMessage() }}
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label">Account Number</label>
+      <input 
+        type="text" 
+        class="form-input"
+        [value]="accountNumber()"
+        disabled
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Account Name<span class="required">*</span>
+      </label>
+      <input 
+        type="text" 
+        class="form-input"
+        [(ngModel)]="accountName"
+        placeholder="Enter account name"
+        [disabled]="loading() || loadingAccount()"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Adress List<span class="required">*</span> :
+      </label>
+      <div class="dropdown-container">
+        <button 
+          type="button"
+          class="dropdown-button" 
+          (click)="toggleDropdown()"
+          [disabled]="loading() || loadingAddresses() || loadingAccount()">
+          @if (loadingAddresses() || loadingAccount()) {
+            <span>Loading...</span>
+          } @else {
+            <span>{{ getSelectedAddressTitle() }}</span>
+          }
+          <span class="dropdown-arrow">▼</span>
+        </button>
+        
+        @if (isDropdownOpen() && !loadingAddresses() && !loadingAccount()) {
+          <div class="dropdown-menu">
+            @for (address of addresses(); track address.id) {
+              <div 
+                class="dropdown-item"
+                [class.selected]="address.id === selectedAddressId()"
+                (click)="selectAddress(address)">
+                Title : {{ address.title }}
+              </div>
+            }
+            @if (addresses().length === 0) {
+              <div class="dropdown-item disabled">
+                No addresses found
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button 
+        type="button"
+        class="btn btn-cancel" 
+        (click)="cancel()"
+        [disabled]="loading()">
+        Cancel
+      </button>
+      <button 
+        type="button"
+        class="btn btn-update" 
+        (click)="updateAccount()"
+        [disabled]="loading() || loadingAddresses() || loadingAccount()">
+        @if (loading()) {
+          <span>Updating...</span>
+        } @else {
+          <span>Update</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
