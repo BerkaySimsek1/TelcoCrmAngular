@@ -122,6 +122,7 @@ this.handleCityChanges();
 
   private buildForm() {
     this.formGroup = this.fb.group({
+      title: new FormControl<string | null>(null, { validators: [Validators.required] }),
       cityId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       districtId: new FormControl<number | null>({ value: null, disabled: true }, { validators: [Validators.required] }),
       street: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
@@ -186,6 +187,7 @@ private findCityByDistrictFallback(districtId?: number | null) {
   // Wizard: CreateAddressItem'tan forma bas
   private patchFormFromCreateItem(item: CreateAddressItem) {
   this.formGroup.patchValue({
+    title: item.title?? '',
     street: item.street ?? '',
     houseNumber: item.houseNumber ?? '',
     description: item.description ?? null,
@@ -197,6 +199,7 @@ private findCityByDistrictFallback(districtId?: number | null) {
   // Standalone: AddressResponse'tan forma bas
   private patchFormWithAddress(res: AddressResponse) {
   this.formGroup.patchValue({
+    title: res.title?? '',
     street: res.street ?? '',
     houseNumber: res.houseNumber ?? '',
     description: res.description ?? null,
@@ -233,6 +236,7 @@ private findCityByDistrictFallback(districtId?: number | null) {
     }
 
     const payload = {
+      title:this.f['title'].value,
       street: this.f['street'].value,
       houseNumber: this.f['houseNumber'].value,
       description: this.f['description'].value ?? '',

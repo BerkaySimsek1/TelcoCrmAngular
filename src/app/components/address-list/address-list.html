@@ -32,7 +32,7 @@
           @for (address of addresses(); track address.id) {
             <div class="address-card">
               <div class="address-header">
-                <span class="address-title">{{ address.street }}</span>
+                <span class="address-title">{{ address.title }}</span>
                 <div class="address-actions">
                   <button 
                     (click)="editAddress(address.id)" 

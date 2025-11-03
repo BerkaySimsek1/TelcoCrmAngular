@@ -50,6 +50,7 @@ export class CustomerAddressCreateCard implements OnInit {
  
   private buildForm() {
     this.formGroup = this.fb.group({
+      title:new FormControl<string| null>(null, { validators: [Validators.required] }),
       cityId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       districtId: new FormControl<number | null>({ value: null, disabled: true }, { validators: [Validators.required] }),
       street: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
@@ -109,6 +110,7 @@ export class CustomerAddressCreateCard implements OnInit {
     }
 
     const addrItem: CreateAddressItem = {
+  title:this.f['title'].value,
   cityId: this.f['cityId'].value!,                // ✅ eklendi
   street: this.f['street'].value,
   houseNumber: this.f['houseNumber'].value,
@@ -136,6 +138,7 @@ export class CustomerAddressCreateCard implements OnInit {
     }
 
     const req: CreateAddressRequest = {
+      title:addrItem.title,
       street: addrItem.street,
       houseNumber: addrItem.houseNumber,
       description: addrItem.description,
