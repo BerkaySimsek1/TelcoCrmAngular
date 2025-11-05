@@ -45,6 +45,11 @@ export class CreateBillingAccountComponent implements OnInit {
         this.errorMessage.set('Customer ID bulunamadı');
       }
     });
+
+    // 2) create-address’ten geri dönerken state ile gelen id’yi yakala
+    // router.getCurrentNavigation() sadece ilk tick’te dolu olabilir, o yüzden history.state kullan
+    const s = (history.state as any)?.createdAddressId as number | undefined;
+    if (s) this.selectedAddressId.set(s);
   }
 
   loadAddresses(customerId: string): void {
@@ -136,6 +141,17 @@ export class CreateBillingAccountComponent implements OnInit {
       }
     });
   }
+
+  addNewAddress(): void {
+    // Doğru create-address rotası:
+    // /customers/:customerId/addresses/new?returnTo=/create-billing-account?customerId=XYZ
+    const returnTo = `/create-billing-account?customerId=${encodeURIComponent(this.customerId())}`;
+    this.router.navigate(
+      ['/customers', this.customerId(), 'addresses', 'new'],
+      { queryParams: { returnTo } }
+    );
+  }
+
 
   cancel(): void {
     this.router.navigate([`/customer/${this.customerId()}/customer-account`]);

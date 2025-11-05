@@ -4,7 +4,7 @@ export interface UpdateContactMediumRequest {
 }
 
 export interface UpdateContactMedium {
-  id: number;
+  id?: number;
   type: string;
   value: string;
   isPrimary: boolean;

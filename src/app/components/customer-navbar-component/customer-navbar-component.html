@@ -17,8 +17,9 @@
 
           <!-- Customer Account Tab - Disabled -->
           <button
-            disabled
-            class="flex-1 px-6 py-3 text-center font-medium text-sm rounded-xl transition-all duration-200 ease-out bg-gray-50 text-gray-400 cursor-not-allowed opacity-60">
+            (click)="navigateToTab('account')"
+            [class]="getTabClasses('account')"
+            class="transition-all duration-200 ease-out">
             <span class="relative z-10">Customer Account</span>
           </button>
 

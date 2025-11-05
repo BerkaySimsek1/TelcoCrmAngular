@@ -135,87 +135,55 @@ export class UpdateContactmediumCard implements OnInit {
   }
 
   submit() {
-    if (this.formGroup.invalid) {
-      this.formGroup.markAllAsTouched();
-      return;
-    }
-
-    if (!this.customerId) {
-      console.error('customerId bulunamadı. UpdateContactMediumRequest için zorunlu.');
-      return;
-    }
-
-    // UpdateContactMedium array'i oluştur (id'leri dahil et)
-    const contactMediums: UpdateContactMedium[] = [];
-
-    // Email (zorunlu) - ID'sini bul
-    const emailId = this.existingContactMediums.find(cm => cm.type.toLowerCase() === 'email')?.id;
-    if (emailId) {
-      contactMediums.push({
-        id: emailId,
-        type: 'email',
-        value: this.f['email'].value,
-        isPrimary: this.f['emailPrimary'].value
-      });
-    }
-
-    // Mobile Phone (zorunlu) - ID'sini bul
-    const mobilePhoneId = this.existingContactMediums.find(cm => cm.type.toLowerCase() === 'mobile_phone')?.id;
-    if (mobilePhoneId) {
-      contactMediums.push({
-        id: mobilePhoneId,
-        type: 'mobile_phone',
-        value: this.f['mobilePhone'].value,
-        isPrimary: this.f['mobilePhonePrimary'].value
-      });
-    }
-
-    // Home Phone (opsiyonel) - ID'sini bul
-    if (this.f['homePhone'].value) {
-      const homePhoneId = this.existingContactMediums.find(cm => cm.type.toLowerCase() === 'home_phone')?.id;
-      if (homePhoneId) {
-        contactMediums.push({
-          id: homePhoneId,
-          type: 'home_phone',
-          value: this.f['homePhone'].value,
-          isPrimary: this.f['homePhonePrimary'].value
-        });
-      }
-    }
-
-    // Fax (opsiyonel) - ID'sini bul
-    if (this.f['fax'].value) {
-      const faxId = this.existingContactMediums.find(cm => cm.type.toLowerCase() === 'fax')?.id;
-      if (faxId) {
-        contactMediums.push({
-          id: faxId,
-          type: 'fax',
-          value: this.f['fax'].value,
-          isPrimary: this.f['faxPrimary'].value
-        });
-      }
-    }
-
-    const req: UpdateContactMediumRequest = {
-      customerId: this.customerId,
-      contactMediums: contactMediums
-    };
-
-    this.submitting.set(true);
-    this.contactMediumService.updateContactMedium(req).subscribe({
-      next: (response) => {
-        this.updatedContactMediumResponse.set(response);
-        this.submitting.set(false);
-
-        // Güncelleme sonrası contact medium info sayfasına dön
-        this.router.navigate(['/customer', this.customerId, 'contact']);
-      },
-      error: (error) => {
-        console.error('İletişim bilgileri güncellenirken hata:', error);
-        this.submitting.set(false);
-      },
-    });
+  if (this.formGroup.invalid) {
+    this.formGroup.markAllAsTouched();
+    return;
   }
+  if (!this.customerId) return;
+
+  const cms: UpdateContactMedium[] = [];
+
+  const pushUpsert = (type: string, value: string, isPrimary: boolean) => {
+    // o tipte mevcut var mı?
+    const existing = this.existingContactMediums.find(cm => cm.type.toLowerCase() === type);
+    if (value && value.trim().length > 0) {
+      // değer girilmiş → update (id varsa) veya create (id yoksa)
+      cms.push({
+        id: existing?.id, // yoksa undefined kalsın → backend create
+        type,
+        value: value.trim(),
+        isPrimary
+      });
+    } else if (existing?.id) {
+      // değer temizlendiyse (silmek istiyor olabilir) → opsiyon: delete kuyruğu
+      // Şimdilik boş bırakıyoruz (silme API'niz varsa burada delete'e gönderin)
+    }
+  };
+
+  pushUpsert('email', this.f['email'].value, this.f['emailPrimary'].value);
+  pushUpsert('mobile_phone', this.f['mobilePhone'].value, this.f['mobilePhonePrimary'].value);
+  pushUpsert('home_phone', this.f['homePhone'].value, this.f['homePhonePrimary'].value);
+  pushUpsert('fax', this.f['fax'].value, this.f['faxPrimary'].value);
+
+  const req: UpdateContactMediumRequest = {
+    customerId: this.customerId,
+    contactMediums: cms
+  };
+
+  this.submitting.set(true);
+  this.contactMediumService.updateContactMedium(req).subscribe({
+    next: (res) => {
+      this.updatedContactMediumResponse.set(res);
+      this.submitting.set(false);
+      this.router.navigate(['/customer', this.customerId, 'contact']);
+    },
+    error: (e) => {
+      console.error('Update error:', e);
+      this.submitting.set(false);
+    }
+  });
+}
+
 
   cancel() {
     // Cancel ile contact medium info sayfasına dön

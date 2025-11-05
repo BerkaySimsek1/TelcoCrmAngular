@@ -165,6 +165,15 @@ export class UpdateBillingAccountComponent implements OnInit {
     });
   }
 
+  addNewAddress(): void {
+    // Update sayfasından yeni adres ekleme
+    const returnTo = `/billing-account-update?customerId=${encodeURIComponent(this.customerId())}&billingAccountId=${this.billingAccountId()}`;
+    this.router.navigate(
+      ['/customers', this.customerId(), 'addresses', 'new'],
+      { queryParams: { returnTo } }
+    );
+  }
+
   cancel(): void {
     this.router.navigate([`/customer/${this.customerId()}/customer-account`]);
   }
