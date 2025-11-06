@@ -1,0 +1,193 @@
+<div class="update-address-container" id="ua-page">
+  <div class="form-card" id="ua-card">
+    <h2 class="form-title" id="ua-title">Update Address</h2>
+    
+    <form [formGroup]="formGroup" (ngSubmit)="submit()" id="ua-form">
+      <!-- Title -->
+      <div class="form-group" id="ua-title-group">
+        <label for="title" id="ua-title-label">
+          Title<span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="title" 
+          formControlName="title"
+          class="form-control"
+          placeholder="Enter address title (e.g., Home, Office)"
+          [class.invalid]="f['title'].invalid && f['title'].touched"
+          aria-describedby="ua-title-error"
+        />
+        @if (f['title'].invalid && f['title'].touched) {
+          <span class="error-message" id="ua-title-error">
+            @if (f['title'].errors?.['required']) {
+              Title is required
+            }
+          </span>
+        }
+      </div>
+
+      <!-- City -->
+      <div class="form-group" id="ua-city-group">
+        <label for="cityId" id="ua-city-label">
+          City<span class="required">*</span>
+        </label>
+        <select 
+          id="cityId" 
+          formControlName="cityId"
+          class="form-control"
+          [class.invalid]="f['cityId'].invalid && f['cityId'].touched"
+          aria-describedby="ua-city-error"
+        >
+          <option [ngValue]="null" disabled id="ua-city-opt-null">Select City</option>
+          @for (city of cities(); track city.id) {
+            <option [ngValue]="city.id" id="ua-city-opt-{{city.id}}">{{ city.name }}</option>
+          }
+        </select>
+        @if (f['cityId'].invalid && f['cityId'].touched) {
+          <span class="error-message" id="ua-city-error">City is required</span>
+        }
+      </div>
+
+      <!-- District -->
+      <div class="form-group" id="ua-district-group">
+        <label for="districtId" id="ua-district-label">
+          District<span class="required">*</span>
+        </label>
+        <select 
+          id="districtId" 
+          formControlName="districtId"
+          class="form-control"
+          [class.invalid]="f['districtId'].invalid && f['districtId'].touched"
+          aria-describedby="ua-district-error"
+        >
+          <option [ngValue]="null" disabled id="ua-district-opt-null">Select District</option>
+          @for (district of districts(); track district.id) {
+            <option [ngValue]="district.id" id="ua-district-opt-{{district.id}}">{{ district.name }}</option>
+          }
+        </select>
+        @if (f['districtId'].invalid && f['districtId'].touched) {
+          <span class="error-message" id="ua-district-error">District is required</span>
+        }
+      </div>
+
+      <!-- Street -->
+      <div class="form-group" id="ua-street-group">
+        <label for="street" id="ua-street-label">
+          Street<span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="street" 
+          formControlName="street"
+          class="form-control"
+          placeholder="Enter street name"
+          [class.invalid]="f['street'].invalid && f['street'].touched"
+          aria-describedby="ua-street-error ua-street-maxlen"
+        />
+        @if (f['street'].invalid && f['street'].touched) {
+          <span class="error-message" id="ua-street-error">
+            @if (f['street'].errors?.['required']) {
+              Street is required
+            }
+            @if (f['street'].errors?.['maxlength']) {
+              <span id="ua-street-maxlen">Street cannot exceed 200 characters</span>
+            }
+          </span>
+        }
+      </div>
+
+      <!-- House/Flat Number -->
+      <div class="form-group" id="ua-house-group">
+        <label for="houseNumber" id="ua-house-label">
+          House/Flat Number<span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="houseNumber" 
+          formControlName="houseNumber"
+          class="form-control"
+          placeholder="Enter house/flat number"
+          [class.invalid]="f['houseNumber'].invalid && f['houseNumber'].touched"
+          aria-describedby="ua-house-error ua-house-maxlen"
+        />
+        @if (f['houseNumber'].invalid && f['houseNumber'].touched) {
+          <span class="error-message" id="ua-house-error">
+            @if (f['houseNumber'].errors?.['required']) {
+              House/Flat number is required
+            }
+            @if (f['houseNumber'].errors?.['maxlength']) {
+              <span id="ua-house-maxlen">House number cannot exceed 50 characters</span>
+            }
+          </span>
+        }
+      </div>
+
+      <!-- Address Description -->
+      <div class="form-group" id="ua-desc-group">
+        <label for="description" id="ua-desc-label">Address Description:</label>
+        <textarea 
+          id="description" 
+          formControlName="description"
+          class="form-control textarea"
+          placeholder="Enter additional address details (optional)"
+          rows="4"
+          [class.invalid]="f['description'].invalid && f['description'].touched"
+          aria-describedby="ua-desc-error"
+        ></textarea>
+        @if (f['description'].invalid && f['description'].touched) {
+          <span class="error-message" id="ua-desc-error">
+            @if (f['description'].errors?.['maxlength']) {
+              Description cannot exceed 500 characters
+            }
+          </span>
+        }
+      </div>
+
+      <!-- Default Checkbox -->
+      <div class="form-group checkbox-group" id="ua-default-group">
+        <label class="checkbox-label" id="ua-default-label">
+          <input 
+            type="checkbox" 
+            formControlName="default"
+            class="checkbox-input"
+            id="ua-default"
+          />
+          <span id="ua-default-text">Set as default address</span>
+        </label>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions" id="ua-actions">
+        <button 
+          type="button" 
+          (click)="cancel()" 
+          class="btn btn-secondary"
+          [disabled]="submitting()"
+          id="ua-cancel-btn"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="submitting()"
+          id="ua-submit-btn"
+        >
+          @if (submitting()) {
+            <span class="spinner-small" id="ua-submit-spinner"></span>
+            Updating...
+          } @else {
+            Update Address
+          }
+        </button>
+      </div>
+    </form>
+
+    <!-- Success Message -->
+    @if (updatedAddressResponse()) {
+      <div class="success-message" id="ua-success">
+        ✓ Address updated successfully!
+      </div>
+    }
+  </div>
+</div>

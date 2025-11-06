@@ -4,17 +4,17 @@ import { Search } from './pages/search/search';
 import { CreateCustomer } from './pages/customer/create-customer/create-customer';
 import { CustomerInfo } from './pages/customer/customer-info/customer-info';
 import { UpdateCustomer } from './pages/customer/update-customer/update-customer';
-import { AddressListComponent } from './components/address-list/address-list';
-import { CustomerAddressCreateCard } from './components/customer-address-create-card/customer-address-create-card';
-import { UpdateAddressCard } from './components/update-address-card/update-address-card';
+import { AddressListComponent } from './components/AddressComponents/address-list/address-list';
+import { CustomerAddressCreateCard } from './components/AddressComponents/customer-address-create-card/customer-address-create-card';
+import { UpdateAddressCard } from './components/AddressComponents/update-address-card/update-address-card';
 import { ContactmediumInfo } from './pages/contactmedium/contactmedium-info/contactmedium-info';
 import { UpdateContactmedium } from './pages/contactmedium/update-contactmedium/update-contactmedium';
 import { CreateContactmedium } from './pages/contactmedium/create-contactmedium/create-contactmedium';
 import { authGuard } from './guards/auth.guard';
-import { CustomerNavbarComponent } from './components/customer-navbar-component/customer-navbar-component';
-import { BillingAccountInfoListComponent } from './components/billing-account-info-list/billing-account-info-list';
-import { CreateBillingAccountComponent } from './components/create-billing-account-card/create-billing-account-card';
-import { UpdateBillingAccountComponent } from './components/update-billing-account-card/update-billing-account-card';
+import { CustomerNavbarComponent } from './components/CoreComponents/customer-navbar-component/customer-navbar-component';
+import { BillingAccountInfoListComponent } from './components/BillingAccountComponents/billing-account-info-list/billing-account-info-list';
+import { CreateBillingAccountComponent } from './components/BillingAccountComponents/billing-account-info-list/create-billing-account-card/create-billing-account-card';
+import { UpdateBillingAccountComponent } from './components/BillingAccountComponents/update-billing-account-card/update-billing-account-card';
 
 export const routes: Routes = [
   // Login

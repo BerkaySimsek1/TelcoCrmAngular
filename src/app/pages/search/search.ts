@@ -1,10 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SearchCustomerResponse } from '../../models/searchCustomerResponse';
+import { SearchCustomerResponse } from '../../models/SearchModels/searchCustomerResponse';
 import { Router } from '@angular/router';
 import { SearchFilters, SearchService } from '../../services/search-service';
-import { SearchCustomerCard } from '../../components/search-customer-card/search-customer-card';
-import { SearchCustomerListComponent } from '../../components/search-customer-list/search-customer-list';
+import { SearchCustomerCard } from '../../components/SearchComponents/search-customer-card/search-customer-card';
+import { SearchCustomerListComponent } from '../../components/SearchComponents/search-customer-list/search-customer-list';
 
 
 @Component({

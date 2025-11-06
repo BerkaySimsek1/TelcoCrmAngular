@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CustomerInfoCard } from "../../../components/customer-info-card/customer-info-card";
+import { CustomerInfoCard } from "../../../components/CustomerComponents/customer-info-card/customer-info-card";
 
 @Component({
   selector: 'app-customer-info',

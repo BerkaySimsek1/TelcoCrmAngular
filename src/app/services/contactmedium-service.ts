@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateContactMediumRequest } from '../models/createContactMediumRequest';
-import { CreatedContactMediumResponse } from '../models/createdContactMediumResponse';
-import { ContactMediumResponse } from '../models/contactMediumResponse';
-import { UpdateContactMediumRequest } from '../models/updateContactMediumRequest';
-import { UpdatedContactMediumResponse } from '../models/updatedContactMediumResponse';
+import { CreateContactMediumRequest } from '../models/ContactMediumModels/createContactMediumRequest';
+import { CreatedContactMediumResponse } from '../models/ContactMediumModels/createdContactMediumResponse';
+import { ContactMediumResponse } from '../models/ContactMediumModels/contactMediumResponse';
+import { UpdateContactMediumRequest } from '../models/ContactMediumModels/updateContactMediumRequest';
+import { UpdatedContactMediumResponse } from '../models/ContactMediumModels/updatedContactMediumResponse';
 
 
 @Injectable({

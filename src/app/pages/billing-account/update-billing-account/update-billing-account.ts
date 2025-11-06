@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UpdateBillingAccountComponent } from '../../../components/update-billing-account-card/update-billing-account-card';
+import { UpdateBillingAccountComponent } from '../../../components/BillingAccountComponents/update-billing-account-card/update-billing-account-card';
 
 @Component({
   selector: 'app-update-billing-account',

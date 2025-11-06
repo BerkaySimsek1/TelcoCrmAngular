@@ -1,0 +1,121 @@
+<div class="update-contactmedium-card" id="ucm-page">
+  <h2 class="card-title" id="ucm-title">Update Contact Medium</h2>
+
+  <form [formGroup]="formGroup" (ngSubmit)="submit()" id="ucm-form">
+    <div class="form-grid" id="ucm-grid">
+      <!-- Email Row -->
+      <div class="form-row" id="ucm-row-email">
+        <div class="form-group required" id="ucm-email-group">
+          <label for="email" id="ucm-email-label">Email :</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-input"
+            [class.invalid]="f['email'].invalid && f['email'].touched"
+            placeholder="example@email.com"
+            aria-describedby="ucm-email-error"
+          />
+          @if (f['email'].invalid && f['email'].touched) {
+            <span class="error-message" id="ucm-email-error">
+              {{ getEmailErrorMessage() }}
+            </span>
+          }
+        </div>
+
+        <div class="form-group" id="ucm-home-group">
+          <label for="homePhone" id="ucm-home-label">Home Phone :</label>
+          <input
+            type="text"
+            id="homePhone"
+            formControlName="homePhone"
+            class="form-input"
+            [class.invalid]="f['homePhone'].invalid && f['homePhone'].touched"
+            placeholder="+902121234567"
+            aria-describedby="ucm-home-error"
+          />
+          @if (f['homePhone'].invalid && f['homePhone'].touched) {
+            <span class="error-message" id="ucm-home-error">
+              {{ getHomePhoneErrorMessage() }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Mobile Phone Row -->
+      <div class="form-row" id="ucm-row-mobile">
+        <div class="form-group required" id="ucm-mobile-group">
+          <label for="mobilePhone" id="ucm-mobile-label">Mobile Phone :</label>
+          <input
+            type="text"
+            id="mobilePhone"
+            formControlName="mobilePhone"
+            class="form-input"
+            [class.invalid]="f['mobilePhone'].invalid && f['mobilePhone'].touched"
+            placeholder="+905331234567"
+            aria-describedby="ucm-mobile-error"
+          />
+          @if (f['mobilePhone'].invalid && f['mobilePhone'].touched) {
+            <span class="error-message" id="ucm-mobile-error">
+              {{ getMobilePhoneErrorMessage() }}
+            </span>
+          }
+        </div>
+
+        <div class="form-group" id="ucm-fax-group">
+          <label for="fax" id="ucm-fax-label">Fax:</label>
+          <input
+            type="text"
+            id="fax"
+            formControlName="fax"
+            class="form-input"
+            [class.invalid]="f['fax'].invalid && f['fax'].touched"
+            placeholder="+902121234567"
+            aria-describedby="ucm-fax-error"
+          />
+          @if (f['fax'].invalid && f['fax'].touched) {
+            <span class="error-message" id="ucm-fax-error">
+              {{ getFaxErrorMessage() }}
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-group" id="ucm-buttons">
+      <button
+        type="button"
+        class="btn btn-cancel"
+        (click)="cancel()"
+        [disabled]="submitting()"
+        id="ucm-cancel-btn">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-save"
+        [disabled]="submitting()"
+        id="ucm-submit-btn">
+        {{ submitting() ? 'Updating...' : 'Update' }}
+      </button>
+    </div>
+  </form>
+
+  <!-- Success Message -->
+  @if (updatedContactMediumResponse() && updatedContactMediumResponse()!.updatedContactMediums.length > 0) {
+    <div class="success-message" id="ucm-success">
+      <h3 id="ucm-success-title">✓ Contact mediums updated successfully!</h3>
+      <div class="response-list" id="ucm-response-list">
+        @for (response of updatedContactMediumResponse()!.updatedContactMediums; track response.id) {
+          <div class="response-item" id="ucm-response-{{response.id}}">
+            <p><strong>ID:</strong> {{ response.id }}</p>
+            <p><strong>Type:</strong> {{ response.type }}</p>
+            <p><strong>Value:</strong> {{ response.value }}</p>
+            <p><strong>Primary:</strong> {{ response.isPrimary ? 'Yes' : 'No' }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

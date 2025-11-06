@@ -1,0 +1,48 @@
+<div class="w-full md:w-[320px] border-2 border-orange-300 rounded-xl p-4 bg-white/80" id="srch-panel">
+  <div class="space-y-3" id="srch-fields">
+    <!-- ACC-1: Sıralı alanlar -->
+    <label class="block text-sm font-semibold text-gray-800" id="srch-firstname-label" for="srch-firstname-input">First Name</label>
+    <input type="text" id="srch-firstname-input" [formControl]="form.controls.firstName"
+           class="w-full rounded-full border-2 border-orange-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-300">
+
+    <label class="block text-sm font-semibold text-gray-800" id="srch-lastname-label" for="srch-lastname-input">Last Name</label>
+    <input type="text" id="srch-lastname-input" [formControl]="form.controls.lastName"
+           class="w-full rounded-full border-2 border-orange-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-300">
+
+    <label class="block text-sm font-semibold text-gray-800" id="srch-natid-label" for="srch-natid-input">Nat ID</label>
+    <input type="text" id="srch-natid-input" [formControl]="form.controls.natId"
+           class="w-full rounded-full border-2 border-orange-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:opacity-50">
+
+    <label class="block text-sm font-semibold text-gray-800" id="srch-custnum-label" for="srch-custnum-input">Customer Number</label>
+    <input type="text" id="srch-custnum-input" [formControl]="form.controls.customerId"
+           class="w-full rounded-full border-2 border-orange-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:opacity-50">
+
+    <label class="block text-sm font-semibold text-gray-800" id="srch-accnum-label" for="srch-accnum-input">Account Number</label>
+    <input type="text" id="srch-accnum-input" [formControl]="form.controls.accountNumber"
+           class="w-full rounded-full border-2 border-orange-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:opacity-50">
+
+    <label class="block text-sm font-semibold text-gray-800" id="srch-gsm-label" for="srch-gsm-input">GSM Number</label>
+    <input type="text" id="srch-gsm-input" [formControl]="form.controls.gsmNumber"
+           class="w-full rounded-full border-2 border-orange-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:opacity-50">
+
+    <label class="block text-sm font-semibold text-gray-800" id="srch-ordernum-label" for="srch-ordernum-input">Order Number</label>
+    <input type="text" id="srch-ordernum-input" [formControl]="form.controls.orderNumber"
+           class="w-full rounded-full border-2 border-orange-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:opacity-50">
+
+    <div class="flex items-center gap-3 pt-2" id="srch-actions">
+      <!-- ACC-5 -->
+      <button type="button" id="srch-clear-btn"
+              (click)="clear()"
+              class="px-4 py-1.5 rounded-full border-2 border-orange-300 text-gray-700 hover:bg-orange-50">
+        Clear
+      </button>
+      <!-- ACC-4 -->
+      <button type="button" id="srch-submit-btn"
+              [disabled]="!canSearch()"
+              (click)="submit()"
+              class="px-4 py-1.5 rounded-full bg-orange-500 text-white disabled:opacity-40 hover:bg-orange-600">
+        Search
+      </button>
+    </div>
+  </div>
+</div>

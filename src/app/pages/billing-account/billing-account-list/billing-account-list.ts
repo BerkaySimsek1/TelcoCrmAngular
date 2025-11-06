@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BillingAccountInfoListComponent } from '../../../components/billing-account-info-list/billing-account-info-list';
+import { BillingAccountInfoListComponent } from '../../../components/BillingAccountComponents/billing-account-info-list/billing-account-info-list';
 
 
 @Component({

@@ -1,0 +1,160 @@
+<div class="address-card-container" id="addr-page">
+  <form [formGroup]="formGroup" (ngSubmit)="submit()" class="address-form" id="addr-form">
+    
+    <!-- Title & City Row -->
+    <div class="form-row" id="addr-row-title-city">
+      <!-- Title Field (Optional, not in CreateAddressRequest) -->
+      <div class="form-field" id="addr-title-group">
+        <label for="addr-title" id="addr-title-label">Title:</label>
+        <input 
+          type="text" 
+          id="addr-title" 
+          formControlName="title"
+          class="input-field"
+          placeholder="Enter title"
+          aria-labelledby="addr-title-label"
+        />
+      </div>
+
+      <!-- City Field -->
+      <div class="form-field" id="addr-city-group">
+        <label for="addr-cityId" id="addr-city-label">City:<span class="required">*</span></label>
+        <select 
+          id="addr-cityId" 
+          formControlName="cityId" 
+          class="select-field"
+          [class.error]="f['cityId'].invalid && f['cityId'].touched"
+          aria-describedby="addr-city-error"
+        >
+          <option [value]="null" disabled>Select city</option>
+          @for (city of cities(); track city.id) {
+            <option id="addr-city-opt-{{city.id}}" [value]="city.id">{{ city.name }}</option>
+          }
+        </select>
+        @if (f['cityId'].invalid && f['cityId'].touched) {
+          <span class="error-message" id="addr-city-error">City is required</span>
+        }
+      </div>
+    </div>
+
+    <!-- District & Street Row -->
+    <div class="form-row" id="addr-row-district-street">
+      <!-- District Field -->
+      <div class="form-field" id="addr-district-group">
+        <label for="addr-districtId" id="addr-district-label">District:<span class="required">*</span></label>
+        <select 
+          id="addr-districtId" 
+          formControlName="districtId" 
+          class="select-field"
+          [class.error]="f['districtId'].invalid && f['districtId'].touched"
+          aria-describedby="addr-district-error"
+        >
+          <option [value]="null" disabled>Select district</option>
+          @for (district of districts(); track district.id) {
+            <option id="addr-district-opt-{{district.id}}" [value]="district.id">{{ district.name }}</option>
+          }
+        </select>
+        @if (f['districtId'].invalid && f['districtId'].touched) {
+          <span class="error-message" id="addr-district-error">District is required</span>
+        }
+      </div>
+
+      <!-- Street Field -->
+      <div class="form-field" id="addr-street-group">
+        <label for="addr-street" id="addr-street-label">Street:<span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="addr-street" 
+          formControlName="street"
+          class="input-field"
+          [class.error]="f['street'].invalid && f['street'].touched"
+          placeholder="Enter street"
+          maxlength="200"
+          aria-describedby="addr-street-error"
+        />
+        @if (f['street'].invalid && f['street'].touched) {
+          <span class="error-message" id="addr-street-error">Street is required</span>
+        }
+      </div>
+    </div>
+
+    <!-- House/Flat Number Row -->
+    <div class="form-row" id="addr-row-house">
+      <div class="form-field form-field-full" id="addr-house-group">
+        <label for="addr-houseNumber" id="addr-house-label">House/Flat Number:<span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="addr-houseNumber" 
+          formControlName="houseNumber"
+          class="input-field"
+          [class.error]="f['houseNumber'].invalid && f['houseNumber'].touched"
+          placeholder="Enter house/flat number"
+          maxlength="50"
+          aria-describedby="addr-house-error"
+        />
+        @if (f['houseNumber'].invalid && f['houseNumber'].touched) {
+          <span class="error-message" id="addr-house-error">House/Flat number is required</span>
+        }
+      </div>
+    </div>
+
+    <!-- Address Description -->
+    <div class="form-row" id="addr-row-desc">
+      <div class="form-field form-field-full" id="addr-desc-group">
+        <label for="addr-description" id="addr-desc-label">Address Description:</label>
+        <textarea 
+          id="addr-description" 
+          formControlName="description"
+          class="textarea-field"
+          placeholder="Enter additional details"
+          rows="4"
+          maxlength="500"
+          aria-labelledby="addr-desc-label"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Default Address Checkbox -->
+    <div class="form-row" id="addr-row-default">
+      <div class="checkbox-field" id="addr-default-group">
+        <input 
+          type="checkbox" 
+          id="addr-default" 
+          formControlName="default"
+          class="checkbox-input"
+        />
+        <label for="addr-default" class="checkbox-label" id="addr-default-label">Set as default address</label>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="button-container" id="addr-actions">
+      <button 
+        type="button" 
+        (click)="cancel()" 
+        class="btn btn-cancel"
+        id="addr-cancel-btn"
+      >
+        Cancel
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-save"
+        id="addr-save-btn"
+      >
+        @if (submitting()) {
+          <span id="addr-saving-text">Saving...</span>
+        } @else {
+          <span id="addr-next-text">Next</span>
+        }
+      </button>
+    </div>
+
+    <!-- Success Message -->
+    @if (createdAddressResponse()) {
+      <div class="success-message" id="addr-success">
+        Address created successfully! ID: <span id="addr-success-id">{{ createdAddressResponse()?.id }}</span>
+      </div>
+    }
+  </form>
+</div>

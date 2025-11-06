@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Sidebar } from "./components/sidebar/sidebar";
-import { Header } from "./components/header/header";
+import { Sidebar } from "./components/CoreComponents/sidebar/sidebar";
+import { Header } from "./components/CoreComponents/header/header";
 import { AuthService } from './services/auth-service';
 import { CommonModule } from '@angular/common';
 

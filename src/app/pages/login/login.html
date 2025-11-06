@@ -1,89 +1,96 @@
-<div class="min-h-screen bg-[#2d2d44] flex items-center justify-center p-4">
-  <div class="w-full max-w-md">
+<div class="min-h-screen bg-[#2d2d44] flex items-center justify-center p-4" id="login-page">
+  <div class="w-full max-w-md" id="login-card">
     <!-- Logo Section -->
-    <div class="text-center mb-8">
-      <div class="mb-8">
-        <img src="/images/etiya-logo.png" alt="Etiya Logo" class="h-12 mx-auto">
+    <div class="text-center mb-8" id="login-logo-section">
+      <div class="mb-8" id="login-logo-wrapper">
+        <img src="/images/etiya-logo.png" alt="Etiya Logo" class="h-12 mx-auto" id="login-logo-img">
       </div>
-      <h2 class="text-white text-lg font-light">Sign in with your organization account</h2>
+      <h2 class="text-white text-lg font-light" id="login-title">Sign in with your organization account</h2>
     </div>
 
     <!-- Login Form Card -->
-    <div class="bg-white/5 backdrop-blur-sm rounded-lg p-8 shadow-2xl">
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <div class="bg-white/5 backdrop-blur-sm rounded-lg p-8 shadow-2xl" id="login-form-card">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6" id="login-form">
         
         <!-- Username Input -->
-        <div>
-          <label for="email" class="block text-white text-sm font-medium mb-2">
+        <div id="login-username-field">
+          <label for="login-email" class="block text-white text-sm font-medium mb-2" id="login-email-label">
             Username
           </label>
           <input
-            id="email"
+            id="login-email"
             type="text"
             formControlName="email"
             class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-gray-900"
             placeholder=""
+            aria-describedby="login-email-error"
           />
-          <div class="mt-1 text-red-300 text-sm h-5">
-            <span [class.invisible]="f['email'].valid || !f['email'].touched">Username is required</span>
+          <div class="mt-1 text-red-300 text-sm h-5" id="login-email-error-wrap">
+            <span id="login-email-error" [class.invisible]="f['email'].valid || !f['email'].touched">Username is required</span>
           </div>
         </div>
 
         <!-- Password Input -->
-        <div>
-          <label for="password" class="block text-white text-sm font-medium mb-2">
+        <div id="login-password-field">
+          <label for="login-password" class="block text-white text-sm font-medium mb-2" id="login-password-label">
             Password
           </label>
-          <div class="relative">
+          <div class="relative" id="login-password-input-wrap">
             <input
-              id="password"
+              id="login-password"
               [type]="passwordVisible() ? 'text' : 'password'"
               formControlName="password"
               class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all pr-12 text-gray-900"
               placeholder=""
+              aria-describedby="login-password-error"
             />
             <button
+              id="login-toggle-password-btn"
               type="button"
               (click)="togglePasswordVisibility()"
               class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800 focus:outline-none"
               aria-label="Toggle password visibility"
             >
-              <svg [class.hidden]="passwordVisible()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg id="login-eye-open" [class.hidden]="passwordVisible()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              <svg [class.hidden]="!passwordVisible()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg id="login-eye-closed" [class.hidden]="!passwordVisible()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
               </svg>
             </button>
           </div>
-          <div class="mt-1 text-red-300 text-sm h-5">
-            <span [class.invisible]="f['password'].valid || !f['password'].touched">Password is required</span>
+          <div class="mt-1 text-red-300 text-sm h-5" id="login-password-error-wrap">
+            <span id="login-password-error" [class.invisible]="f['password'].valid || !f['password'].touched">Password is required</span>
           </div>
         </div>
 
         <!-- Error Message -->
-        <div class="bg-red-500/20 border border-red-400 text-red-100 px-4 py-3 rounded-md text-sm" [class.invisible]="!errorMessage()">
+        <div
+          class="bg-red-500/20 border border-red-400 text-red-100 px-4 py-3 rounded-md text-sm"
+          id="login-global-error"
+          [class.invisible]="!errorMessage()">
           {{ errorMessage() || 'Error placeholder' }}
         </div>
 
         <!-- Submit Button -->
         <button
+          id="login-submit-btn"
           type="submit"
           [disabled]="!isLoginButtonEnabled() || submitting()"
           [class.opacity-50]="!isLoginButtonEnabled() || submitting()"
           [class.cursor-not-allowed]="!isLoginButtonEnabled() || submitting()"
           class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium py-3 px-4 rounded-md transition-all duration-200 flex items-center justify-center gap-2 shadow-lg disabled:hover:from-orange-500 disabled:hover:to-orange-600"
         >
-          <span [class.hidden]="submitting()">Sign In</span>
-          <span [class.hidden]="!submitting()" class="flex items-center gap-2">
-            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <span id="login-submit-text" [class.hidden]="submitting()">Sign In</span>
+          <span id="login-submitting-wrap" [class.hidden]="!submitting()" class="flex items-center gap-2">
+            <svg id="login-submitting-spinner" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             Signing in...
           </span>
-          <svg [class.hidden]="submitting()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg id="login-submit-icon" [class.hidden]="submitting()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </button>
@@ -91,7 +98,7 @@
     </div>
 
     <!-- Footer -->
-    <p class="text-center text-white/70 text-sm mt-6">
+    <p class="text-center text-white/70 text-sm mt-6" id="login-footer">
       © 2025 Etiya. All rights reserved.
     </p>
   </div>

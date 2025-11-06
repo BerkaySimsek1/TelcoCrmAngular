@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UpdateAddressCard } from '../../../components/update-address-card/update-address-card';
+import { UpdateAddressCard } from '../../../components/AddressComponents/update-address-card/update-address-card';
 
 @Component({
   selector: 'app-update-address',

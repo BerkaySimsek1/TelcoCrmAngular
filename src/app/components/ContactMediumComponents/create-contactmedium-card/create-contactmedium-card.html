@@ -1,0 +1,121 @@
+<div class="create-contactmedium-card" id="cmc-page">
+  <h2 class="card-title" id="cmc-title">Contact Medium</h2>
+
+  <form [formGroup]="formGroup" (ngSubmit)="submit()" id="cmc-form">
+    <div class="form-grid" id="cmc-grid">
+      <!-- Email Row -->
+      <div class="form-row" id="cmc-row-email-home">
+        <div class="form-group required" id="cmc-email-group">
+          <label for="cmc-email" id="cmc-email-label">Email :</label>
+          <input
+            type="email"
+            id="cmc-email"
+            formControlName="email"
+            class="form-input"
+            [class.invalid]="f['email'].invalid && f['email'].touched"
+            placeholder="example@email.com"
+            aria-describedby="cmc-email-error"
+          />
+          @if (f['email'].invalid && f['email'].touched) {
+            <span class="error-message" id="cmc-email-error">
+              {{ getEmailErrorMessage() }}
+            </span>
+          }
+        </div>
+
+        <div class="form-group" id="cmc-homephone-group">
+          <label for="cmc-homephone" id="cmc-homephone-label">Home Phone :</label>
+          <input
+            type="text"
+            id="cmc-homephone"
+            formControlName="homePhone"
+            class="form-input"
+            [class.invalid]="f['homePhone'].invalid && f['homePhone'].touched"
+            placeholder="+902121234567"
+            aria-describedby="cmc-homephone-error"
+          />
+          @if (f['homePhone'].invalid && f['homePhone'].touched) {
+            <span class="error-message" id="cmc-homephone-error">
+              {{ getHomePhoneErrorMessage() }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Mobile Phone Row -->
+      <div class="form-row" id="cmc-row-mobile-fax">
+        <div class="form-group required" id="cmc-mobile-group">
+          <label for="cmc-mobile" id="cmc-mobile-label">Mobile Phone :</label>
+          <input
+            type="text"
+            id="cmc-mobile"
+            formControlName="mobilePhone"
+            class="form-input"
+            [class.invalid]="f['mobilePhone'].invalid && f['mobilePhone'].touched"
+            placeholder="+905331234567"
+            aria-describedby="cmc-mobile-error"
+          />
+          @if (f['mobilePhone'].invalid && f['mobilePhone'].touched) {
+            <span class="error-message" id="cmc-mobile-error">
+              {{ getMobilePhoneErrorMessage() }}
+            </span>
+          }
+        </div>
+
+        <div class="form-group" id="cmc-fax-group">
+          <label for="cmc-fax" id="cmc-fax-label">Fax:</label>
+          <input
+            type="text"
+            id="cmc-fax"
+            formControlName="fax"
+            class="form-input"
+            [class.invalid]="f['fax'].invalid && f['fax'].touched"
+            placeholder="+902121234567"
+            aria-describedby="cmc-fax-error"
+          />
+          @if (f['fax'].invalid && f['fax'].touched) {
+            <span class="error-message" id="cmc-fax-error">
+              {{ getFaxErrorMessage() }}
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-group" id="cmc-buttons">
+      <button
+        type="button"
+        class="btn btn-cancel"
+        id="cmc-cancel-btn"
+        (click)="cancel()"
+        [disabled]="submitting()">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-save"
+        id="cmc-save-btn"
+        [disabled]="submitting()">
+        {{ submitting() ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </form>
+
+  <!-- Success Message -->
+  @if (createdContactMediumResponses() && createdContactMediumResponses()!.length > 0) {
+    <div class="success-message" id="cmc-success">
+      <h3 id="cmc-success-title">✓ Contact mediums created successfully!</h3>
+      <div class="response-list" id="cmc-success-list">
+        @for (response of createdContactMediumResponses()!; track response.id) {
+          <div class="response-item" id="cmc-response-{{response.id}}">
+            <p id="cmc-res-id-{{response.id}}"><strong>ID:</strong> {{ response.id }}</p>
+            <p id="cmc-res-type-{{response.id}}"><strong>Type:</strong> {{ response.type }}</p>
+            <p id="cmc-res-value-{{response.id}}"><strong>Value:</strong> {{ response.value }}</p>
+            <p id="cmc-res-primary-{{response.id}}"><strong>Primary:</strong> {{ response.isPrimary ? 'Yes' : 'No' }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

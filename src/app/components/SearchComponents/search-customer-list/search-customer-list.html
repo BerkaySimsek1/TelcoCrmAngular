@@ -1,0 +1,77 @@
+<div class="flex-1 border-2 border-orange-300 rounded-xl p-4 bg-white/80" id="res-panel">
+
+  @if (loading) {
+    <div class="text-sm text-gray-600" id="res-loading">Loading...</div>
+  } @else {
+
+    <!-- ACC-6: Sonuçlar tablo/kart -->
+    @if (results.length) {
+      <div class="space-y-4" id="res-list">
+        @for (item of pageSlice; track item.id) {
+          <div class="rounded-xl border border-orange-200 bg-gray-50 p-3" id="res-card-{{item.id}}">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3" id="res-grid-{{item.id}}">
+              <div class="flex items-center gap-2" id="res-firstname-wrap-{{item.id}}">
+                <span class="text-xs text-gray-600" id="res-firstname-label-{{item.id}}">First Name</span>
+                <span class="px-2 py-0.5 rounded-full border border-orange-300 text-sm bg-white" id="res-firstname-{{item.id}}">
+                  {{ item.firstName }}
+                </span>
+              </div>
+              <div class="flex items-center gap-2" id="res-lastname-wrap-{{item.id}}">
+                <span class="text-xs text-gray-600" id="res-lastname-label-{{item.id}}">Last Name</span>
+                <span class="px-2 py-0.5 rounded-full border border-orange-300 text-sm bg-white" id="res-lastname-{{item.id}}">
+                  {{ item.lastName }}
+                </span>
+              </div>
+              <div class="flex items-center gap-2" id="res-custid-wrap-{{item.id}}">
+                <span class="text-xs text-gray-600" id="res-custid-label-{{item.id}}">Customer ID</span>
+                <button
+                  class="px-2 py-0.5 rounded-full border-2 border-orange-400 text-sm underline bg-white hover:bg-orange-50"
+                  id="res-custid-btn-{{item.id}}"
+                  (click)="openCustomerInfo(item)"
+                  [attr.aria-labelledby]="'res-custid-label-' + item.id">
+                  {{ item.customerNumber }}
+                </button>
+              </div>
+              <div class="flex items-center gap-2" id="res-natid-wrap-{{item.id}}">
+                <span class="text-xs text-gray-600" id="res-natid-label-{{item.id}}">Nat ID</span>
+                <span class="px-2 py-0.5 rounded-full border border-orange-300 text-sm bg-white" id="res-natid-{{item.id}}">
+                  {{ item.nationalId }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ACC-7: Sayfalama -->
+        @if (totalPages() > 1) {
+          <div class="flex justify-end items-center gap-2 pt-2 text-sm" id="res-pagination">
+            <button class="px-2 py-1 rounded border border-orange-300"
+                    id="res-page-prev"
+                    (click)="go(currentPage()-1)">‹</button>
+            <span class="px-2" id="res-page-info">Page {{ currentPage() }} / {{ totalPages() }}</span>
+            <button class="px-2 py-1 rounded border border-orange-300"
+                    id="res-page-next"
+                    (click)="go(currentPage()+1)">›</button>
+          </div>
+        }
+      </div>
+
+    } @else if (searched) {
+      <!-- ACC-10: Kayıt yoksa uyarı + Create Customer -->
+      <div class="flex flex-col items-center justify-center py-10" id="res-empty">
+        <div class="relative w-full max-w-md rounded-lg border border-orange-300 bg-white shadow p-4" id="res-empty-card">
+          <div class="font-semibold text-gray-800 mb-2" id="res-empty-title">Can't Find the Customer!!!</div>
+          <div class="text-sm text-gray-700" id="res-empty-text">
+            No customer found! Would you like to create a customer?
+          </div>
+          <div class="absolute right-2 top-2 text-gray-400" id="res-empty-close">✕</div>
+        </div>
+        <button class="mt-6 px-6 py-2 rounded-full bg-orange-500 text-white hover:bg-orange-600"
+                id="res-create-btn"
+                (click)="createCustomer.emit()">
+          Create Customer
+        </button>
+      </div>
+    }
+  }
+</div>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CreateCustomerCard } from "../../../components/create-customer-card/create-customer-card";
+import { CreateCustomerCard } from "../../../components/CustomerComponents/create-customer-card/create-customer-card";
 
 @Component({
   selector: 'app-create-customer',

@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateAddressRequest } from '../models/createAddressRequest';
-import { AddressResponse } from '../models/addressResponse';
-import { CreatedAddressResponse } from '../models/createdAddressResponse';
-import { DistrictResponse } from '../models/districtResponse';
-import { CityResponse } from '../models/cityResponse';
-import { UpdateAddressRequest } from '../models/updateAddressRequest';
-import { UpdatedAddressResponse } from '../models/updatedAddressResponse';
+import { CreateAddressRequest } from '../models/AddressModels/createAddressRequest';
+import { AddressResponse } from '../models/AddressModels/addressResponse';
+import { CreatedAddressResponse } from '../models/AddressModels/createdAddressResponse';
+import { DistrictResponse } from '../models/AddressModels/districtResponse';
+import { CityResponse } from '../models/AddressModels/cityResponse';
+import { UpdateAddressRequest } from '../models/AddressModels/updateAddressRequest';
+import { UpdatedAddressResponse } from '../models/AddressModels/updatedAddressResponse';
 
 @Injectable({
   providedIn: 'root'

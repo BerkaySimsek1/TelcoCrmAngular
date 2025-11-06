@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateCustomerRequest } from '../models/createCustomerRequest';
-import { CreatedCustomerRespose } from '../models/createdCustomerResponse';
-import { CustomerResponse } from '../models/customerResponse';
-import { UpdateCustomerRequest } from '../models/updateCustomerRequest';
-import { UpdatedCustomerResponse } from '../models/updatedCustomerResponse';
+import { CreateCustomerRequest } from '../models/CustomerModels/createCustomerRequest';
+import { CreatedCustomerRespose } from '../models/CustomerModels/createdCustomerResponse';
+import { CustomerResponse } from '../models/CustomerModels/customerResponse';
+import { UpdateCustomerRequest } from '../models/CustomerModels/updateCustomerRequest';
+import { UpdatedCustomerResponse } from '../models/CustomerModels/updatedCustomerResponse';
 
 @Injectable({
   providedIn: 'root'

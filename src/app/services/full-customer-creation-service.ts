@@ -1,8 +1,8 @@
 // services/full-customer-creation-service.ts
 import { Injectable, signal } from '@angular/core';
-import { CreateCustomerRequest } from '../models/createCustomerRequest';
+import { CreateCustomerRequest } from '../models/CustomerModels/createCustomerRequest';
 import { CreateAddressItem } from '../models/createFullCustomerModels/createAddressItem';
-import { ContactMedium } from '../models/createContactMediumRequest';
+import { ContactMedium } from '../models/ContactMediumModels/createContactMediumRequest';
 
 export interface FullCustomerState {
   individual?: CreateCustomerRequest;

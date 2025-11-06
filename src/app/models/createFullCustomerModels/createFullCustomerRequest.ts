@@ -1,5 +1,5 @@
-import { ContactMedium } from "../createContactMediumRequest";
-import { CreateCustomerRequest } from "../createCustomerRequest";
+import { ContactMedium } from "../ContactMediumModels/createContactMediumRequest";
+import { CreateCustomerRequest } from "../CustomerModels/createCustomerRequest";
 import { CreateAddressItem } from "./createAddressItem";
 
 export interface CreateFullCustomerRequest {

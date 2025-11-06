@@ -1,0 +1,231 @@
+<div class="bg-gray-100 min-h-screen flex items-center justify-center p-4" id="di-page">
+  <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full border-2 border-orange-300" id="di-card">
+    <h2 class="text-2xl font-bold text-orange-600 mb-6" id="di-title">Demographic Info</h2>
+
+    <form [formGroup]="formGroup" (ngSubmit)="submit()" class="space-y-6" id="di-form">
+      <!-- First Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="di-row-1">
+        <div class="flex items-start" id="di-firstname-group">
+          <label class="font-semibold text-gray-800 w-32 pt-2" id="di-firstname-label" for="di-firstname-input">First Name*</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="di-firstname-input"
+              formControlName="firstName"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-describedby="di-firstname-err-required di-firstname-err-letters"
+            />
+            @if (f['firstName'].touched && f['firstName'].errors) {
+              @if (has('firstName', 'required')) {
+                <p class="text-sm text-red-600 mt-1" id="di-firstname-err-required">Please enter a valid value</p>
+              }
+              @if (has('firstName', 'lettersOnly')) {
+                <p class="text-sm text-red-600 mt-1" id="di-firstname-err-letters">Only letters (2–50 chars)</p>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="flex items-start" id="di-middlename-group">
+          <label class="font-semibold text-gray-800 w-32 pt-2" id="di-middlename-label" for="di-middlename-input">Middle Name</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="di-middlename-input"
+              formControlName="middleName"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-describedby="di-middlename-err-letters"
+            />
+            @if (f['middleName'].touched && f['middleName'].errors?.['lettersOnly']) {
+              <p class="text-sm text-red-600 mt-1" id="di-middlename-err-letters">Only letters (2–50 chars)</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Second Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="di-row-2">
+        <div class="flex items-start" id="di-lastname-group">
+          <label class="font-semibold text-gray-800 w-32 pt-2" id="di-lastname-label" for="di-lastname-input">Last Name*</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="di-lastname-input"
+              formControlName="lastName"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-describedby="di-lastname-err-required di-lastname-err-letters"
+            />
+            @if (f['lastName'].touched && f['lastName'].errors) {
+              @if (has('lastName', 'required')) {
+                <p class="text-sm text-red-600 mt-1" id="di-lastname-err-required">Please enter a valid value</p>
+              } @else if (has('lastName', 'lettersOnly')) {
+                <p class="text-sm text-red-600 mt-1" id="di-lastname-err-letters">Only letters (2–50 chars)</p>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="flex items-start" id="di-birthdate-group">
+          <label class="font-semibold text-gray-800 w-32 pt-2" id="di-birthdate-label" for="di-birthdate-input">Birth Date*</label>
+          <div class="flex-1">
+            <input
+              type="date"
+              id="di-birthdate-input"
+              formControlName="dateOfBirth"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-describedby="di-birthdate-err-required di-birthdate-err-future"
+            />
+            @if (has('dateOfBirth', 'required')) {
+              <p class="text-sm text-red-600 mt-1" id="di-birthdate-err-required">Please enter a valid value</p>
+            } @else if (has('dateOfBirth', 'futureDate')) {
+              <p class="text-sm text-red-600 mt-1" id="di-birthdate-err-future">Date cannot be in the future</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Third Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="di-row-3">
+        <div class="flex items-start" id="di-mothername-group">
+          <label class="font-semibold text-gray-800 w-32 pt-2" id="di-mothername-label" for="di-mothername-input">Mother Name</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="di-mothername-input"
+              formControlName="motherName"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-describedby="di-mothername-err-letters"
+            />
+            @if (f['motherName'].touched && f['motherName'].errors?.['lettersOnly']) {
+              <p class="text-sm text-red-600 mt-1" id="di-mothername-err-letters">Only letters (2–50 chars)</p>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-start" id="di-fathername-group">
+          <label class="font-semibold text-gray-800 w-32 pt-2" id="di-fathername-label" for="di-fathername-input">Father Name</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="di-fathername-input"
+              formControlName="fatherName"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-describedby="di-fathername-err-letters"
+            />
+            @if (f['fatherName'].touched && f['fatherName'].errors?.['lettersOnly']) {
+              <p class="text-sm text-red-600 mt-1" id="di-fathername-err-letters">Only letters (2–50 chars)</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Fourth Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="di-row-4">
+        <div class="flex items-start" id="di-gender-group">
+          <label class="font-semibold text-gray-800 w-32 pt-2" id="di-gender-label" for="di-gender-select">Gender*</label>
+          <div class="flex-1">
+            <select
+              id="di-gender-select"
+              formControlName="gender"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-describedby="di-gender-err-required"
+            >
+              <option id="di-gender-opt-male" value="MALE">Male</option>
+              <option id="di-gender-opt-female" value="FEMALE">Female</option>
+              <option id="di-gender-opt-other" value="OTHER">Other</option>
+            </select>
+            @if (f['gender'].touched && f['gender'].errors?.['required']) {
+              <p class="text-sm text-red-600 mt-1" id="di-gender-err-required">Please enter a valid value</p>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-start" id="di-nationalid-group">
+          <label class="font-semibold text-gray-800 w-32 pt-2" id="di-nationalid-label" for="di-nationalid-input">Nat ID*</label>
+          <div class="flex-1">
+            <input
+              type="text"
+              id="di-nationalid-input"
+              formControlName="nationalId"
+              maxlength="11"
+              class="w-full px-3 py-2 border-2 border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-describedby="di-nationalid-err-required di-nationalid-err-format di-nationalid-err-start di-nationalid-err-even di-nationalid-err-taken"
+            />
+            @if (has('nationalId', 'required')) {
+              <p class="text-sm text-red-600 mt-1" id="di-nationalid-err-required">Please enter a valid value</p>
+            }
+            @if (has('nationalId', 'nationalIdFormat')) {
+              <p class="text-sm text-red-600 mt-1" id="di-nationalid-err-format">Must be 11 digits</p>
+            }
+            @if (has('nationalId', 'nationalIdStartsWithZero')) {
+              <p class="text-sm text-red-600 mt-1" id="di-nationalid-err-start">Cannot start with 0</p>
+            }
+            @if (has('nationalId', 'nationalIdNotEven')) {
+              <p class="text-sm text-red-600 mt-1" id="di-nationalid-err-even">Must end with an even number</p>
+            }
+            @if (has('nationalId', 'nationalIdTaken')) {
+              <p class="text-sm text-red-600 mt-1" id="di-nationalid-err-taken">A customer already exists with this Nationality ID</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-center gap-4 mt-8" id="di-actions">
+        <button
+          type="button"
+          id="di-cancel-btn"
+          (click)="cancel()"
+          class="px-8 py-2 bg-orange-100 hover:bg-orange-200 text-gray-800 font-semibold rounded-full border-2 border-orange-300 transition-colors"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          id="di-submit-btn"
+          [disabled]="submitting()"
+          class="px-8 py-2 bg-orange-100 hover:bg-orange-200 text-gray-800 font-semibold rounded-full border-2 border-orange-300 transition-colors disabled:opacity-60"
+        >
+          {{ submitting() ? 'Saving...' : 'Next' }}
+        </button>
+      </div>
+    </form>
+
+    @if (createdCustomerResponse(); as res) {
+      <div class="mt-6 p-4 border rounded bg-green-50" id="di-created-box">
+        <p class="font-semibold text-green-700" id="di-created-title">Customer created!</p>
+        <pre class="text-sm text-green-800 overflow-auto" id="di-created-json">{{ res | json }}</pre>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- ACC-2 Cancel Modal -->
+@if (showCancelModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center" id="di-cancel-modal-overlay">
+    <div class="fixed inset-0 bg-black/30" id="di-cancel-modal-backdrop"></div>
+    <div class="relative bg-white rounded-2xl shadow-xl border border-orange-200 p-6 w-full max-w-md" id="di-cancel-modal">
+      <h3 class="text-lg font-semibold text-gray-800 mb-2" id="di-cancel-modal-title">Would you like to cancel the changes?</h3>
+      <p class="text-sm text-gray-600 mb-6" id="di-cancel-modal-text">Your unsaved changes will be lost.</p>
+      <div class="flex justify-end gap-3" id="di-cancel-modal-actions">
+        <button
+          type="button"
+          id="di-cancel-continue-btn"
+          (click)="closeCancelModal()"
+          class="px-4 py-2 rounded-full border-2 border-gray-300 hover:bg-gray-100"
+        >
+          Continue Editing
+        </button>
+        <button
+          type="button"
+          id="di-cancel-confirm-btn"
+          (click)="confirmCancel()"
+          class="px-4 py-2 rounded-full border-2 border-orange-300 bg-orange-100 hover:bg-orange-200"
+        >
+          Yes, Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+}

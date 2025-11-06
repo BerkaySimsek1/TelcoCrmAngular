@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UpdateContactmediumCard } from '../../../components/update-contactmedium-card/update-contactmedium-card';
+import { UpdateContactmediumCard } from '../../../components/ContactMediumComponents/update-contactmedium-card/update-contactmedium-card';
 
 @Component({
   selector: 'app-update-contactmedium',

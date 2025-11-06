@@ -1,11 +1,13 @@
-<div class="min-h-[calc(100vh-120px)] w-full bg-gradient-to-br from-orange-50 to-white p-4 md:p-6">
-  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[320px,1fr] gap-4">
+<div class="min-h-[calc(100vh-120px)] w-full bg-gradient-to-br from-orange-50 to-white p-4 md:p-6" id="sc-page">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[320px,1fr] gap-4" id="sc-layout">
     <app-search-customer-card
+      id="sc-card"
       (searchClicked)="onSearch($event)"
       (cleared)="onCleared()">
     </app-search-customer-card>
 
     <app-search-customer-list
+      id="sc-list"
       [results]="results"
       [loading]="loading()"
       [searched]="searched()"

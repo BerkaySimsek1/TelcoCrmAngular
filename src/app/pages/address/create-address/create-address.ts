@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CustomerAddressCreateCard } from '../../../components/customer-address-create-card/customer-address-create-card';
+import { CustomerAddressCreateCard } from '../../../components/AddressComponents/customer-address-create-card/customer-address-create-card';
 
 @Component({
   selector: 'app-create-address',

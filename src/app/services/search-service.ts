@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SearchCustomerResponse } from '../models/searchCustomerResponse';
+import { SearchCustomerResponse } from '../models/SearchModels/searchCustomerResponse';
 
 export interface SearchFilters {
   natId?: string;
