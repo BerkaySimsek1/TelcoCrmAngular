@@ -199,9 +199,15 @@ export class BillingAccountInfoListComponent implements OnInit {
   }
 
   startNewSale(accountId: number): void {
-    console.log('Start New Sale for account:', accountId);
-    // this.router.navigate(['/start-new-sale'], { queryParams: { accountId } });
-  }
+  // /customer/:customerId/start-new-sale/:billingAccountId
+  this.router.navigate([
+    '/customer',
+    this.customerId(),
+    'start-new-sale',
+    accountId
+  ]);
+}
+
 
   transfer(accountId: number): void {
     console.log('Transfer for account:', accountId);

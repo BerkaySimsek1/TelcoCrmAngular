@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BillingAccountServiceTs } from '../../../../services/billing-account-service.ts.js';
-import { AddressService } from '../../../../services/address-service.js';
+import { BillingAccountServiceTs } from '../../../services/billing-account-service.ts.js';
+import { AddressService } from '../../../services/address-service.js';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CreateBillingAccountRequest } from '../../../../models/BillingAccountModels/createBillingAccountRequest.js';
+import { CreateBillingAccountRequest } from '../../../models/BillingAccountModels/createBillingAccountRequest.js';
 interface AddressOption {
   id: number;
   title: string;

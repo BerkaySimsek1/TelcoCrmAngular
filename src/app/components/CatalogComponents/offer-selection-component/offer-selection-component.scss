@@ -1,0 +1,19 @@
+/* src/app/components/offer-selection/offer-selection.component.scss */
+.card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:16px; }
+.tabs { display:flex; gap:8px; margin-bottom:8px; }
+.tab { padding:6px 12px; border:1px solid #e5e7eb; border-bottom:none; border-radius:8px 8px 0 0; background:#f9fafb; }
+.tab.active { background:#fff; font-weight:600; }
+.title { color:#f97316; font-size:20px; margin:6px 0 12px; }
+.section { margin:8px 0 12px; }
+.label { font-weight:600; margin-bottom:6px; }
+.select { padding:6px 10px; border:1px solid #d1d5db; border-radius:8px; }
+.filters { display:flex; gap:12px; align-items:flex-end; margin:14px 0; }
+.filters label { display:block; font-weight:600; margin-bottom:4px; }
+.filters input { padding:6px 10px; border:1px solid #d1d5db; border-radius:8px; width:220px; }
+.btn { padding:6px 12px; border:1px solid #d1d5db; border-radius:8px; background:#fff; cursor:pointer; }
+.btn.ghost { background:#f9fafb; }
+.loading { margin-top:10px; }
+.table-wrapper { max-height:320px; overflow:auto; border:1px solid #e5e7eb; border-radius:8px; }
+.table { width:100%; border-collapse:collapse; }
+.table th, .table td { padding:8px 12px; border-bottom:1px solid #f3f4f6; }
+.table tbody tr:nth-child(odd){ background:#fafafa; }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CreateBillingAccountComponent } from '../../../components/BillingAccountComponents/billing-account-info-list/create-billing-account-card/create-billing-account-card';
+import { CreateBillingAccountComponent } from '../../../components/BillingAccountComponents/create-billing-account-card/create-billing-account-card';
 
 @Component({
   selector: 'app-create-billing-account',

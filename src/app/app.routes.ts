@@ -13,8 +13,9 @@ import { CreateContactmedium } from './pages/contactmedium/create-contactmedium/
 import { authGuard } from './guards/auth.guard';
 import { CustomerNavbarComponent } from './components/CoreComponents/customer-navbar-component/customer-navbar-component';
 import { BillingAccountInfoListComponent } from './components/BillingAccountComponents/billing-account-info-list/billing-account-info-list';
-import { CreateBillingAccountComponent } from './components/BillingAccountComponents/billing-account-info-list/create-billing-account-card/create-billing-account-card';
+import { CreateBillingAccountComponent } from './components/BillingAccountComponents/create-billing-account-card/create-billing-account-card';
 import { UpdateBillingAccountComponent } from './components/BillingAccountComponents/update-billing-account-card/update-billing-account-card';
+import { OfferSelectionComponent } from './components/CatalogComponents/offer-selection-component/offer-selection-component';
 
 export const routes: Routes = [
   // Login
@@ -44,7 +45,8 @@ export const routes: Routes = [
       { path: 'info', component: CustomerInfo },
       { path: 'addresses', component: AddressListComponent, data: { mode: 'standalone' } },
       { path: 'contact', component: ContactmediumInfo },
-      { path: 'customer-account',component:BillingAccountInfoListComponent}
+      { path: 'customer-account',component:BillingAccountInfoListComponent},
+      { path: 'start-new-sale/:billingAccountId', component: OfferSelectionComponent }
     ]
   },
    
