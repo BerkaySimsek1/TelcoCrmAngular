@@ -8,7 +8,7 @@
 
     <app-search-customer-list
       id="sc-list"
-      [results]="results"
+      [results]="results()"
       [loading]="loading()"
       [searched]="searched()"
       (createCustomer)="goCreate()">
