@@ -1,13 +1,13 @@
 <div class="flex-1 border-2 border-orange-300 rounded-xl p-4 bg-white/80" id="res-panel">
 
-  @if (loading) {
+  @if (loading()) {
     <div class="text-sm text-gray-600" id="res-loading">Loading...</div>
   } @else {
 
-    <!-- ACC-6: Sonuçlar tablo/kart -->
-    @if (results.length) {
+    <!-- Sonuçlar gösterimi -->
+    @if (results().length > 0) {
       <div class="space-y-4" id="res-list">
-        @for (item of pageSlice; track item.id) {
+        @for (item of getPaginatedResults(); track item.id) {
           <div class="rounded-xl border border-orange-200 bg-gray-50 p-3" id="res-card-{{item.id}}">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3" id="res-grid-{{item.id}}">
               <div class="flex items-center gap-2" id="res-firstname-wrap-{{item.id}}">
@@ -41,23 +41,48 @@
             </div>
           </div>
         }
-
-        <!-- ACC-7: Sayfalama -->
-        @if (totalPages() > 1) {
-          <div class="flex justify-end items-center gap-2 pt-2 text-sm" id="res-pagination">
-            <button class="px-2 py-1 rounded border border-orange-300"
-                    id="res-page-prev"
-                    (click)="go(currentPage()-1)">‹</button>
-            <span class="px-2" id="res-page-info">Page {{ currentPage() }} / {{ totalPages() }}</span>
-            <button class="px-2 py-1 rounded border border-orange-300"
-                    id="res-page-next"
-                    (click)="go(currentPage()+1)">›</button>
-          </div>
-        }
       </div>
 
-    } @else if (searched) {
-      <!-- ACC-10: Kayıt yoksa uyarı + Create Customer -->
+      <!-- Pagination Kontrolleri -->
+      <div class="flex justify-center items-center gap-4 pt-6" id="res-pagination">
+        <button 
+          class="px-3 py-2 rounded border-2 border-orange-300 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          id="res-page-prev"
+          (click)="previousPage()"
+          [disabled]="currentPage() === 1">
+          ‹
+        </button>
+
+        <span class="page-info text-sm text-gray-600" id="res-page-numbers">
+          @for (page of getPageNumbers(); track page; let i = $index) {
+            @if (page === '...') {
+              <span class="px-2 text-gray-400" id="res-page-dots-{{i}}">...</span>
+            } @else {
+              <button 
+                class="px-3 py-1 rounded border-2 border-orange-300 text-sm hover:bg-orange-50"
+                id="res-page-btn-{{page}}"
+                [class.active]="currentPage() === page"
+                [class.bg-gray-800]="currentPage() === page"
+                [class.text-white]="currentPage() === page"
+                [class.border-gray-800]="currentPage() === page"
+                (click)="typeof page === 'number' && goToPage(page)">
+                {{ page }}
+              </button>
+            }
+          }
+        </span>
+
+        <button 
+          class="px-3 py-2 rounded border-2 border-orange-300 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          id="res-page-next"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages()">
+          ›
+        </button>
+      </div>
+
+    } @else if (searched()) {
+      <!-- Hiç sonuç bulunamadı durumu -->
       <div class="flex flex-col items-center justify-center py-10" id="res-empty">
         <div class="relative w-full max-w-md rounded-lg border border-orange-300 bg-white shadow p-4" id="res-empty-card">
           <div class="font-semibold text-gray-800 mb-2" id="res-empty-title">Can't Find the Customer!!!</div>

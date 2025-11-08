@@ -14,25 +14,33 @@ import { SearchCustomerListComponent } from '../../components/SearchComponents/s
   templateUrl: './search.html'
 })
 export class Search {
-  results: SearchCustomerResponse[] = [];
+  results = signal<SearchCustomerResponse[]>([]);  // ✅ Signal olarak tanımla
   loading = signal(false);
   searched = signal(false);
 
   constructor(private searchService: SearchService, private router: Router) {}
 
- onSearch(filters: SearchFilters) {
-  this.loading.set(true);
-  this.searched.set(false);
-  this.results = [];
+  onSearch(filters: SearchFilters) {
+    this.loading.set(true);
+    this.searched.set(false);
+    this.results.set([]);  // ✅ Signal'ı güncelle
 
-  this.searchService.searchByFilters(filters).subscribe({
-    next: (res) => { this.results = res ?? []; this.loading.set(false); this.searched.set(true); },
-    error: ()    => { this.results = [];      this.loading.set(false); this.searched.set(true); }
-  });
-}
+    this.searchService.searchByFilters(filters).subscribe({
+      next: (res) => { 
+        this.results.set(res ?? []);  // ✅ Signal.set() kullan
+        this.loading.set(false); 
+        this.searched.set(true); 
+      },
+      error: () => { 
+        this.results.set([]);  // ✅ Signal.set() kullan
+        this.loading.set(false); 
+        this.searched.set(true); 
+      }
+    });
+  }
 
   onCleared() {
-    this.results = [];
+    this.results.set([]);  // ✅ Signal.set() kullan
     this.searched.set(false);
   }
 
