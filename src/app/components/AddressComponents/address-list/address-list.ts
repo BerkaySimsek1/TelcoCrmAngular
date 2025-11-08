@@ -40,6 +40,7 @@ ngOnInit(): void {
     this.addresses.set(
       wizardAddrs.map((a, idx) => ({
         id: idx + 1,
+        title: a.title,
         street: a.street,
         houseNumber: a.houseNumber,
         description: a.description,

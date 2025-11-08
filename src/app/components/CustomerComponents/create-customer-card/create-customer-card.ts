@@ -5,7 +5,7 @@ import { CustomerService } from '../../../services/customer-service';
 import { CommonModule } from '@angular/common';
 import { CreateCustomerRequest } from '../../../models/CustomerModels/createCustomerRequest';
 import { Router } from '@angular/router';
-import { lettersOnlyValidator, nationalIdRulesValidator, nationalIdUniqueAsyncValidator } from '../../../validators/customer-validators';
+import { lettersOnlyValidator, nationalIdRulesValidator, nationalIdUniqueAsyncValidator, notFutureDateValidator } from '../../../validators/customer-validators';
 import { FullCustomerCreationService } from '../../../services/full-customer-creation-service';
 
 @Component({
@@ -48,7 +48,7 @@ submitting = signal(false);
         firstName: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, lettersOnlyValidator(2, 50)] }),
       middleName: new FormControl<string | null>(null, { validators: lettersOnlyValidator(2, 50) }),
       lastName: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, lettersOnlyValidator(2, 50)] }),
-      dateOfBirth: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+      dateOfBirth: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, notFutureDateValidator()] }),
       motherName: new FormControl<string | null>(null, { validators: [lettersOnlyValidator(2, 50)] }),
       fatherName: new FormControl<string | null>(null, { validators: [lettersOnlyValidator(2, 50)] }),
       gender: new FormControl<'MALE' | 'FEMALE' | 'OTHER'>('OTHER', { nonNullable: true, validators: [Validators.required] }),
@@ -59,7 +59,6 @@ submitting = signal(false);
           nationalIdRulesValidator(),
         ],
         asyncValidators: [nationalIdUniqueAsyncValidator(this.customerService)],
-        updateOn: 'blur',
       }),
       })
     }
@@ -124,9 +123,15 @@ submitting = signal(false);
     this.showCancelModal.set(false);
   }
 
-  has(name: keyof typeof this.formGroup.controls, error: string) {
+  has(name: keyof typeof this.formGroup.controls, error?: string) {
   const c = this.formGroup.get(name as string);
-  return !!(c && c.touched && c.hasError(error));
-  }
+  if (!c) return false;
+  const shouldShow = c.invalid && (c.dirty || c.touched); // <-- kritik kısım
+  return error ? (!!c.errors?.[error] && shouldShow) : shouldShow;
+}
+  isInvalid(name: keyof typeof this.formGroup.controls) {
+  const c = this.formGroup.get(name as string);
+  return !!(c && c.invalid && (c.dirty || c.touched));
+}
 
 }

@@ -114,7 +114,6 @@ export class UpdateCustomerCard implements OnInit {
       nationalId: new FormControl<string>('', {
         nonNullable: true,
         validators: [Validators.required, nationalIdRulesValidator()],
-        updateOn: 'blur',
       }),
     });
   }
@@ -170,8 +169,23 @@ export class UpdateCustomerCard implements OnInit {
     this.router.navigate(['/customer', this.customerId, 'info']);
   }
 
-  has(name: keyof typeof this.formGroup.controls, error: string) {
+  has(name: keyof typeof this.formGroup.controls, error?: string) {
   const c = this.formGroup.get(name as string);
-  return !!(c && c.touched && c.hasError(error));
-  }
+  if (!c) return false;
+  const shouldShow = c.invalid && (c.dirty || c.touched); // <-- kritik kısım
+  return error ? (!!c.errors?.[error] && shouldShow) : shouldShow;
+}
+
+  get isSaveDisabled(): boolean {
+  // formGroup.pending: herhangi bir async validator çalışıyorsa true
+  // nationalId specific kontrol: daha net görünsün diye ayrıca tuttum
+  const natIdPending = this.f['nationalId']?.pending ?? false;
+  return this.submitting() || natIdPending || this.formGroup.pending || this.formGroup.invalid;
+}
+
+isInvalid(name: keyof typeof this.formGroup.controls) {
+  const c = this.formGroup.get(name as string);
+  return !!(c && c.invalid && (c.dirty || c.touched));
+}
+
 }

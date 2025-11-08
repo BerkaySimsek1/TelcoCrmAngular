@@ -19,10 +19,10 @@
           type="text" 
           formControlName="firstName"
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
-          [class.border-red-500]="f['firstName'].invalid && f['firstName'].touched"
+          [class.border-red-500]="isInvalid('firstName')"
           placeholder="Enter first name"
           aria-describedby="cu-firstname-error">
-        @if (f['firstName'].invalid && f['firstName'].touched) {
+        @if (isInvalid('firstName')) {
           <span class="text-xs text-red-500 mt-1" id="cu-firstname-error">
             @if (f['firstName'].errors?.['required']) {
               Please enter a valid value
@@ -41,10 +41,10 @@
           type="text" 
           formControlName="middleName"
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
-          [class.border-red-500]="f['middleName'].invalid && f['middleName'].touched"
+          [class.border-red-500]="isInvalid('middleName')"
           placeholder="Enter middle name"
           aria-describedby="cu-middlename-error">
-        @if (f['middleName'].invalid && f['middleName'].touched) {
+        @if (isInvalid('middleName')) {
           <span class="text-xs text-red-500 mt-1" id="cu-middlename-error">Only letters (2–50 chars)</span>
         }
       </div>
@@ -59,10 +59,10 @@
           type="text" 
           formControlName="lastName"
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
-          [class.border-red-500]="f['lastName'].invalid && f['lastName'].touched"
+          [class.border-red-500]="isInvalid('lastName')"
           placeholder="Enter last name"
           aria-describedby="cu-lastname-error">
-        @if (f['lastName'].invalid && f['lastName'].touched) {
+        @if (isInvalid('lastName')) {
           <span class="text-xs text-red-500 mt-1" id="cu-lastname-error">
             @if (has('lastName', 'required')) {
               Please enter a valid value
@@ -84,7 +84,7 @@
             type="date" 
             formControlName="dateOfBirth"
             class="w-full text-sm border border-gray-300 rounded-lg pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
-            [class.border-red-500]="f['dateOfBirth'].invalid && f['dateOfBirth'].touched"
+            [class.border-red-500]="isInvalid('dateOfBirth')"
             aria-describedby="cu-dob-error">
           <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center" id="cu-dob-icon">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,7 +93,7 @@
             </svg>
           </span>
         </div>
-        @if (f['dateOfBirth'].touched && f['dateOfBirth'].errors) {
+        @if (isInvalid('dateOfBirth')) {
           <span class="text-xs text-red-500 mt-1" id="cu-dob-error">
             @if (has('dateOfBirth', 'required')) {
               Please enter a valid value
@@ -112,10 +112,10 @@
           type="text" 
           formControlName="motherName"
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
-          [class.border-red-500]="f['motherName'].invalid && f['motherName'].touched"
+          [class.border-red-500]="isInvalid('motherName')"
           placeholder="Enter mother's name"
           aria-describedby="cu-mother-error">
-        @if (f['motherName'].touched && f['motherName'].errors?.['lettersOnly']) {
+        @if (isInvalid('motherName')) {
           <span class="text-xs text-red-500 mt-1" id="cu-mother-error">Only letters (2–50 chars)</span>
         }
       </div>
@@ -128,10 +128,10 @@
           type="text" 
           formControlName="fatherName"
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
-          [class.border-red-500]="f['fatherName'].invalid && f['fatherName'].touched"
+          [class.border-red-500]="isInvalid('fatherName')"
           placeholder="Enter father's name"
           aria-describedby="cu-father-error">
-        @if (f['fatherName'].touched && f['fatherName'].errors?.['lettersOnly']) {
+        @if (isInvalid('fatherName')) {
           <span class="text-xs text-red-500 mt-1" id="cu-father-error">Only letters (2–50 chars)</span>
         }
       </div>
@@ -146,7 +146,7 @@
             id="cu-gender-select"
             formControlName="gender"
             class="w-full appearance-none text-sm border border-gray-300 rounded-lg pl-4 pr-10 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
-            [class.border-red-500]="f['gender'].invalid && f['gender'].touched"
+            [class.border-red-500]="isInvalid('gender')"
             aria-describedby="cu-gender-error">
             <option value="MALE" id="cu-gender-male">Male</option>
             <option value="FEMALE" id="cu-gender-female">Female</option>
@@ -158,7 +158,7 @@
             </svg>
           </span>
         </div>
-        @if (f['gender'].touched && f['gender'].errors?.['required']) {
+        @if (isInvalid('gender')) {
           <span class="text-xs text-red-500 mt-1" id="cu-gender-error">Please enter a valid value</span>
         }
       </div>
@@ -175,10 +175,13 @@
           inputmode="numeric"
           maxlength="11"
           class="text-sm border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
-          [class.border-red-500]="f['nationalId'].invalid && f['nationalId'].touched"
+[class.border-red-500]="f['nationalId'].invalid && (f['nationalId'].dirty || f['nationalId'].touched)"
           placeholder="11-digit National ID"
           aria-describedby="cu-natid-error">
-        @if (f['nationalId'].touched && f['nationalId'].errors) {
+          @if (f['nationalId']?.pending) {
+  <span class="text-xs text-gray-500 mt-1">Checking National ID…</span>
+}
+@if ((f['nationalId'].dirty || f['nationalId'].touched) && f['nationalId'].errors) {
           <span class="text-xs text-red-500 mt-1" id="cu-natid-error">
             @if (has('nationalId', 'required')) {
               Please enter a valid value
@@ -214,7 +217,8 @@
       <button 
         id="cu-submit-btn"
         type="submit"
-        [disabled]="submitting()"
+        [disabled]="isSaveDisabled"
+        [attr.aria-busy]="f['nationalId']?.pending || null"
         class="px-8 py-2.5 text-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2">
         @if (submitting()) {
           <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" id="cu-submit-spinner">
@@ -222,9 +226,16 @@
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           <span id="cu-submit-loading">Updating...</span>
-        } @else {
-          <span id="cu-submit-text">Save Changes</span>
-        }
+        } @else if (f['nationalId']?.pending) {
+    <!-- NatID async kontrol spinner'ı -->
+    <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+    </svg>
+    <span>Checking ID…</span>
+  } @else {
+    <span id="cu-submit-text">Save Changes</span>
+  }
       </button>
     </div>
 

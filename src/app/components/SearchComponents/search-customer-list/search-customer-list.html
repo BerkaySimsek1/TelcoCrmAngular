@@ -1,4 +1,9 @@
-<div class="flex-1 border-2 border-orange-300 rounded-xl p-4 bg-white/80" id="res-panel">
+<div class="flex-1 border-2 border-orange-300 rounded-xl bg-white/80 min-h-[600px] flex flex-col" id="res-panel">
+
+  <!-- Başlık - her zaman görünür -->
+  <div class="px-4 pt-4 pb-2 border-b border-orange-200" id="res-header">
+    <h2 class="text-lg font-semibold text-orange-600" id="res-title">Search Result</h2>
+  </div>
 
   @if (loading()) {
     <div class="text-sm text-gray-600" id="res-loading">Loading...</div>
@@ -6,7 +11,7 @@
 
     <!-- Sonuçlar gösterimi -->
     @if (results().length > 0) {
-      <div class="space-y-4" id="res-list">
+      <div class="space-y-4 px-4 py-2" id="res-list">
         @for (item of getPaginatedResults(); track item.id) {
           <div class="rounded-xl border border-orange-200 bg-gray-50 p-3" id="res-card-{{item.id}}">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3" id="res-grid-{{item.id}}">
