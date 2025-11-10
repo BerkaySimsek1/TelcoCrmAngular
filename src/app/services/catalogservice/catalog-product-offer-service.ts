@@ -10,11 +10,22 @@ export class CatalogProductOfferService {
 
   constructor(private http: HttpClient) {}
 
-  getByCatalogId(catalogId: number, activeOnly = false)
-    : Observable<CatalogProductOfferWithDetailResponse[]> {
-    const url = activeOnly
+  // ✅ default: activeOnly=true, includeChildren=true
+  getByCatalogId(
+    catalogId: number,
+    activeOnly = true,
+    includeChildren = true
+  ): Observable<CatalogProductOfferWithDetailResponse[]> {
+
+    // aktif endpoint + includeChildren=true paramı
+    let url = activeOnly
       ? `${this.baseUrl}/api/catalog-product-offers/by-catalog/${catalogId}/active`
       : `${this.baseUrl}/api/catalog-product-offers/by-catalog/${catalogId}`;
+
+    if (includeChildren) {
+      url += (url.includes('?') ? '&' : '?') + 'includeChildren=true';
+    }
+
     return this.http.get<CatalogProductOfferWithDetailResponse[]>(url);
   }
 }

@@ -20,21 +20,27 @@ export class Search {
 
   constructor(private searchService: SearchService, private router: Router) {}
 
+  // src/app/pages/search/search.ts
+
+  // ...
   onSearch(filters: SearchFilters) {
     this.loading.set(true);
     this.searched.set(false);
-    this.results.set([]);  // ✅ Signal'ı güncelle
+    this.results.set([]);
 
-    this.searchService.searchByFilters(filters).subscribe({
-      next: (res) => { 
-        this.results.set(res ?? []);  // ✅ Signal.set() kullan
-        this.loading.set(false); 
-        this.searched.set(true); 
+    const page = 0;
+    const size = 1000;
+
+    this.searchService.searchByFilters(filters, page, size).subscribe({
+      next: (res) => {
+        this.results.set(res ?? []);
+        this.loading.set(false);
+        this.searched.set(true);
       },
-      error: () => { 
-        this.results.set([]);  // ✅ Signal.set() kullan
-        this.loading.set(false); 
-        this.searched.set(true); 
+      error: () => {
+        this.results.set([]);
+        this.loading.set(false);
+        this.searched.set(true);
       }
     });
   }

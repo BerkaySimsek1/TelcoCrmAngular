@@ -26,9 +26,12 @@ export class OfferSelectionComponent implements OnInit {
   selectedCatalogId = signal<number | null>(null);
   offers = signal<CatalogProductOfferWithDetailResponse[]>([]);
   loading = signal(false);
+
+  // filtreler
   activeOnly = signal(true);
-  
-  // Selected offers for basket
+  includeChildren = signal(true); // ✅ YENİ: Alt kataloglar da gelsin mi?
+
+  // Basket
   selectedOffers = signal<Set<string>>(new Set());
   basketItems = signal<BasketItem[]>([]);
 
@@ -37,7 +40,7 @@ export class OfferSelectionComponent implements OnInit {
   filterName = signal<string>('');
   applyFilterToggle = signal(0);
 
-  // Active tab
+  // Tab
   activeTab = signal<'catalog' | 'campaign'>('catalog');
 
   filteredOffers = computed(() => {
@@ -70,23 +73,39 @@ export class OfferSelectionComponent implements OnInit {
     const id = Number(val);
     if (Number.isNaN(id)) return;
     this.selectedCatalogId.set(id);
+    // opsiyonel: filtreleri resetlemek istersen aşağıyı aç
+    // this.filterId.set(''); this.filterName.set('');
     this.loadOffers();
   }
 
+  // ✅ includeChildren ve activeOnly parametrelerini servise geçir
   loadOffers() {
-    const id = this.selectedCatalogId();
-    if (!id) return;
-    this.loading.set(true);
+  const id = this.selectedCatalogId();
+  if (!id) return;
+  this.loading.set(true);
 
-    this.cpoApi.getByCatalogId(id, this.activeOnly()).subscribe({
-      next: data => this.offers.set(data),
-      error: err => {
-        console.error('getByCatalogId error:', err);
-        this.offers.set([]);
-        this.loading.set(false);
-      },
-      complete: () => this.loading.set(false)
-    });
+  // ✅ Her zaman aktif + alt kataloglar
+  this.cpoApi.getByCatalogId(id, true, true).subscribe({
+    next: data => this.offers.set(data),
+    error: err => {
+      console.error('getByCatalogId error:', err);
+      this.offers.set([]);
+      this.loading.set(false);
+    },
+    complete: () => this.loading.set(false)
+  });
+}
+
+
+  // ✅ Toggle’lar
+  onToggleActiveOnly(val: boolean) {
+    this.activeOnly.set(val);
+    this.loadOffers();
+  }
+
+  onToggleIncludeChildren(val: boolean) {
+    this.includeChildren.set(val);
+    this.loadOffers();
   }
 
   onSearchClick() {
@@ -95,34 +114,31 @@ export class OfferSelectionComponent implements OnInit {
 
   toggleOfferSelection(offer: CatalogProductOfferWithDetailResponse) {
     const selected = new Set(this.selectedOffers());
-    
-    if (selected.has(offer.productOfferId)) {
-      selected.delete(offer.productOfferId);
-      // Remove from basket
-      this.basketItems.set(
-        this.basketItems().filter(item => item.id !== String(offer.productOfferId))
-      );
+    const key = String(offer.productOfferId); // numara ise string'e çevir
+
+    if (selected.has(key)) {
+      selected.delete(key);
+      this.basketItems.set(this.basketItems().filter(item => item.id !== key));
     } else {
-      selected.add(offer.productOfferId);
-      // Add to basket
-      //const newItem: BasketItem = {
-        //id: String(offer.productOfferId),
-        //name: offer.productOfferName || 'Unknown',
-       // description: offer.description,
-       // price: offer.price || 0
-     // };
-     // this.basketItems.set([...this.basketItems(), newItem]);
+      selected.add(key);
+      // Sepete ekleme burada devre dışı; ihtiyaç olursa aç
+      // const newItem: BasketItem = {
+      //   id: key,
+      //   name: offer.productOfferName || 'Unknown',
+      //   description: offer.description,
+      //   price: offer.price || 0
+      // };
+      // this.basketItems.set([...this.basketItems(), newItem]);
     }
-    
     this.selectedOffers.set(selected);
   }
 
+  // Şablonda çağırırken isOfferSelected(String(offer.productOfferId)) kullan
   isOfferSelected(offerId: string): boolean {
     return this.selectedOffers().has(offerId);
   }
 
   addToBasket() {
-    // Already handled in toggleOfferSelection
     console.log('Basket items:', this.basketItems());
   }
 
@@ -140,6 +156,5 @@ export class OfferSelectionComponent implements OnInit {
 
   onNextClick() {
     console.log('Proceeding with basket items:', this.basketItems());
-    // Navigate to next step
   }
 }

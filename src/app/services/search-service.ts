@@ -14,53 +14,31 @@ export interface SearchFilters {
   orderNumber?: string;
 }
 
+// src/app/services/search.service.ts
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   private apiUrl = 'http://localhost:8091/searchservice/api/customer-search';
   constructor(private http: HttpClient) {}
 
-  // ES query_string için kritik karakterleri kaçır
-  private escapeQS(v: string): string {
-    // + - = && || > < ! ( ) { } [ ] ^ " ~ * ? : \ / .
-    return v.replace(/([+\-=&|><!(){}\[\]^"~*?:\\/\.])/g, '\\$1');
-  }
+  // page/size ekleyelim (varsayılanları yüksek tut)
+  searchByFilters(
+    filters: SearchFilters,
+    page = 0,
+    size = 1000
+  ): Observable<SearchCustomerResponse[]> {
+    let params = new HttpParams();
 
-  // first/last için contains, id alanları için exact
-  private buildRaw(filters: SearchFilters): string {
-    const clauses: string[] = [];
+    Object.keys(filters).forEach(key => {
+      const value = filters[key as keyof SearchFilters];
+      if (value) {
+        const trimmed = value.trim();
+        if (trimmed.length > 0) params = params.set(key, trimmed);
+      }
+    });
 
-    if (filters.natId)         clauses.push(`nationalId:${this.escapeQS(filters.natId)}`);
-    if (filters.customerId)    clauses.push(`customerNumber:${this.escapeQS(filters.customerId)}`);
-    if (filters.accountNumber)  clauses.push(`billingAccounts.accountNumber:${this.escapeQS(filters.accountNumber)}`);
-    if (filters.orderNumber)   clauses.push(`orderNumber:${this.escapeQS(filters.orderNumber)}`);
+    params = params.set('page', String(page));
+    params = params.set('size', String(size));
 
-    if (filters.gsmNumber) {
-    // basit normalizasyon: yalnız rakamları bırak
-    const digits = filters.gsmNumber.replace(/\D+/g, '');
-    const esc = this.escapeQS(digits);
-
-    // contactMediums.value içinde farklı formatlar olabilir diye contains kullanalım
-    // AND type:phone_number ile birlikte
-    // Parantezle tek clause haline getirdik:
-    clauses.push(`(gsmNumber:${esc} OR (contactMediums.type:phone_number AND contactMediums.value:*${esc}*))`);
-  }
-
-    if (filters.firstName) {
-      const v = this.escapeQS(filters.firstName.toLowerCase());
-      clauses.push(`firstName:*${v}*`);
-    }
-    if (filters.lastName) {
-      const v = this.escapeQS(filters.lastName.toLowerCase());
-      clauses.push(`lastName:*${v}*`);
-    }
-
-    // Hepsini açıkça AND’le
-    return clauses.join(' AND ');
-  }
-
-  searchByFilters(filters: SearchFilters): Observable<SearchCustomerResponse[]> {
-    const raw = this.buildRaw(filters);
-    const params = new HttpParams().set('keyword', raw);
-    return this.http.get<SearchCustomerResponse[]>(`${this.apiUrl}/fulltext`, { params });
+    return this.http.get<SearchCustomerResponse[]>(`${this.apiUrl}/dynamic-search`, { params });
   }
 }
