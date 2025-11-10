@@ -2,7 +2,7 @@ export interface CatalogProductOfferWithDetailResponse {
   catalogProductOfferId: number;
   catalogId: number;
 
-  productOfferId: number;
+  productOfferId: string;
   productOfferName: string;
   productOfferDescription?: string;
   discountRate?: number; // 0..1

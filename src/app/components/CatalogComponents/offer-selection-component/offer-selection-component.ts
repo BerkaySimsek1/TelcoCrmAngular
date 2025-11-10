@@ -29,7 +29,7 @@ export class OfferSelectionComponent implements OnInit {
   activeOnly = signal(true);
   
   // Selected offers for basket
-  selectedOffers = signal<Set<number>>(new Set());
+  selectedOffers = signal<Set<string>>(new Set());
   basketItems = signal<BasketItem[]>([]);
 
   // Filters
@@ -117,7 +117,7 @@ export class OfferSelectionComponent implements OnInit {
     this.selectedOffers.set(selected);
   }
 
-  isOfferSelected(offerId: number): boolean {
+  isOfferSelected(offerId: string): boolean {
     return this.selectedOffers().has(offerId);
   }
 
@@ -129,7 +129,7 @@ export class OfferSelectionComponent implements OnInit {
   onRemoveFromBasket(itemId: string) {
     this.basketItems.set(this.basketItems().filter(item => item.id !== itemId));
     const selected = new Set(this.selectedOffers());
-    selected.delete(Number(itemId));
+    selected.delete(itemId);
     this.selectedOffers.set(selected);
   }
 
