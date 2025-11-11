@@ -310,7 +310,7 @@
   </div>
 
   <!-- Right Panel -->
-  @if (activeTab() === 'catalog') {
+  
     <app-basket-component
       id="basket-component"
       [items]="basketItems()"
@@ -318,12 +318,5 @@
       (clearBasket)="onClearBasket()"
       (next)="onNextClick()">
     </app-basket-component>
-  } @else {
-    <app-campaign-basket-component
-      [items]="campaignBasket()"
-      (removeItem)="onCampaignRemoveFromBasket($event)"
-      (clearBasket)="onCampaignClearBasket()"
-      (next)="onCampaignNext()">
-    </app-campaign-basket-component>
-  }
+  
 </div>

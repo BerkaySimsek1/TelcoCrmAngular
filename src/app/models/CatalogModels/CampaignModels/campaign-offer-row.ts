@@ -1,4 +1,5 @@
 export interface CampaignOfferRow {
+  campaignProductId: number;
   campaignId: number;
   campaignName: string;
   productOfferId: string;

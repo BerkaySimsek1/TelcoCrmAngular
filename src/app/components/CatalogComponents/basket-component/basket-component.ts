@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { BasketItem } from '../../../models/CatalogModels/BasketModels/basket-item';
 
-export interface BasketItem {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-}
+type Group =
+  | { kind: 'campaign'; title: string; items: BasketItem[]; subtotal: number }
+  | { kind: 'others'; items: BasketItem[] };
 
 @Component({
   selector: 'app-basket-component',
@@ -25,15 +23,27 @@ export class BasketComponent {
     return this.items.reduce((sum, item) => sum + item.price, 0);
   }
 
+  // sıraya bakmak yerine isCampaign / isHeader alanlarını kullan
+  get groups(): Group[] {
+  const header = this.items.find(x => x.isHeader === true);
+  const campaignItems = this.items.filter(x => x.isCampaign === true && x.isHeader !== true);
+  const otherItems    = this.items.filter(x => (x.isCampaign !== true) && (x.isHeader !== true));
+
+  const res: Group[] = [];
+  if (header) {
+    const subtotal = campaignItems.reduce((s, it) => s + (Number(it.price) || 0), 0);
+    res.push({ kind: 'campaign', title: header.name, items: campaignItems, subtotal });
+  }
+  if (otherItems.length) {
+    res.push({ kind: 'others', items: otherItems });
+  }
+  return res;
+}
+
+
   onRemoveItem(itemId: string) {
     this.removeItem.emit(itemId);
   }
-
-  onClear() {
-    this.clearBasket.emit();
-  }
-
-  onNext() {
-    this.next.emit();
-  }
+  onClear() { this.clearBasket.emit(); }
+  onNext() { this.next.emit(); }
 }

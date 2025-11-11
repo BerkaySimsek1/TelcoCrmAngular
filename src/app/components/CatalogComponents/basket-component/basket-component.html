@@ -4,46 +4,110 @@
     Basket
   </h2>
 
-  <!-- Basket Items -->
-  <div class="space-y-3 mb-4" id="basket-items-list">
-    @for (item of items; track item.id) {
-      <div 
-        class="flex items-start justify-between py-3 border-b border-gray-200"
-        [attr.id]="'basket-item-' + item.id"
-        [attr.data-test-id]="'basket-item-' + item.id"
-      >
-        <div class="flex-1">
-          <div class="flex items-start justify-between">
-            <div class="font-semibold text-base" [attr.data-test-id]="'basket-item-id-' + item.id">
-              {{ item.id }}
-            </div>
-            <div class="font-semibold text-base ml-2" [attr.data-test-id]="'basket-item-price-' + item.id">
-              {{ item.price | number:'1.2-2' }} TL
-            </div>
-          </div>
-          <div class="text-sm text-gray-600 mt-1" [attr.data-test-id]="'basket-item-description-' + item.id">
-            {{ item.description || item.name }}
-          </div>
-        </div>
-        <button
-          type="button"
-          [attr.id]="'remove-item-' + item.id"
-          [attr.data-test-id]="'remove-item-' + item.id"
-          class="ml-3 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex-shrink-0"
-          (click)="onRemoveItem(item.id)"
-          title="Remove item"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-          </svg>
-        </button>
-      </div>
-    }
+  <!-- Basket Content -->
+  <div class="space-y-4 mb-4" id="basket-items-list">
 
     @if (items.length === 0) {
       <div class="text-center py-8 text-gray-500" id="basket-empty-message">
         Your basket is empty
       </div>
+    } @else {
+
+      <!-- Gruplar: önce kampanya kart(lar)ı, sonra diğer ürünler -->
+      @for (g of groups; track $index) {
+
+        <!-- Campaign Card -->
+        @if (g.kind === 'campaign') {
+          <div class="rounded-xl border border-orange-200 bg-orange-50/50" id="basket-campaign-card">
+            <!-- Card Header -->
+            <div class="flex items-center justify-between px-3 py-2 border-b border-orange-200">
+              <div class="font-semibold text-base" id="basket-campaign-title">
+                {{ g.title }}
+              </div>
+              <div class="font-semibold text-base" id="basket-campaign-subtotal">
+                {{ g.subtotal | number:'1.2-2' }} TL
+              </div>
+            </div>
+
+            <!-- Card Body: campaign ürünleri -->
+            <div class="divide-y divide-gray-200" id="basket-campaign-items">
+              @for (item of g.items; track item.id) {
+                <div class="flex items-start justify-between px-3 py-2"
+                     [attr.id]="'basket-item-' + item.id"
+                     [attr.data-test-id]="'basket-item-' + item.id">
+                  <div class="flex-1">
+                    <div class="flex items-start justify-between">
+                      <div class="font-medium text-sm"
+                           [attr.data-test-id]="'basket-item-name-' + item.id">
+                        {{ item.name }}
+                      </div>
+                      <div class="font-medium text-sm ml-2"
+                           [attr.data-test-id]="'basket-item-price-' + item.id">
+                        {{ item.price | number:'1.2-2' }} TL
+                      </div>
+                    </div>
+                    <div class="text-xs text-gray-600 mt-0.5"
+                         [attr.data-test-id]="'basket-item-description-' + item.id">
+                      {{ item.description || item.name }}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    [attr.id]="'remove-item-' + item.id"
+                    [attr.data-test-id]="'remove-item-' + item.id"
+                    class="ml-3 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex-shrink-0"
+                    (click)="onRemoveItem(item.id)"
+                    title="Remove item">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                    </svg>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Others (catalog’dan eklenenler) -->
+        @if (g.kind === 'others') {
+          <div class="space-y-3" id="basket-others-list">
+            @for (item of g.items; track item.id) {
+              <div
+                class="flex items-start justify-between py-3 border-b border-gray-200"
+                [attr.id]="'basket-item-' + item.id"
+                [attr.data-test-id]="'basket-item-' + item.id">
+                <div class="flex-1">
+                  <div class="flex items-start justify-between">
+                    <div class="font-semibold text-base"
+                         [attr.data-test-id]="'basket-item-name-' + item.id">
+                      {{ item.name }}
+                    </div>
+                    <div class="font-semibold text-base ml-2"
+                         [attr.data-test-id]="'basket-item-price-' + item.id">
+                      {{ item.price | number:'1.2-2' }} TL
+                    </div>
+                  </div>
+                  <div class="text-sm text-gray-600 mt-1"
+                       [attr.data-test-id]="'basket-item-description-' + item.id">
+                    {{ item.description || item.name }}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  [attr.id]="'remove-item-' + item.id"
+                  [attr.data-test-id]="'remove-item-' + item.id"
+                  class="ml-3 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex-shrink-0"
+                  (click)="onRemoveItem(item.id)"
+                  title="Remove item">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      }
     }
   </div>
 
@@ -63,8 +127,7 @@
       id="clear-basket-button"
       type="button"
       class="w-full mb-3 px-4 py-2 border border-gray-300 rounded bg-white hover:bg-gray-50 font-medium transition-colors"
-      (click)="onClear()"
-    >
+      (click)="onClear()">
       Clear
     </button>
   }
@@ -75,8 +138,7 @@
     type="button"
     class="w-full px-4 py-2 border border-gray-300 rounded bg-white hover:bg-gray-50 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     [disabled]="items.length === 0"
-    (click)="onNext()"
-  >
+    (click)="onNext()">
     Next
   </button>
 </div>

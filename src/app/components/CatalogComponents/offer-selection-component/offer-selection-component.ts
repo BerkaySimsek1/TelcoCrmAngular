@@ -12,25 +12,21 @@ import { GetListSearchProductOfferResponse } from '../../../models/CatalogModels
 import { ProductOfferService } from '../../../services/catalogservice/product-offer-service';
 import { CampaignOfferRow } from '../../../models/CatalogModels/CampaignModels/campaign-offer-row';
 import { CampaignProductOfferService, GetCampaignProductOfferResponse } from '../../../services/catalogservice/campaign-product-offer-service';
-import { CampaignBasketComponent } from '../campaign-basket-component/campaign-basket-component';
+import { BasketService } from '../../../services/catalogservice/basket-service';
+import { Basket } from '../../../models/CatalogModels/BasketModels/basket-model';
+import { catchError, of, throwError } from 'rxjs';
+import { BasketItem } from '../../../models/CatalogModels/BasketModels/basket-item';
 
-
-// CAMPAIGN tarafı
-export interface BasketItem {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-}
 
 @Component({
   selector: 'app-offer-selection',
   standalone: true,
-  imports: [CommonModule, BasketComponent, CampaignBasketComponent],
+  imports: [CommonModule, BasketComponent],
   templateUrl: './offer-selection-component.html',
   styleUrls: ['./offer-selection-component.scss'],
 })
 export class OfferSelectionComponent implements OnInit {
+  billingAccountId = signal<number | null>(null);
   catalogs = signal<CatalogItem[]>([]);
   selectedCatalogId = signal<number | null>(null);
   offers = signal<CatalogProductOfferWithDetailResponse[]>([]);
@@ -45,6 +41,8 @@ export class OfferSelectionComponent implements OnInit {
   filterId = signal<string>('');
   filterName = signal<string>('');
   applyFilterToggle = signal(0);
+
+  private cpidToCid = new Map<number, number>();
 
   // -------------------- TABS --------------------
   activeTab = signal<'catalog' | 'campaign'>('catalog');
@@ -122,15 +120,40 @@ export class OfferSelectionComponent implements OnInit {
     private cpoApi: CatalogProductOfferService,
     private productOfferService: ProductOfferService,
     private campaignApi: CampaignProductOfferService,
-    private productOfferApi: ProductOfferService
+    private productOfferApi: ProductOfferService,
+    private basketApi: BasketService
   ) {}
 
-  ngOnInit(): void {
-    // catalog
-    this.catalogApi.getCatalogItems().subscribe((cs) => this.catalogs.set(cs));
-    // campaign dropdown hydrate
-    this.loadCampaignDropdown();
+
+ngOnInit(): void {
+  const billingAccIdParam = this.route.snapshot.paramMap.get('billingAccountId')
+                      ?? this.route.parent?.snapshot.paramMap.get('billingAccountId');
+  if (billingAccIdParam) {
+    this.billingAccountId.set(Number(billingAccIdParam));
+    this.refreshBasketUI(); // sayfa açılışında sepeti çek
   }
+
+  this.catalogApi.getCatalogItems().subscribe((cs) => this.catalogs.set(cs));
+
+  // Kampanya dropdown ve harita
+  this.campaignApi.getAllActive().subscribe({
+    next: (list) => {
+      // dropdown
+      const map = new Map<number, string>();
+      list.forEach((x) => { if (!map.has(x.campaignId)) map.set(x.campaignId, x.campaignName); });
+      this.campaignOptions.set(Array.from(map.entries()).map(([id, name]) => ({ id, name })));
+
+      // 🔥 campaignProductId -> campaignId haritası
+      this.cpidToCid.clear();
+      list.forEach(x => this.cpidToCid.set(x.campaignProductId, x.campaignId));
+
+      // Harita geldikten sonra sepeti yeniden çiz (yanlış gruplamayı düzeltir)
+      this.refreshBasketUI();
+    },
+    error: (e) => console.error('getAllActive campaigns error:', e),
+  });
+}
+
 
   // ---------- tabs ----------
   onTabChange(tab: 'catalog' | 'campaign') {
@@ -239,31 +262,60 @@ export class OfferSelectionComponent implements OnInit {
   }
 
   addToBasket() {
-    const ids = Array.from(this.selectedOffers());
-    const rows = this.offers().filter((o) => ids.includes(String(o.productOfferId)));
-    const payload = rows.map((r) => ({
-      id: String(r.productOfferId),
-      name: r.productOfferName ?? '',
-      price: r.productPrice ?? 0,
-    }));
-    console.log('[CATALOG] AddToBasket payload:', payload);
-  }
+  const billingAccId = this.billingAccountId();
+  if (!billingAccId) return;
 
-  onRemoveFromBasket(itemId: string) {
-    this.basketItems.set(this.basketItems().filter((item) => item.id !== itemId));
-    const selected = new Set(this.selectedOffers());
-    selected.delete(itemId);
-    this.selectedOffers.set(selected);
-  }
+  const ids = Array.from(this.selectedOffers());
+  if (ids.length === 0) return;
 
-  onClearBasket() {
+  import('rxjs').then(({ forkJoin }) => {
+    const calls = ids.map(id => this.basketApi.addProductOffer(billingAccId, id, 1));
+    forkJoin(calls).subscribe({
+      next: () => {
+        this.selectedOffers.set(new Set());
+        this.refreshBasketUI(); // BE’den sepeti çek
+      },
+      error: (err) => console.error('addToBasket error:', err),
+    });
+  });
+}
+
+
+  onRemoveFromBasket(basketItemId: string) {
+  const accId = this.billingAccountId();
+  if (!accId) return;
+
+  this.basketApi.deleteItem(accId, basketItemId).subscribe({
+    next: () => this.refreshBasketUI(),
+    error: (err) => console.error('deleteItem error:', err),
+  });
+}
+
+onClearBasket() {
+  const accId = this.billingAccountId();
+  if (!accId) {
+    // route’tan henüz gelmediyse, sadece local temizle
     this.basketItems.set([]);
     this.selectedOffers.set(new Set());
+    return;
   }
 
+  this.basketApi.clear(accId).subscribe({
+    next: () => {
+      this.basketItems.set([]);
+      this.selectedOffers.set(new Set());
+      this.refreshBasketUI();
+    },
+    error: (err) => console.error('clearBasket error:', err),
+  });
+}
+
+
   onNextClick() {
-    console.log('[CATALOG] Proceed:', this.basketItems());
-  }
+  this.refreshBasketUI();
+  console.log('[CATALOG] Proceed with basket:', this.basketItems());
+}
+
 
   // ================== CAMPAIGN methods ==================
   private loadCampaignDropdown() {
@@ -309,6 +361,7 @@ export class OfferSelectionComponent implements OnInit {
             const reqs = items.map((x) =>
               this.productOfferApi.getForBasket(x.productId).pipe(
                 map((p) => ({
+                  campaignProductId: x.campaignProductId,
                   campaignId: x.campaignId,
                   campaignName: x.campaignName,
                   productOfferId: p.id,
@@ -410,16 +463,106 @@ export class OfferSelectionComponent implements OnInit {
   }
 
   addCampaignToBasket() {
-    const selectedIds = Array.from(this.campaignSelected());
-    const items = selectedIds.length > 0
-      ? this.campaignRows().filter(r => selectedIds.includes(r.productOfferId))
-      : this.campaignRows();
+  const billingAccId = this.billingAccountId();
+  const campaignId = this.selectedCampaignId();
+  if (!billingAccId || !campaignId) return;
 
-    console.log('[CAMPAIGN] AddToBasket payload:', {
-      campaignId: this.selectedCampaignId(),
-      items
-    });
+  this.campaignLoading.set(true);
+  this.basketApi.addCampaign(billingAccId, campaignId).subscribe({
+    next: () => {
+      this.onCampaignClearBasket(); // local seçimleri temizle (UI)
+      this.refreshBasketUI();       // BE sepetini sağ panelde göster
+      this.campaignLoading.set(false);
+    },
+    error: (err) => {
+      console.error('addCampaignToBasket error:', err);
+      this.campaignLoading.set(false);
+    }
+  });
+}
+
+
+private mapBasketToUiItems(basket: Basket): BasketItem[] {
+  if (!basket) return [];
+
+  const result: BasketItem[] = [];
+  const activeCampaignId = basket.campaignId; // seçip eklediğin kampanya
+  const hasCampaignMeta = activeCampaignId != null && basket.campaignName != null;
+
+  // Header: yalnızca meta göstermek için
+  if (hasCampaignMeta) {
+    result.push({
+      id: `__hdr__${activeCampaignId}`,
+      name: basket.campaignName!,
+      description: 'Campaign bundle',
+      price: 0,
+      isHeader: true,
+      isCampaign: true
+    } as BasketItem);
   }
+
+  const items = (basket.basketItems ?? []).map(it => {
+    const unit = Number(it.discountedPrice) || 0;
+    const qty  = Number(it.quantity) || 1;
+
+    // 👇 Sadece SEÇİLEN kampanyaya aitse kampanya kalemi yap
+    const cpid = Number(it.campaignProductId ?? 0);
+    const belongsToSelected =
+      hasCampaignMeta &&
+      cpid > 0 &&
+      this.cpidToCid.has(cpid) &&
+      this.cpidToCid.get(cpid) === activeCampaignId;
+
+    return {
+      id: it.id,
+      name: it.productName ?? it.productOfferId ?? it.productId,
+      description: `${qty} × ${unit.toFixed(2)} TL`,
+      price: unit * qty,
+      isCampaign: belongsToSelected
+    } as BasketItem;
+  });
+
+  const campaignItems = items.filter(x => x.isCampaign === true);
+  const otherItems    = items.filter(x => !x.isCampaign);
+
+  if (hasCampaignMeta) result.push(...campaignItems);
+  result.push(...otherItems);
+
+  return result;
+}
+
+
+
+private refreshBasketUI(): void {
+  const accId = this.billingAccountId();
+  if (!accId) return;
+
+  this.basketApi.getForBilling(accId).pipe(
+    // Not: BE 204 No Content dönerse HttpClient genelde null body ile success geçer
+    catchError((err: any) => {
+      // 404/400’u “boş sepet” say
+      if (err?.status === 404 || err?.status === 400) {
+        return of(null as Basket | null);
+      }
+      return throwError(() => err);
+    })
+  ).subscribe({
+    next: (basket: Basket | null) => {
+      if (basket) {
+        this.basketItems.set(this.mapBasketToUiItems(basket));
+      } else {
+        this.basketItems.set([]);
+      }
+    },
+    error: (err) => {
+      console.error('refreshBasketUI error:', err);
+      this.basketItems.set([]);
+    }
+  });
+}
+
+
+
 
   onCampaignRemoveFromBasket(id: string) {
     this.campaignBasket.set(this.campaignBasket().filter((i) => i.productOfferId !== id));
