@@ -11,7 +11,7 @@ import { BasketComponent } from '../basket-component/basket-component';
 import { GetListSearchProductOfferResponse } from '../../../models/CatalogModels/getListSearchProductOfferResponse';
 import { ProductOfferService } from '../../../services/catalogservice/product-offer-service';
 import { CampaignOfferRow } from '../../../models/CatalogModels/CampaignModels/campaign-offer-row';
-import { CampaignProductOfferService } from '../../../services/catalogservice/campaign-product-offer-service';
+import { CampaignProductOfferService, GetCampaignProductOfferResponse } from '../../../services/catalogservice/campaign-product-offer-service';
 import { CampaignBasketComponent } from '../campaign-basket-component/campaign-basket-component';
 
 
@@ -68,6 +68,10 @@ export class OfferSelectionComponent implements OnInit {
     });
   });
 
+  searchFilteredResults = computed(() => {
+    return this.searchResults();
+  });
+
   // -------------------- CAMPAIGN (yeni) --------------------
   campaignLoading = signal(false);
   campaignOptions = signal<{ id: number; name: string }[]>([]);
@@ -81,8 +85,26 @@ export class OfferSelectionComponent implements OnInit {
   campaignFilterCampaignName = signal<string>('');
   campaignApplyFilterToggle = signal(0);
 
+  // -------------------- CAMPAIGN SEARCH (YENİ) --------------------
+  campaignSearchResults = signal<GetCampaignProductOfferResponse[]>([]);
+  campaignIsSearchMode = signal(false);
+  campaignSearchError = signal<string>('');
+
   filteredCampaignRows = computed(() => {
     this.campaignApplyFilterToggle();
+
+    // Eğer arama yapıldıysa, arama sonuçlarını CampaignOfferRow formatına dönüştür
+    if (this.campaignIsSearchMode()) {
+      return this.campaignSearchResults().map(r => ({
+        campaignId: r.campaignId,
+        campaignName: '', // arama sonuçlarında name yok
+        productOfferId: r.productOfferId,
+        productOfferName: r.productOfferName,
+        price: 0, // arama sonuçlarında price yok
+      } as CampaignOfferRow));
+    }
+
+    // Normal filtering
     const idTxt = this.campaignFilterCampaignId().trim();
     const nameTxt = this.campaignFilterCampaignName().trim().toLowerCase();
     return this.campaignRows().filter((r) => {
@@ -94,19 +116,13 @@ export class OfferSelectionComponent implements OnInit {
     });
   });
 
-  searchFilteredResults = computed(() => {
-    return this.searchResults();
-  });
-
   constructor(
     private route: ActivatedRoute,
     private catalogApi: CatalogService,
     private cpoApi: CatalogProductOfferService,
     private productOfferService: ProductOfferService,
-
     private campaignApi: CampaignProductOfferService,
     private productOfferApi: ProductOfferService
-
   ) {}
 
   ngOnInit(): void {
@@ -131,8 +147,7 @@ export class OfferSelectionComponent implements OnInit {
     this.filterId.set('');
     this.filterName.set('');
     this.searchError.set('');
-     this.loadOffers();
-
+    this.loadOffers();
   }
 
   loadOffers() {
@@ -165,9 +180,8 @@ export class OfferSelectionComponent implements OnInit {
     const id = this.filterId().trim();
     const name = this.filterName().trim();
 
-    // Eğer ikisi de boş ise
     if (!id && !name) {
-      this.searchError.set('Lütfen ID veya Ad alanlarından birini doldurunuz.');
+      this.searchError.set('Please enter either Prod Offer ID or Prod Offer Name');
       this.isSearchMode.set(false);
       this.searchResults.set([]);
       return;
@@ -177,7 +191,6 @@ export class OfferSelectionComponent implements OnInit {
     this.searchError.set('');
     this.isSearchMode.set(true);
 
-    // İlk olarak ID'yi ara, ID boşsa Name ile ara
     const searchObservable = id 
       ? this.productOfferService.searchById(id)
       : this.productOfferService.searchByName(name);
@@ -189,7 +202,7 @@ export class OfferSelectionComponent implements OnInit {
       },
       error: err => {
         console.error('Search error:', err);
-        this.searchError.set(err?.error?.message || 'Sonuç bulunamadı. Lütfen arama parametrelerini kontrol ediniz.');
+        this.searchError.set(err?.error?.message || 'No results found. Please check your search parameters.');
         this.searchResults.set([]);
         this.loading.set(false);
       }
@@ -226,7 +239,6 @@ export class OfferSelectionComponent implements OnInit {
   }
 
   addToBasket() {
-    // Test için log
     const ids = Array.from(this.selectedOffers());
     const rows = this.offers().filter((o) => ids.includes(String(o.productOfferId)));
     const payload = rows.map((r) => ({
@@ -255,7 +267,6 @@ export class OfferSelectionComponent implements OnInit {
 
   // ================== CAMPAIGN methods ==================
   private loadCampaignDropdown() {
-    // aktif campaign-product listeden benzersiz kampanya seti
     this.campaignApi.getAllActive().subscribe({
       next: (list) => {
         const map = new Map<number, string>();
@@ -271,33 +282,28 @@ export class OfferSelectionComponent implements OnInit {
   }
 
   canAddCampaignToBasket = computed(() =>
-  this.selectedCampaignId() !== null && this.campaignRows().length > 0 && !this.campaignLoading()
-);
+    this.selectedCampaignId() !== null && this.campaignRows().length > 0 && !this.campaignLoading()
+  );
 
-// kampanya değişince varsa seçimleri sıfırla (opsiyonel ama iyi olur)
-onCampaignChange(val: string) {
-  const id = Number(val);
-  if (Number.isNaN(id)) return;
-  this.selectedCampaignId.set(id);
-  this.campaignSelected.set(new Set());  // <— ek
-  this.loadCampaignRows(id);
-}
+  onCampaignChange(val: string) {
+    const id = Number(val);
+    if (Number.isNaN(id)) return;
+    this.selectedCampaignId.set(id);
+    this.campaignSelected.set(new Set());
+    this.campaignIsSearchMode.set(false);
+    this.campaignSearchResults.set([]);
+    this.campaignFilterCampaignId.set('');
+    this.campaignFilterCampaignName.set('');
+    this.campaignSearchError.set('');
+    this.loadCampaignRows(id);
+  }
 
   private loadCampaignRows(campaignId: number) {
     this.campaignLoading.set(true);
     this.campaignApi.getAllActive().subscribe({
       next: (all) => {
         const items = all.filter((x) => x.campaignId === campaignId);
-        // her ProductOffer’ın ad/price’ını getir
-        const calls = items.map((x) =>
-          this.productOfferApi.getForBasket(x.productId).pipe(
-            // map operatörü importu TS seviyesinde
-            // (Angular CLI zaten rxjs/operators tree-shake ediyor)
-            // eslint-disable-next-line rxjs/no-ignored-replay
-          )
-        );
 
-        // forkJoin manuel import
         import('rxjs').then(({ forkJoin, of }) => {
           import('rxjs/operators').then(({ map, catchError }) => {
             const reqs = items.map((x) =>
@@ -340,8 +346,40 @@ onCampaignChange(val: string) {
     });
   }
 
+  // ================== CAMPAIGN SEARCH METHODS (YENİ) ==================
   onCampaignSearchClick() {
-    this.campaignApplyFilterToggle.set(this.campaignApplyFilterToggle() + 1);
+    const campaignId = this.campaignFilterCampaignId().trim();
+    const campaignName = this.campaignFilterCampaignName().trim();
+
+    if (!campaignId && !campaignName) {
+      this.campaignSearchError.set('Please enter either Campaign ID or Campaign Name.');
+      this.campaignIsSearchMode.set(false);
+      this.campaignSearchResults.set([]);
+      return;
+    }
+
+    this.campaignLoading.set(true);
+    this.campaignSearchError.set('');
+    this.campaignIsSearchMode.set(true);
+
+    const searchObservable = campaignId
+      ? this.campaignApi.searchByCampaignId(Number(campaignId))
+      : this.campaignApi.searchByCampaignName(campaignName);
+
+    searchObservable.subscribe({
+      next: (data) => {
+        this.campaignSearchResults.set(data);
+        this.campaignLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Campaign search error:', err);
+        this.campaignSearchError.set(
+          err?.error?.message || 'No results found. Please check your search parameters.'
+        );
+        this.campaignSearchResults.set([]);
+        this.campaignLoading.set(false);
+      }
+    });
   }
 
   toggleCampaignSelection(row: CampaignOfferRow) {
@@ -357,21 +395,31 @@ onCampaignChange(val: string) {
     this.campaignSelected.set(set);
   }
 
+  toggleCampaignSearchResultSelection(campaignId: number, productOfferId: string, productOfferName: string) {
+    const set = new Set(this.campaignSelected());
+    if (set.has(productOfferId)) {
+      set.delete(productOfferId);
+    } else {
+      set.add(productOfferId);
+    }
+    this.campaignSelected.set(set);
+  }
+
   isCampaignRowSelected(productOfferId: string) {
     return this.campaignSelected().has(productOfferId);
   }
 
   addCampaignToBasket() {
-  const selectedIds = Array.from(this.campaignSelected());
-  const items = selectedIds.length > 0
-    ? this.campaignRows().filter(r => selectedIds.includes(r.productOfferId))
-    : this.campaignRows(); // <— seçim yoksa tamamını al
+    const selectedIds = Array.from(this.campaignSelected());
+    const items = selectedIds.length > 0
+      ? this.campaignRows().filter(r => selectedIds.includes(r.productOfferId))
+      : this.campaignRows();
 
-  console.log('[CAMPAIGN] AddToBasket payload:', {
-    campaignId: this.selectedCampaignId(),
-    items
-  });
-}
+    console.log('[CAMPAIGN] AddToBasket payload:', {
+      campaignId: this.selectedCampaignId(),
+      items
+    });
+  }
 
   onCampaignRemoveFromBasket(id: string) {
     this.campaignBasket.set(this.campaignBasket().filter((i) => i.productOfferId !== id));
