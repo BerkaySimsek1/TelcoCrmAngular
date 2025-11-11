@@ -6,6 +6,8 @@ import { CatalogProductOfferWithDetailResponse } from '../../../models/CatalogMo
 import { CatalogService } from '../../../services/catalogservice/catalog-service';
 import { CatalogProductOfferService } from '../../../services/catalogservice/catalog-product-offer-service';
 import { BasketComponent } from '../basket-component/basket-component';
+import { GetListSearchProductOfferResponse } from '../../../models/CatalogModels/getListSearchProductOfferResponse';
+import { ProductOfferService } from '../../../services/catalogservice/product-offer-service';
 
 export interface BasketItem {
   id: string;
@@ -29,7 +31,7 @@ export class OfferSelectionComponent implements OnInit {
 
   // filtreler
   activeOnly = signal(true);
-  includeChildren = signal(true); // ✅ YENİ: Alt kataloglar da gelsin mi?
+  includeChildren = signal(true);
 
   // Basket
   selectedOffers = signal<Set<string>>(new Set());
@@ -43,6 +45,11 @@ export class OfferSelectionComponent implements OnInit {
   // Tab
   activeTab = signal<'catalog' | 'campaign'>('catalog');
 
+  // Search Mode
+  searchResults = signal<GetListSearchProductOfferResponse[]>([]);
+  isSearchMode = signal(false);
+  searchError = signal<string>('');
+
   filteredOffers = computed(() => {
     this.applyFilterToggle();
     const idText = this.filterId().trim();
@@ -55,10 +62,15 @@ export class OfferSelectionComponent implements OnInit {
     });
   });
 
+  searchFilteredResults = computed(() => {
+    return this.searchResults();
+  });
+
   constructor(
     private route: ActivatedRoute,
     private catalogApi: CatalogService,
-    private cpoApi: CatalogProductOfferService
+    private cpoApi: CatalogProductOfferService,
+    private productOfferService: ProductOfferService
   ) {}
 
   ngOnInit(): void {
@@ -73,31 +85,30 @@ export class OfferSelectionComponent implements OnInit {
     const id = Number(val);
     if (Number.isNaN(id)) return;
     this.selectedCatalogId.set(id);
-    // opsiyonel: filtreleri resetlemek istersen aşağıyı aç
-    // this.filterId.set(''); this.filterName.set('');
+    this.isSearchMode.set(false);
+    this.searchResults.set([]);
+    this.filterId.set('');
+    this.filterName.set('');
+    this.searchError.set('');
     this.loadOffers();
   }
 
-  // ✅ includeChildren ve activeOnly parametrelerini servise geçir
   loadOffers() {
-  const id = this.selectedCatalogId();
-  if (!id) return;
-  this.loading.set(true);
+    const id = this.selectedCatalogId();
+    if (!id) return;
+    this.loading.set(true);
 
-  // ✅ Her zaman aktif + alt kataloglar
-  this.cpoApi.getByCatalogId(id, true, true).subscribe({
-    next: data => this.offers.set(data),
-    error: err => {
-      console.error('getByCatalogId error:', err);
-      this.offers.set([]);
-      this.loading.set(false);
-    },
-    complete: () => this.loading.set(false)
-  });
-}
+    this.cpoApi.getByCatalogId(id, true, true).subscribe({
+      next: data => this.offers.set(data),
+      error: err => {
+        console.error('getByCatalogId error:', err);
+        this.offers.set([]);
+        this.loading.set(false);
+      },
+      complete: () => this.loading.set(false)
+    });
+  }
 
-
-  // ✅ Toggle’lar
   onToggleActiveOnly(val: boolean) {
     this.activeOnly.set(val);
     this.loadOffers();
@@ -109,31 +120,66 @@ export class OfferSelectionComponent implements OnInit {
   }
 
   onSearchClick() {
-    this.applyFilterToggle.set(this.applyFilterToggle() + 1);
+    const id = this.filterId().trim();
+    const name = this.filterName().trim();
+
+    // Eğer ikisi de boş ise
+    if (!id && !name) {
+      this.searchError.set('Lütfen ID veya Ad alanlarından birini doldurunuz.');
+      this.isSearchMode.set(false);
+      this.searchResults.set([]);
+      return;
+    }
+
+    this.loading.set(true);
+    this.searchError.set('');
+    this.isSearchMode.set(true);
+
+    // İlk olarak ID'yi ara, ID boşsa Name ile ara
+    const searchObservable = id 
+      ? this.productOfferService.searchById(id)
+      : this.productOfferService.searchByName(name);
+
+    searchObservable.subscribe({
+      next: data => {
+        this.searchResults.set(data);
+        this.loading.set(false);
+      },
+      error: err => {
+        console.error('Search error:', err);
+        this.searchError.set(err?.error?.message || 'Sonuç bulunamadı. Lütfen arama parametrelerini kontrol ediniz.');
+        this.searchResults.set([]);
+        this.loading.set(false);
+      }
+    });
   }
 
   toggleOfferSelection(offer: CatalogProductOfferWithDetailResponse) {
     const selected = new Set(this.selectedOffers());
-    const key = String(offer.productOfferId); // numara ise string'e çevir
+    const key = String(offer.productOfferId);
 
     if (selected.has(key)) {
       selected.delete(key);
       this.basketItems.set(this.basketItems().filter(item => item.id !== key));
     } else {
       selected.add(key);
-      // Sepete ekleme burada devre dışı; ihtiyaç olursa aç
-      // const newItem: BasketItem = {
-      //   id: key,
-      //   name: offer.productOfferName || 'Unknown',
-      //   description: offer.description,
-      //   price: offer.price || 0
-      // };
-      // this.basketItems.set([...this.basketItems(), newItem]);
     }
     this.selectedOffers.set(selected);
   }
 
-  // Şablonda çağırırken isOfferSelected(String(offer.productOfferId)) kullan
+  toggleSearchResultSelection(id: string, name: string) {
+    const selected = new Set(this.selectedOffers());
+    const key = id;
+
+    if (selected.has(key)) {
+      selected.delete(key);
+      this.basketItems.set(this.basketItems().filter(item => item.id !== key));
+    } else {
+      selected.add(key);
+    }
+    this.selectedOffers.set(selected);
+  }
+
   isOfferSelected(offerId: string): boolean {
     return this.selectedOffers().has(offerId);
   }

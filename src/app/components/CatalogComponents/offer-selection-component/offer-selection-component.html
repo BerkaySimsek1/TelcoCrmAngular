@@ -65,6 +65,7 @@
           (input)="filterId.set($any($event.target).value)"
           [value]="filterId()"
           data-test-id="prod-offer-id-input"
+          
         />
       </div>
 
@@ -79,6 +80,7 @@
           (input)="filterName.set($any($event.target).value)"
           [value]="filterName()"
           data-test-id="prod-offer-name-input"
+          
         />
       </div>
 
@@ -88,14 +90,25 @@
         class="px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 font-medium"
         (click)="onSearchClick()"
         data-test-id="search-button"
+        [disabled]="loading()"
       >
-        Search
+        {{ loading() ? 'Aranıyor...' : 'Search' }}
       </button>
     </div>
 
+    <!-- Error Message -->
+    @if (searchError()) {
+      <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg" id="search-error" data-test-id="search-error">
+        {{ searchError() }}
+      </div>
+    }
+
     <!-- Loading State -->
     @if (loading()) {
-      <div class="text-center py-4" id="loading-indicator" data-test-id="loading-indicator">Loading…</div>
+      <div class="text-center py-4" id="loading-indicator" data-test-id="loading-indicator">
+        <div class="inline-block animate-spin">⏳</div>
+        Loading…
+      </div>
     } @else {
       <!-- Offers Table -->
       <div class="border border-gray-200 rounded-lg overflow-hidden max-h-80 overflow-y-auto" id="offers-table-container">
@@ -111,47 +124,88 @@
             </tr>
           </thead>
           <tbody id="offers-table-body">
-            @for (o of filteredOffers(); track o.productOfferId; let i = $index) {
-              <tr
-                [id]="'offer-row-' + o.productOfferId"
-                [attr.data-test-id]="'offer-row-' + o.productOfferId"
-                class="cursor-pointer transition-colors"
-                [class.bg-blue-100]="isOfferSelected(o.productOfferId.toString())"
-[class.border-l-4]="isOfferSelected(o.productOfferId.toString())"
-[class.border-l-blue-500]="isOfferSelected(o.productOfferId.toString())"
-[class.hover:bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
-[class.hover:bg-gray-100]="!isOfferSelected(o.productOfferId.toString())"
-
-                (click)="toggleOfferSelection(o)"
-              >
-                <td 
-                  class="px-4 py-2 border-b border-gray-100 font-medium"
-                  [class.bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
-[class.text-blue-900]="isOfferSelected(o.productOfferId.toString())"
-[class.bg-gray-50]="i % 2 === 0 && !isOfferSelected(o.productOfferId.toString())"
-
-                  [attr.data-test-id]="'offer-id-' + o.productOfferId"
+            @if (isSearchMode()) {
+              @for (r of searchFilteredResults(); track r.id; let i = $index) {
+                <tr
+                  [id]="'offer-row-' + r.id"
+                  [attr.data-test-id]="'offer-row-' + r.id"
+                  class="cursor-pointer transition-colors"
+                  [class.bg-blue-100]="isOfferSelected(r.id)"
+                  [class.border-l-4]="isOfferSelected(r.id)"
+                  [class.border-l-blue-500]="isOfferSelected(r.id)"
+                  [class.hover:bg-blue-50]="isOfferSelected(r.id)"
+                  [class.hover:bg-gray-100]="!isOfferSelected(r.id)"
+                  (click)="toggleSearchResultSelection(r.id, r.name)"
                 >
-                  {{ o.productOfferId }}
-                </td>
-                <td 
-                  class="px-4 py-2 border-b border-gray-100"
-                  [class.bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
-                  [class.text-blue-900]="isOfferSelected(o.productOfferId.toString())"
-                  [class.font-medium]="isOfferSelected(o.productOfferId.toString())"
-                  [class.bg-gray-50]="i % 2 === 0 && !isOfferSelected(o.productOfferId.toString())"
-                  [attr.data-test-id]="'offer-name-' + o.productOfferId"
+                  <td 
+                    class="px-4 py-2 border-b border-gray-100 font-medium"
+                    [class.bg-blue-50]="isOfferSelected(r.id)"
+                    [class.text-blue-900]="isOfferSelected(r.id)"
+                    [class.bg-gray-50]="i % 2 === 0 && !isOfferSelected(r.id)"
+                    [attr.data-test-id]="'offer-id-' + r.id"
+                  >
+                    {{ r.id }}
+                  </td>
+                  <td 
+                    class="px-4 py-2 border-b border-gray-100"
+                    [class.bg-blue-50]="isOfferSelected(r.id)"
+                    [class.text-blue-900]="isOfferSelected(r.id)"
+                    [class.font-medium]="isOfferSelected(r.id)"
+                    [class.bg-gray-50]="i % 2 === 0 && !isOfferSelected(r.id)"
+                    [attr.data-test-id]="'offer-name-' + r.id"
+                  >
+                    {{ r.name }}
+                  </td>
+                </tr>
+              }
+              @if (searchFilteredResults().length === 0) {
+                <tr id="no-search-results-row" data-test-id="no-search-results-row">
+                  <td colspan="2" class="px-4 py-8 text-center text-gray-500">
+                    Arama sonucunda eşleşen ürün bulunamadı
+                  </td>
+                </tr>
+              }
+            } @else {
+              @for (o of filteredOffers(); track o.productOfferId; let i = $index) {
+                <tr
+                  [id]="'offer-row-' + o.productOfferId"
+                  [attr.data-test-id]="'offer-row-' + o.productOfferId"
+                  class="cursor-pointer transition-colors"
+                  [class.bg-blue-100]="isOfferSelected(o.productOfferId.toString())"
+                  [class.border-l-4]="isOfferSelected(o.productOfferId.toString())"
+                  [class.border-l-blue-500]="isOfferSelected(o.productOfferId.toString())"
+                  [class.hover:bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
+                  [class.hover:bg-gray-100]="!isOfferSelected(o.productOfferId.toString())"
+                  (click)="toggleOfferSelection(o)"
                 >
-                  {{ o.productOfferName }}
-                </td>
-              </tr>
-            }
-            @if (filteredOffers().length === 0) {
-              <tr id="no-offers-row" data-test-id="no-offers-row">
-                <td colspan="2" class="px-4 py-8 text-center text-gray-500">
-                  No offers found
-                </td>
-              </tr>
+                  <td 
+                    class="px-4 py-2 border-b border-gray-100 font-medium"
+                    [class.bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
+                    [class.text-blue-900]="isOfferSelected(o.productOfferId.toString())"
+                    [class.bg-gray-50]="i % 2 === 0 && !isOfferSelected(o.productOfferId.toString())"
+                    [attr.data-test-id]="'offer-id-' + o.productOfferId"
+                  >
+                    {{ o.productOfferId }}
+                  </td>
+                  <td 
+                    class="px-4 py-2 border-b border-gray-100"
+                    [class.bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
+                    [class.text-blue-900]="isOfferSelected(o.productOfferId.toString())"
+                    [class.font-medium]="isOfferSelected(o.productOfferId.toString())"
+                    [class.bg-gray-50]="i % 2 === 0 && !isOfferSelected(o.productOfferId.toString())"
+                    [attr.data-test-id]="'offer-name-' + o.productOfferId"
+                  >
+                    {{ o.productOfferName }}
+                  </td>
+                </tr>
+              }
+              @if (filteredOffers().length === 0) {
+                <tr id="no-offers-row" data-test-id="no-offers-row">
+                  <td colspan="2" class="px-4 py-8 text-center text-gray-500">
+                    Lütfen önce bir katalog seçiniz
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>
@@ -167,7 +221,7 @@
       (click)="addToBasket()"
       data-test-id="add-to-basket-button"
     >
-      Add to Basket
+      Add to Basket ({{ selectedOffers().size }})
     </button>
   </div>
 
