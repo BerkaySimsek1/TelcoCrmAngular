@@ -1,5 +1,5 @@
 <div class="flex gap-4 p-4" id="offer-selection-container">
-  <!-- Left Panel: Offer Selection -->
+  <!-- Left Panel -->
   <div class="flex-1 bg-white border border-gray-200 rounded-lg p-4" id="offer-selection-panel">
     <!-- Tabs -->
     <div class="flex gap-2 mb-2" id="offer-selection-tabs">
@@ -7,25 +7,22 @@
         id="catalog-tab"
         type="button"
         (click)="onTabChange('catalog')"
-        [class]="activeTab() === 'catalog' 
-          ? 'px-4 py-1.5 border border-gray-200 border-b-0 rounded-t-lg bg-white font-semibold' 
-          : 'px-4 py-1.5 border border-gray-200 border-b-0 rounded-t-lg bg-gray-50'"
-      >
+        [class]="activeTab() === 'catalog'
+            ? 'px-4 py-1.5 border border-gray-200 border-b-0 rounded-t-lg bg-white font-semibold'
+            : 'px-4 py-1.5 border border-gray-200 border-b-0 rounded-t-lg bg-gray-50'">
         Catalog
       </button>
       <button
         id="campaign-tab"
         type="button"
         (click)="onTabChange('campaign')"
-        [class]="activeTab() === 'campaign' 
-          ? 'px-4 py-1.5 border border-gray-200 border-b-0 rounded-t-lg bg-white font-semibold' 
-          : 'px-4 py-1.5 border border-gray-200 border-b-0 rounded-t-lg bg-gray-50'"
-      >
+        [class]="activeTab() === 'campaign'
+            ? 'px-4 py-1.5 border border-gray-200 border-b-0 rounded-t-lg bg-white font-semibold'
+            : 'px-4 py-1.5 border border-gray-200 border-b-0 rounded-t-lg bg-gray-50'">
         Campaign
       </button>
     </div>
 
-    <!-- Title -->
     <h2 class="text-orange-500 text-xl font-normal mb-3" id="offer-selection-title">
       Offer Selection
     </h2>
@@ -80,12 +77,58 @@
           (input)="filterName.set($any($event.target).value)"
           [value]="filterName()"
           data-test-id="prod-offer-name-input"
-          
         />
       </div>
 
+      @if (loading()) {
+        <div class="text-center py-4" id="loading-indicator">Loading…</div>
+      } @else {
+        <div class="border border-gray-200 rounded-lg overflow-hidden max-h-80 overflow-y-auto" id="offers-table-container">
+          <table class="w-full border-collapse" id="offers-table">
+            <thead class="bg-gray-50 sticky top-0" id="offers-table-head">
+              <tr id="offers-table-head-row">
+                <th class="px-4 py-2 text-left font-semibold text-sm border-b border-gray-200">Prod Offer ID</th>
+                <th class="px-4 py-2 text-left font-semibold text-sm border-b border-gray-200">Prod Offer Name</th>
+              </tr>
+            </thead>
+            <tbody id="offers-table-body">
+              @for (o of filteredOffers(); track o.productOfferId; let i = $index) {
+                <tr
+                  [id]="'offer-row-' + o.productOfferId"
+                  [attr.data-test-id]="'offer-row-' + o.productOfferId"
+                  class="cursor-pointer transition-colors"
+                  [class.bg-blue-100]="isOfferSelected(o.productOfferId.toString())"
+                  [class.border-l-4]="isOfferSelected(o.productOfferId.toString())"
+                  [class.border-l-blue-500]="isOfferSelected(o.productOfferId.toString())"
+                  [class.hover:bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
+                  [class.hover:bg-gray-100]="!isOfferSelected(o.productOfferId.toString())"
+                  (click)="toggleOfferSelection(o)"
+                >
+                  <td class="px-4 py-2 border-b border-gray-100 font-medium"
+                      [class.bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
+                      [class.text-blue-900]="isOfferSelected(o.productOfferId.toString())"
+                      [class.bg-gray-50]="i % 2 === 0 && !isOfferSelected(o.productOfferId.toString())">
+                    {{ o.productOfferId }}
+                  </td>
+                  <td class="px-4 py-2 border-b border-gray-100"
+                      [class.bg-blue-50]="isOfferSelected(o.productOfferId.toString())"
+                      [class.text-blue-900]="isOfferSelected(o.productOfferId.toString())"
+                      [class.font-medium]="isOfferSelected(o.productOfferId.toString())"
+                      [class.bg-gray-50]="i % 2 === 0 && !isOfferSelected(o.productOfferId.toString())">
+                    {{ o.productOfferName }}
+                  </td>
+                </tr>
+              }
+              @if (filteredOffers().length === 0) {
+                <tr id="no-offers-row"><td colspan="2" class="px-4 py-8 text-center text-gray-500">No offers found</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
       <button
-        id="search-button"
+        id="add-to-basket-button"
         type="button"
         class="px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 font-medium"
         (click)="onSearchClick()"
@@ -211,27 +254,103 @@
         </table>
       </div>
     }
+@if (activeTab() === 'campaign') {
+      <!-- Campaign Selection -->
+      <div class="mb-4" id="campaign-selection">
+        <label class="block font-semibold mb-2 text-sm" for="campaign-dropdown">Campaign Selection</label>
+        <select id="campaign-dropdown"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                (change)="onCampaignChange($any($event.target).value)">
+          <option value="" selected disabled>Select</option>
+          @for (c of campaignOptions(); track c.id) {
+            <option [value]="c.id">{{ c.name }}</option>
+          }
+        </select>
+      </div>
 
-    <!-- Add to Basket Button -->
-    <button
-      id="add-to-basket-button"
-      type="button"
-      class="mt-4 px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      [disabled]="selectedOffers().size === 0"
-      (click)="addToBasket()"
-      data-test-id="add-to-basket-button"
-    >
-      Add to Basket ({{ selectedOffers().size }})
-    </button>
+      <!-- Filters (ID/Name) -->
+      <div class="flex gap-3 items-end mb-4" id="campaign-search-filters">
+        <div class="flex-1">
+          <label class="block font-semibold mb-2 text-sm" for="campaign-id-input">Campaign ID</label>
+          <input id="campaign-id-input" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                 (input)="campaignFilterCampaignId.set($any($event.target).value)"
+                 [value]="campaignFilterCampaignId()"/>
+        </div>
+        <div class="flex-1">
+          <label class="block font-semibold mb-2 text-sm" for="campaign-name-input">Campaign Name</label>
+          <input id="campaign-name-input" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                 (input)="campaignFilterCampaignName.set($any($event.target).value)"
+                 [value]="campaignFilterCampaignName()"/>
+        </div>
+        <button type="button"
+                class="px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 font-medium"
+                (click)="onCampaignSearchClick()">
+          Search
+        </button>
+      </div>
+
+      @if (campaignLoading()) {
+        <div class="text-center py-4">Loading…</div>
+      } @else {
+        <div class="border border-gray-200 rounded-lg overflow-hidden max-h-80 overflow-y-auto">
+          <table class="w-full border-collapse">
+            <thead class="bg-gray-50 sticky top-0">
+              <tr>
+                <th class="px-4 py-2 text-left font-semibold text-sm border-b">Campaign ID</th>
+                <th class="px-4 py-2 text-left font-semibold text-sm border-b">Prod Offer ID</th>
+                <th class="px-4 py-2 text-left font-semibold text-sm border-b">Prod Offer Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of filteredCampaignRows(); track row.productOfferId; let i = $index) {
+                <tr class="cursor-pointer transition-colors"
+                    [class.bg-blue-100]="isCampaignRowSelected(row.productOfferId)"
+                    (click)="toggleCampaignSelection(row)">
+                  <td class="px-4 py-2 border-b" [class.bg-blue-50]="isCampaignRowSelected(row.productOfferId)">
+                    {{ row.campaignId }}
+                  </td>
+                  <td class="px-4 py-2 border-b" [class.bg-blue-50]="isCampaignRowSelected(row.productOfferId)">
+                    {{ row.productOfferId }}
+                  </td>
+                  <td class="px-4 py-2 border-b" [class.bg-blue-50]="isCampaignRowSelected(row.productOfferId)">
+                    {{ row.productOfferName }}
+                  </td>
+                </tr>
+              }
+              @if (filteredCampaignRows().length === 0) {
+                <tr><td colspan="3" class="px-4 py-8 text-center text-gray-500">No offers found</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <button
+  type="button"
+  class="mt-4 px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+  [disabled]="!canAddCampaignToBasket()"
+  (click)="addCampaignToBasket()">
+  Add to Basket
+</button>
+    }
   </div>
 
-  <!-- Right Panel: Basket -->
-  <app-basket-component
-    id="basket-component"
-    [items]="basketItems()"
-    (removeItem)="onRemoveFromBasket($event)"
-    (clearBasket)="onClearBasket()"
-    (next)="onNextClick()"
-    data-test-id="basket-component"
-  ></app-basket-component>
+  <!-- Right Panel -->
+  @if (activeTab() === 'catalog') {
+    <app-basket-component
+      id="basket-component"
+      [items]="basketItems()"
+      (removeItem)="onRemoveFromBasket($event)"
+      (clearBasket)="onClearBasket()"
+      (next)="onNextClick()">
+    </app-basket-component>
+  } @else {
+    <app-campaign-basket-component
+      [items]="campaignBasket()"
+      (removeItem)="onCampaignRemoveFromBasket($event)"
+      (clearBasket)="onCampaignClearBasket()"
+      (next)="onCampaignNext()">
+    </app-campaign-basket-component>
+  }
 </div>
+

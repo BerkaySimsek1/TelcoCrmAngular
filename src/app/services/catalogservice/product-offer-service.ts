@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
+import { ProductResponse } from '../../models/CatalogModels/CampaignModels/product-response';
 export interface GetListSearchProductOfferResponse {
   id: string;
   name: string;
@@ -43,4 +44,10 @@ export class ProductOfferService {
       })
     );
   }
+   // backend: GET /api/product-offers/{id}/for-basket
+  getForBasket(id: string): Observable<ProductResponse> {
+    return this.http.get<ProductResponse>(`${this.baseUrl}/api/product-offers/${id}/for-basket`);
+  }
+
 }
+
