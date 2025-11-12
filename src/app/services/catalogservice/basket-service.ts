@@ -55,4 +55,10 @@ addCampaign(billingAccId: number, campaignId: number): Observable<void> {
   clear(billingAccId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/api/baskets/${billingAccId}`);
   }
+
+
+  deleteCampaign(billingAccId: number): Observable<void> {
+  return this.http.delete<void>(`${this.baseUrl}/api/baskets/${billingAccId}/campaign`);
+  }
+
 }

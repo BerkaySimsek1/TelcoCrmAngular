@@ -18,6 +18,7 @@ export class BasketComponent {
   @Output() removeItem = new EventEmitter<string>();
   @Output() clearBasket = new EventEmitter<void>();
   @Output() next = new EventEmitter<void>();
+  @Output() removeCampaign = new EventEmitter<void>();
 
   get totalAmount(): number {
     return this.items.reduce((sum, item) => sum + item.price, 0);
@@ -39,7 +40,7 @@ export class BasketComponent {
   }
   return res;
 }
-
+  onRemoveCampaign() { this.removeCampaign.emit(); }
 
   onRemoveItem(itemId: string) {
     this.removeItem.emit(itemId);

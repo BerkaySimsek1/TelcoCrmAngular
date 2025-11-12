@@ -268,16 +268,21 @@ ngOnInit(): void {
   const ids = Array.from(this.selectedOffers());
   if (ids.length === 0) return;
 
-  import('rxjs').then(({ forkJoin }) => {
-    const calls = ids.map(id => this.basketApi.addProductOffer(billingAccId, id, 1));
-    forkJoin(calls).subscribe({
-      next: () => {
-        this.selectedOffers.set(new Set());
-        this.refreshBasketUI(); // BE’den sepeti çek
-      },
-      error: (err) => console.error('addToBasket error:', err),
-    });
+  import('rxjs').then(({ from, last, concatMap }) => {
+  const calls$ = from(ids).pipe(
+    concatMap(id => this.basketApi.addProductOffer(billingAccId, id, 1))
+  );
+
+  calls$.subscribe({
+    next: () => {},                 // her add başarıyla bittiğinde
+    error: (err) => console.error('addToBasket error:', err),
+    complete: () => {
+      this.selectedOffers.set(new Set());
+      this.refreshBasketUI();
+    }
   });
+});
+
 }
 
 
@@ -480,6 +485,16 @@ onClearBasket() {
     }
   });
 }
+
+onRemoveCampaign() {
+  const accId = this.billingAccountId();
+  if (!accId) return;
+  this.basketApi.deleteCampaign(accId).subscribe({
+    next: () => this.refreshBasketUI(),
+    error: (err) => console.error('deleteCampaign error:', err),
+  });
+}
+
 
 
 private mapBasketToUiItems(basket: Basket): BasketItem[] {

@@ -21,13 +21,26 @@
           <div class="rounded-xl border border-orange-200 bg-orange-50/50" id="basket-campaign-card">
             <!-- Card Header -->
             <div class="flex items-center justify-between px-3 py-2 border-b border-orange-200">
-              <div class="font-semibold text-base" id="basket-campaign-title">
-                {{ g.title }}
-              </div>
-              <div class="font-semibold text-base" id="basket-campaign-subtotal">
-                {{ g.subtotal | number:'1.2-2' }} TL
-              </div>
-            </div>
+  <div class="font-semibold text-base" id="basket-campaign-title">
+    {{ g.title }}
+  </div>
+  <div class="flex items-center gap-2">
+    <div class="font-semibold text-base" id="basket-campaign-subtotal">
+      {{ g.subtotal | number:'1.2-2' }} TL
+    </div>
+    <!-- Yeni: tüm kampanya kalemlerini sil -->
+    <button
+      type="button"
+      class="ml-2 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+      title="Remove campaign items"
+      (click)="onRemoveCampaign()">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+
 
             <!-- Card Body: campaign ürünleri -->
             <div class="divide-y divide-gray-200" id="basket-campaign-items">
@@ -51,17 +64,7 @@
                       {{ item.description || item.name }}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    [attr.id]="'remove-item-' + item.id"
-                    [attr.data-test-id]="'remove-item-' + item.id"
-                    class="ml-3 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex-shrink-0"
-                    (click)="onRemoveItem(item.id)"
-                    title="Remove item">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                    </svg>
-                  </button>
+                  
                 </div>
               }
             </div>
