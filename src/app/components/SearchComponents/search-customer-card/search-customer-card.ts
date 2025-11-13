@@ -35,6 +35,8 @@ export class SearchCustomerCard implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
   // ACC-4: başlangıçta pasif
   canSearch = signal(false);
+  @Output() createCustomer = new EventEmitter<void>();
+
 
   // “tekil kimlik” grubu (ACC-2)
   private idKeys: (keyof SearchForm)[] = ['natId', 'customerId', 'accountNumber', 'gsmNumber', 'orderNumber'];
