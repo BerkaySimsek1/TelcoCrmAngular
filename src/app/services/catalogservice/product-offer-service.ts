@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ProductResponse } from '../../models/CatalogModels/CampaignModels/product-response';
+import { ProductConfigMeta } from '../../models/CatalogModels/product-config-meta';
 export interface GetListSearchProductOfferResponse {
   id: string;
   name: string;
@@ -48,6 +49,13 @@ export class ProductOfferService {
   getForBasket(id: string): Observable<ProductResponse> {
     return this.http.get<ProductResponse>(`${this.baseUrl}/api/product-offers/${id}/for-basket`);
   }
+
+
+  getConfigMeta(id: string): Observable<ProductConfigMeta> {
+  return this.http.get<ProductConfigMeta>(
+    `${this.baseUrl}/api/product-offers/${id}/config-meta`
+  );
+}
 
 }
 

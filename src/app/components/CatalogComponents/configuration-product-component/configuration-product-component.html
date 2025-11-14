@@ -1,0 +1,107 @@
+<!-- configuration-product.component.html -->
+<div class="p-4" *ngIf="!loading(); else loadingTpl">
+  <h2 class="text-xl font-semibold mb-4">Configuration Product</h2>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onNext()">
+    <div formArrayName="products" class="space-y-6">
+      <div
+        class="border rounded bg-white p-4"
+        *ngFor="let productGroup of productsArray.controls; index as i"
+        [formGroupName]="i"
+      >
+        <div class="font-semibold mb-2">
+          Prod Offer ID: {{ productGroup.get('productOfferId')?.value }} -
+          {{ productGroup.get('productName')?.value }}
+        </div>
+
+        <div formArrayName="fields" class="grid grid-cols-2 gap-3">
+          <div
+            class="flex flex-col text-sm"
+            *ngFor="let fieldCtrl of getFieldsArray(i).controls; index as j"
+            [formGroupName]="j"
+          >
+            <label class="font-medium">
+              {{ fieldCtrl.get('key')?.value }}
+              <span class="text-red-500" *ngIf="fieldCtrl.get('required')?.value">*</span>
+            </label>
+
+            <!-- allowedValues varsa dropdown -->
+            <ng-container
+              *ngIf="(fieldCtrl.get('allowedValues')?.value?.length || 0) > 0; else textInput"
+            >
+              <select formControlName="value" class="border rounded px-2 py-1">
+                <option
+                  *ngFor="let opt of fieldCtrl.get('allowedValues')?.value"
+                  [ngValue]="opt"
+                >
+                  {{ opt }}
+                </option>
+              </select>
+            </ng-container>
+
+            <!-- allowedValues yoksa text input -->
+            <ng-template #textInput>
+              <input
+                type="text"
+                formControlName="value"
+                class="border rounded px-2 py-1"
+              />
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <!-- Adres kısmı: billing’deki mantığın sade select versiyonu -->
+    <div>
+      <h3 class="font-semibold mb-2">Service Address</h3>
+
+      <select
+        formControlName="addressId"
+        class="border rounded px-2 py-1 min-w-[320px]"
+        [disabled]="loadingAddresses()"
+      >
+        <option [ngValue]="null">Select a service address</option>
+        <option *ngFor="let addr of addresses()" [ngValue]="addr.id">
+          {{ addr.cityName || '-' }},
+          {{ addr.description || '' }} {{ addr.houseNumber || '' }}
+        </option>
+      </select>
+
+      <button
+        type="button"
+        class="ml-4 px-3 py-1 border rounded"
+        (click)="onAddNewAddress()"
+        [disabled]="loadingAddresses()"
+      >
+        Add New Address
+      </button>
+
+      <div class="text-sm text-gray-500 mt-1" *ngIf="loadingAddresses()">
+        Loading addresses...
+      </div>
+      <div class="text-sm text-red-500 mt-1" *ngIf="errorMessage()">
+        {{ errorMessage() }}
+      </div>
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <button type="button" class="px-4 py-2 border rounded" (click)="onPrevious()">
+        Previous
+      </button>
+      <button
+        type="submit"
+        class="px-4 py-2 bg-orange-500 text-white rounded"
+        [disabled]="loadingAddresses()"
+      >
+        Next
+      </button>
+    </div>
+  </form>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="p-4">Loading configuration fields...</div>
+</ng-template>

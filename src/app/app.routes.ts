@@ -16,6 +16,8 @@ import { BillingAccountInfoListComponent } from './components/BillingAccountComp
 import { CreateBillingAccountComponent } from './components/BillingAccountComponents/create-billing-account-card/create-billing-account-card';
 import { UpdateBillingAccountComponent } from './components/BillingAccountComponents/update-billing-account-card/update-billing-account-card';
 import { OfferSelectionComponent } from './components/CatalogComponents/offer-selection-component/offer-selection-component';
+import { ConfigurationProductComponent } from './components/CatalogComponents/configuration-product-component/configuration-product-component';
+import { OrderSummaryComponent } from './components/CatalogComponents/order-summary-component/order-summary-component';
 
 export const routes: Routes = [
   // Login
@@ -48,6 +50,15 @@ export const routes: Routes = [
       { path: 'customer-account',component:BillingAccountInfoListComponent},
       { path: 'start-new-sale/:billingAccountId', component: OfferSelectionComponent }
     ]
+  },
+
+  {
+    path: 'customer/:customerId/start-new-sale/:billingAccountId/configuration',
+    component: ConfigurationProductComponent,
+  },
+  {
+    path: 'customer/:customerId/start-new-sale/:billingAccountId/summary',
+    component: OrderSummaryComponent,
   },
    
   // Onboarding wizard

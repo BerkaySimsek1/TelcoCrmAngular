@@ -1,6 +1,6 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 // CATALOG tarafı
 import { CatalogItem } from '../../../models/CatalogModels/catalog-model';
@@ -16,6 +16,7 @@ import { BasketService } from '../../../services/catalogservice/basket-service';
 import { Basket } from '../../../models/CatalogModels/BasketModels/basket-model';
 import { catchError, of, throwError } from 'rxjs';
 import { BasketItem } from '../../../models/CatalogModels/BasketModels/basket-item';
+import { OrderCreationService } from '../../../services/catalogservice/order-creation-service';
 
 
 @Component({
@@ -121,7 +122,9 @@ export class OfferSelectionComponent implements OnInit {
     private productOfferService: ProductOfferService,
     private campaignApi: CampaignProductOfferService,
     private productOfferApi: ProductOfferService,
-    private basketApi: BasketService
+    private basketApi: BasketService,
+    private router: Router,
+    private orderCreation: OrderCreationService
   ) {}
 
 
@@ -317,9 +320,32 @@ onClearBasket() {
 
 
   onNextClick() {
-  this.refreshBasketUI();
-  console.log('[CATALOG] Proceed with basket:', this.basketItems());
+  const st = this.orderCreation.state();
+
+  const customerId =
+    this.route.parent?.snapshot.paramMap.get('customerId') ??
+    this.route.snapshot.paramMap.get('customerId');
+  const billingAccId = this.billingAccountId();
+
+  if (!customerId || !billingAccId) {
+    console.warn('customerId veya billingAccountId yok');
+    return;
+  }
+
+  if (!st.basket || !st.basket.basketItems || st.basket.basketItems.length === 0) {
+    console.warn('Boş basket ile config sayfasına geçmiyoruz');
+    return;
+  }
+
+  this.router.navigate([
+    '/customer',
+    customerId,
+    'start-new-sale',
+    billingAccId,
+    'configuration',
+  ]);
 }
+
 
 
   // ================== CAMPAIGN methods ==================
@@ -553,9 +579,7 @@ private refreshBasketUI(): void {
   if (!accId) return;
 
   this.basketApi.getForBilling(accId).pipe(
-    // Not: BE 204 No Content dönerse HttpClient genelde null body ile success geçer
     catchError((err: any) => {
-      // 404/400’u “boş sepet” say
       if (err?.status === 404 || err?.status === 400) {
         return of(null as Basket | null);
       }
@@ -564,19 +588,23 @@ private refreshBasketUI(): void {
   ).subscribe({
     next: (basket: Basket | null) => {
       if (basket) {
+        // wizard state
+        this.orderCreation.setBillingAccountId(accId);
+        this.orderCreation.setBasket(basket);
+
         this.basketItems.set(this.mapBasketToUiItems(basket));
       } else {
+        this.orderCreation.setBasket(null);
         this.basketItems.set([]);
       }
     },
     error: (err) => {
       console.error('refreshBasketUI error:', err);
+      this.orderCreation.setBasket(null);
       this.basketItems.set([]);
     }
   });
 }
-
-
 
 
   onCampaignRemoveFromBasket(id: string) {

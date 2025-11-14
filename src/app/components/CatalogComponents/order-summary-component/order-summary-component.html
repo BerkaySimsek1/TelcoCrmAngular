@@ -1,0 +1,105 @@
+<!-- order-summary-component.html -->
+<div class="p-6" id="os-page">
+  <h2 class="text-xl font-semibold mb-4 text-orange-500" id="os-title">
+    Submit Order
+  </h2>
+
+  <!-- Ana kart -->
+  <div
+    class="max-w-4xl bg-white border border-gray-300 rounded-lg shadow-sm p-6"
+    id="os-card"
+  >
+    <!-- Satırlar: Order Items / Service Address / Total Amount -->
+    <div class="grid grid-cols-[140px,1fr] gap-y-6 gap-x-6 text-sm">
+
+      <!-- ORDER ITEMS -->
+      <div class="font-semibold text-gray-700 flex items-start" id="os-label-items">
+        Order Items
+      </div>
+      <div id="os-items-box">
+        <div
+          class="bg-gray-100 border border-gray-300 rounded-md"
+          id="os-items-wrapper"
+        >
+          <div
+            *ngFor="let item of orderCreation.state().basket?.basketItems"
+            class="px-4 py-2 border-b border-gray-300 last:border-b-0 flex gap-6 items-center"
+          >
+            <!-- Soldaki kod (ürün id) -->
+            <span class="w-24 font-semibold" id="os-item-code">
+              {{ item.productId }}
+            </span>
+            <!-- Sağdaki ürün adı -->
+            <span class="flex-1" id="os-item-name">
+              {{ item.productName }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+            <!-- SERVICE ADDRESS -->
+      <div class="font-semibold text-gray-700 flex items-start" id="os-label-address">
+        Service Address
+      </div>
+      <div id="os-address">
+        <!-- Loading & error durumları -->
+        <div *ngIf="loadingAddress()" class="text-xs text-gray-500">
+          Loading address...
+        </div>
+        <div *ngIf="addressError()" class="text-xs text-red-500">
+          {{ addressError() }}
+        </div>
+
+        <ng-container *ngIf="!loadingAddress() && !addressError()">
+          <ng-container *ngIf="address(); else noAddr">
+            <!-- City, Description, HouseNumber (configuration sayfasındaki format) -->
+            <div>
+              {{ address()?.cityName || '-' }},
+              {{ address()?.description || '' }}
+              {{ address()?.houseNumber || '' }}
+            </div>
+          </ng-container>
+
+          <ng-template #noAddr>
+            <span class="text-red-500 text-xs">Address not selected</span>
+          </ng-template>
+        </ng-container>
+      </div>
+
+
+
+      <!-- TOTAL AMOUNT -->
+      <div class="font-semibold text-gray-700 flex items-start" id="os-label-total">
+        Total Amount
+      </div>
+      <div class="font-semibold" id="os-total">
+        {{ totalAmount() | number:'1.2-2' }} TL
+      </div>
+    </div>
+
+    <!-- Butonlar -->
+    <div
+      class="mt-10 flex justify-between items-center"
+      id="os-actions"
+    >
+      <button
+        type="button"
+        class="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition"
+        (click)="onPrevious()"
+        id="os-prev-btn"
+      >
+        Previous
+      </button>
+
+      <button
+        type="button"
+        class="px-8 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition disabled:opacity-50"
+        [disabled]="submitting()"
+        (click)="onSubmit()"
+        id="os-submit-btn"
+      >
+        {{ submitting() ? 'Submitting...' : 'Submit' }}
+      </button>
+    </div>
+  </div>
+</div>
