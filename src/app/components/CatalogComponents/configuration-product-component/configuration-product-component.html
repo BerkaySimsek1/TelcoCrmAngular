@@ -1,107 +1,171 @@
 <!-- configuration-product.component.html -->
-<div class="p-4" *ngIf="!loading(); else loadingTpl">
-  <h2 class="text-xl font-semibold mb-4">Configuration Product</h2>
+<div class="min-h-screen bg-white p-4" *ngIf="!loading(); else loadingTpl">
+  <div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-t-lg px-6 py-3 border-b-2 border-orange-400">
+      <h2 class="text-orange-500 text-lg font-medium" id="config-product-title">
+        Configuration Product
+      </h2>
+    </div>
 
-  <form [formGroup]="formGroup" (ngSubmit)="onNext()">
-    <div formArrayName="products" class="space-y-6">
-      <div
-        class="border rounded bg-white p-4"
-        *ngFor="let productGroup of productsArray.controls; index as i"
-        [formGroupName]="i"
-      >
-        <div class="font-semibold mb-2">
-          Prod Offer ID: {{ productGroup.get('productOfferId')?.value }} -
-          {{ productGroup.get('productName')?.value }}
-        </div>
+    <form [formGroup]="formGroup" (ngSubmit)="onNext()">
+      <!-- Products Section -->
+      <div formArrayName="products" class="space-y-6 bg-gray-50 p-6 border-x border-gray-200">
+        <div
+          class="bg-gray-200 rounded p-4 shadow-sm"
+          *ngFor="let productGroup of productsArray.controls; index as i"
+          [formGroupName]="i"
+          [attr.id]="'product-card-' + i"
+        >
+          <!-- Product Header -->
+          <div class="grid grid-cols-2 gap-x-8 gap-y-2 mb-4">
+            <div class="flex items-baseline">
+              <span class="text-sm text-gray-700 min-w-[120px]">Prod Offer ID:</span>
+              <span class="text-sm text-gray-900 font-medium ml-2" [attr.id]="'prod-offer-id-' + i">
+                {{ productGroup.get('productOfferId')?.value }}
+              </span>
+            </div>
+            <div class="flex items-baseline col-span-2">
+              <span class="text-sm text-gray-700 min-w-[120px]">Prod Offer Name:</span>
+              <span
+                class="text-sm text-gray-900 font-medium ml-2"
+                [attr.id]="'prod-offer-name-' + i"
+              >
+                {{ productGroup.get('productName')?.value }}
+              </span>
+            </div>
+          </div>
 
-        <div formArrayName="fields" class="grid grid-cols-2 gap-3">
-          <div
-            class="flex flex-col text-sm"
-            *ngFor="let fieldCtrl of getFieldsArray(i).controls; index as j"
-            [formGroupName]="j"
-          >
-            <label class="font-medium">
-              {{ fieldCtrl.get('key')?.value }}
-              <span class="text-red-500" *ngIf="fieldCtrl.get('required')?.value">*</span>
-            </label>
-
-            <!-- allowedValues varsa dropdown -->
-            <ng-container
-              *ngIf="(fieldCtrl.get('allowedValues')?.value?.length || 0) > 0; else textInput"
+          <!-- Fields -->
+          <div formArrayName="fields" class="grid grid-cols-2 gap-x-8 gap-y-3">
+            <div
+              class="flex flex-col"
+              *ngFor="let fieldCtrl of getFieldsArray(i).controls; index as j"
+              [formGroupName]="j"
             >
-              <select formControlName="value" class="border rounded px-2 py-1">
-                <option
-                  *ngFor="let opt of fieldCtrl.get('allowedValues')?.value"
-                  [ngValue]="opt"
-                >
-                  {{ opt }}
-                </option>
-              </select>
-            </ng-container>
+              <label
+                class="text-sm text-gray-700 mb-1"
+                [attr.for]="'field-' + i + '-' + j"
+                [attr.id]="'field-label-' + i + '-' + j"
+              >
+                {{ fieldCtrl.get('key')?.value }}:
+              </label>
 
-            <!-- allowedValues yoksa text input -->
-            <ng-template #textInput>
-              <input
-                type="text"
-                formControlName="value"
-                class="border rounded px-2 py-1"
-              />
-            </ng-template>
+              <!-- allowedValues varsa dropdown -->
+              <ng-container
+                *ngIf="(fieldCtrl.get('allowedValues')?.value?.length || 0) > 0; else textInput"
+              >
+                <select
+                  formControlName="value"
+                  class="bg-white border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                  [attr.id]="'field-' + i + '-' + j"
+                >
+                  <option
+                    *ngFor="let opt of fieldCtrl.get('allowedValues')?.value; index as k"
+                    [ngValue]="opt"
+                    [attr.id]="'field-option-' + i + '-' + j + '-' + k"
+                  >
+                    {{ opt }}
+                  </option>
+                </select>
+              </ng-container>
+
+              <!-- allowedValues yoksa text input -->
+              <ng-template #textInput>
+                <input
+                  type="text"
+                  formControlName="value"
+                  class="bg-white border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                  [attr.id]="'field-' + i + '-' + j"
+                />
+              </ng-template>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <hr class="my-6" />
+      <!-- Address Section -->
+      <div class="bg-white p-6 border-x border-b border-gray-200">
+        <h3 class="text-sm text-gray-700 font-medium mb-3" id="address-section-title">
+          Address Info
+        </h3>
 
-    <!-- Adres kısmı: billing’deki mantığın sade select versiyonu -->
-    <div>
-      <h3 class="font-semibold mb-2">Service Address</h3>
+        <div class="mb-4">
+          <label
+            class="text-xs text-gray-600 block mb-2"
+            for="service-address-select"
+            id="service-address-label"
+          >
+            Select a service address from existing addresses
+          </label>
+          <div class="flex items-center gap-4">
+            <select
+              formControlName="addressId"
+              class="flex-1 bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+              id="service-address-select"
+            >
+              <option [ngValue]="null" id="address-option-placeholder">
+                Select a service address
+              </option>
+              <option
+                *ngFor="let addr of addresses(); index as k"
+                [ngValue]="addr.id"
+                [attr.id]="'address-option-' + k"
+              >
+                Title:
+                {{ addr.title || '-' }}
+              </option>
+            </select>
+          </div>
+        </div>
 
-      <select
-        formControlName="addressId"
-        class="border rounded px-2 py-1 min-w-[320px]"
-        [disabled]="loadingAddresses()"
-      >
-        <option [ngValue]="null">Select a service address</option>
-        <option *ngFor="let addr of addresses()" [ngValue]="addr.id">
-          {{ addr.cityName || '-' }},
-          {{ addr.description || '' }} {{ addr.houseNumber || '' }}
-        </option>
-      </select>
+        <button
+          type="button"
+          class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded text-sm font-medium transition-colors shadow-sm"
+          (click)="onAddNewAddress()"
+          [disabled]="loadingAddresses()"
+          id="add-new-address-btn"
+        >
+          Add New Address
+        </button>
 
-      <button
-        type="button"
-        class="ml-4 px-3 py-1 border rounded"
-        (click)="onAddNewAddress()"
-        [disabled]="loadingAddresses()"
-      >
-        Add New Address
-      </button>
-
-      <div class="text-sm text-gray-500 mt-1" *ngIf="loadingAddresses()">
-        Loading addresses...
+        <div
+          class="text-sm text-gray-500 mt-2"
+          *ngIf="loadingAddresses()"
+          id="loading-addresses-msg"
+        >
+          Loading addresses...
+        </div>
+        <div class="text-sm text-red-500 mt-2" *ngIf="errorMessage()" id="error-message">
+          {{ errorMessage() }}
+        </div>
       </div>
-      <div class="text-sm text-red-500 mt-1" *ngIf="errorMessage()">
-        {{ errorMessage() }}
-      </div>
-    </div>
 
-    <div class="mt-8 flex justify-between">
-      <button type="button" class="px-4 py-2 border rounded" (click)="onPrevious()">
-        Previous
-      </button>
-      <button
-        type="submit"
-        class="px-4 py-2 bg-orange-500 text-white rounded"
-        [disabled]="loadingAddresses()"
-      >
-        Next
-      </button>
-    </div>
-  </form>
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between bg-white p-6 border-t border-gray-200 rounded-b-lg">
+        <button
+          type="button"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-8 py-2 rounded text-sm font-medium transition-colors border border-gray-300"
+          (click)="onPrevious()"
+          id="previous-btn"
+        >
+          Previous
+        </button>
+        <button
+          type="submit"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-10 py-2 rounded text-sm font-medium transition-colors border border-gray-300"
+          [disabled]="loadingAddresses()"
+          id="next-btn"
+        >
+          Next
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <ng-template #loadingTpl>
-  <div class="p-4">Loading configuration fields...</div>
+  <div class="min-h-screen bg-white p-4 flex items-center justify-center">
+    <div class="text-gray-700 text-lg" id="loading-config-msg">Loading configuration fields...</div>
+  </div>
 </ng-template>

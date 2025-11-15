@@ -22,6 +22,7 @@ export class OrderSummaryComponent implements OnInit {
   address = signal<AddressResponse | null>(null);
   loadingAddress = signal(false);
   addressError = signal<string>('');
+  orderSuccess = signal(false);
 
   totalAmount = computed(() => {
     const st = this.orderCreation.state();
@@ -111,35 +112,41 @@ export class OrderSummaryComponent implements OnInit {
   }
 
   onSubmit() {
-    const st = this.orderCreation.state();
-    if (!st.billingAccountId || !st.addressId) {
-      console.error('Order state eksik');
-      return;
-    }
+  const st = this.orderCreation.state();
+  if (!st.billingAccountId || !st.addressId) {
+    console.error('Order state eksik');
+    return;
+  }
 
-    const req: CreateOrderRequest = {
-      billingAccountId: st.billingAccountId,
-      addressId: st.addressId,
-      configurations: st.configurations ?? [],
-    };
+  const req: CreateOrderRequest = {
+    billingAccountId: st.billingAccountId,
+    addressId: st.addressId,
+    configurations: st.configurations ?? [],
+  };
 
-    this.submitting.set(true);
-    this.salesService.createOrder(req).subscribe({
-      next: () => {
-        this.submitting.set(false);
+  this.submitting.set(true);
+  this.orderSuccess.set(false);
+  
+  this.salesService.createOrder(req).subscribe({
+    next: () => {
+      this.submitting.set(false);
+      this.orderSuccess.set(true);
+      
+      // 2 saniye success mesajı göster, sonra billing account sayfasına yönlendir
+      setTimeout(() => {
         this.orderCreation.reset();
-
         const customerId = this.getCustomerIdFromRoute();
         if (customerId) {
-          this.router.navigate(['/customer', customerId, 'accounts']);
+          this.router.navigate(['/customer', customerId, 'customer-account']);
         } else {
           this.router.navigate(['/search-list']);
         }
-      },
-      error: (err) => {
-        console.error('createOrder error', err);
-        this.submitting.set(false);
-      },
-    });
-  }
+      }, 2000);
+    },
+    error: (err) => {
+      console.error('createOrder error', err);
+      this.submitting.set(false);
+    },
+  });
+}
 }

@@ -90,11 +90,14 @@ export class ConfigurationProductComponent implements OnInit {
 
   // Ana form: addressId + ürünlerin konfig alanları
   private buildEmptyForm() {
-    this.formGroup = this.fb.group({
-      addressId: new FormControl<number | null>(null, [Validators.required]),
-      products: this.fb.array([]),
-    });
-  }
+  this.formGroup = this.fb.group({
+    addressId: new FormControl<number | null>(
+      { value: null, disabled: false }, // disabled durumu burada
+      [Validators.required]
+    ),
+    products: this.fb.array([]),
+  });
+}
 
   get productsArray(): FormArray {
     return this.formGroup.get('products') as FormArray;
@@ -110,38 +113,44 @@ export class ConfigurationProductComponent implements OnInit {
 
   // 🔥 billing account’taki loadAddresses mantığını buraya uyarladık
   private loadAddresses(customerId: string) {
-    this.loadingAddresses.set(true);
-    this.errorMessage.set('');
+  this.loadingAddresses.set(true);
+  this.errorMessage.set('');
+  
+  // Loading başladığında disable et
+  this.formGroup.get('addressId')?.disable();
 
-    this.addressService.getAddressByCustomerId(customerId).subscribe({
-      next: (response: any) => {
-        // tek obje veya array olabilir
-        const list: AddressResponse[] = Array.isArray(response)
-          ? response
-          : [response];
+  this.addressService.getAddressByCustomerId(customerId).subscribe({
+    next: (response: any) => {
+      const list: AddressResponse[] = Array.isArray(response)
+        ? response
+        : [response];
 
-        this.addresses.set(list);
-        this.loadingAddresses.set(false);
+      this.addresses.set(list);
+      this.loadingAddresses.set(false);
+      
+      // Loading bittiğinde enable et
+      this.formGroup.get('addressId')?.enable();
 
-        // eğer formda seçili yoksa, ilk adresi default seç
-        const current = this.formGroup.get('addressId')!.value as number | null;
-        if (!current && list.length > 0) {
-          this.formGroup.patchValue({ addressId: list[0].id });
-        }
-      },
-      error: (err) => {
-        console.error('Address load error', err);
-        this.loadingAddresses.set(false);
+      const current = this.formGroup.get('addressId')!.value as number | null;
+      if (!current && list.length > 0) {
+        this.formGroup.patchValue({ addressId: list[0].id });
+      }
+    },
+    error: (err) => {
+      console.error('Address load error', err);
+      this.loadingAddresses.set(false);
+      
+      // Hata durumunda da enable et
+      this.formGroup.get('addressId')?.enable();
 
-        if (err.status === 404) {
-          // hiç adres yok
-          this.addresses.set([]);
-        } else {
-          this.errorMessage.set('Error loading addresses');
-        }
-      },
-    });
-  }
+      if (err.status === 404) {
+        this.addresses.set([]);
+      } else {
+        this.errorMessage.set('Error loading addresses');
+      }
+    },
+  });
+}
 
   /**
    * Sepetteki her productOfferId için backend'den config meta çeker.
