@@ -2,10 +2,11 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CustomerResponse } from '../../../models/CustomerModels/customerResponse';
 import { CustomerService } from '../../../services/customer-service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-customer-info-card',
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe],
   templateUrl: './customer-info-card.html',
   styleUrl: './customer-info-card.scss',
 })

@@ -104,10 +104,16 @@
       Previous
     </button>
     @if (mode === 'wizard') {
-      <button id="nav-next-btn" (click)="goToNext()" class="nav-btn next-btn">
-        Next
-      </button>
-    }
+  <button
+    id="nav-next-btn"
+    (click)="goToNext()"
+    class="nav-btn next-btn"
+    [disabled]="mode === 'wizard' && addresses().length === 0"
+  >
+    Next
+  </button>
+}
+
   </div>
 
   <!-- Delete Confirmation Modal -->

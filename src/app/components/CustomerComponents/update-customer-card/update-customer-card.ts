@@ -11,7 +11,8 @@ import {
   lettersOnlyValidator,
   notFutureDateValidator,
   nationalIdRulesValidator,
-  nationalIdUniqueForUpdateAsyncValidator
+  nationalIdUniqueForUpdateAsyncValidator,
+  minAgeValidator
 } from '../../../validators/customer-validators';
 
 @Component({
@@ -99,7 +100,7 @@ export class UpdateCustomerCard implements OnInit {
       }),
       dateOfBirth: new FormControl<string>('', {
         nonNullable: true,
-        validators: [Validators.required, notFutureDateValidator()],
+        validators: [Validators.required, notFutureDateValidator(), minAgeValidator(18)],
       }),
       motherName: new FormControl<string | null>(null, {
         validators: [lettersOnlyValidator(2, 50)],

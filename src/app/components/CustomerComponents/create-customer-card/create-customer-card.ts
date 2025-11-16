@@ -5,7 +5,7 @@ import { CustomerService } from '../../../services/customer-service';
 import { CommonModule } from '@angular/common';
 import { CreateCustomerRequest } from '../../../models/CustomerModels/createCustomerRequest';
 import { Router } from '@angular/router';
-import { lettersOnlyValidator, nationalIdRulesValidator, nationalIdUniqueAsyncValidator, notFutureDateValidator } from '../../../validators/customer-validators';
+import { lettersOnlyValidator, minAgeValidator, nationalIdRulesValidator, nationalIdUniqueAsyncValidator, notFutureDateValidator } from '../../../validators/customer-validators';
 import { FullCustomerCreationService } from '../../../services/full-customer-creation-service';
 
 @Component({
@@ -48,7 +48,7 @@ submitting = signal(false);
         firstName: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, lettersOnlyValidator(2, 50)] }),
       middleName: new FormControl<string | null>(null, { validators: lettersOnlyValidator(2, 50) }),
       lastName: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, lettersOnlyValidator(2, 50)] }),
-      dateOfBirth: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, notFutureDateValidator()] }),
+      dateOfBirth: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, notFutureDateValidator(), minAgeValidator(18)] }),
       motherName: new FormControl<string | null>(null, { validators: [lettersOnlyValidator(2, 50)] }),
       fatherName: new FormControl<string | null>(null, { validators: [lettersOnlyValidator(2, 50)] }),
       gender: new FormControl<'MALE' | 'FEMALE' | 'OTHER'>('OTHER', { nonNullable: true, validators: [Validators.required] }),

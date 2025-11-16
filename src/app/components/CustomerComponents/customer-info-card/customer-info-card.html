@@ -46,7 +46,10 @@
         </div>
         <div class="flex items-center" id="cust-birthdate-row">
           <label class="w-36 text-sm font-medium text-gray-700" id="cust-birthdate-label">Birth Date :</label>
-          <span class="text-sm text-gray-900" id="cust-birthdate">{{ res.dateOfBirth || '-' }}</span>
+          <span class="text-sm text-gray-900" id="cust-birthdate">
+  {{ res.dateOfBirth ? (res.dateOfBirth | date:'dd.MM.yyyy') : '-' }}
+</span>
+
         </div>
 
         <!-- Row 3 -->

@@ -100,6 +100,11 @@
             } @else if (has('dateOfBirth', 'futureDate')) {
               Date cannot be in the future
             }
+            @else if (has('dateOfBirth', 'underAge')) {
+    <p class="text-sm text-red-600 mt-1" id="di-birthdate-err-underage">
+      Customer must be at least 18 years old
+    </p>
+  }
           </span>
         }
       </div>

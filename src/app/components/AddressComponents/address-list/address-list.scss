@@ -28,6 +28,12 @@
   margin-bottom: 2rem;
 }
 
+.nav-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
 // Loading State
 .loading-state {
   display: flex;
