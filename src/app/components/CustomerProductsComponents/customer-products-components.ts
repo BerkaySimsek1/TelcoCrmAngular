@@ -27,5 +27,17 @@ export class CustomerProductsComponents implements OnInit {
         });
     }
   }
+  deleteProduct(productId: string): void {
+    console.log('Delete product tıklandı:', productId);
+    // İleride silme servisi buraya eklenecek
+  }
+
+  /**
+   * Ürün detayı görüntüleme (Placeholder)
+   */
+  viewProduct(productId: string): void {
+    console.log('View product tıklandı:', productId);
+    // İleride detay sayfasına yönlendirme buraya eklenecek
+  }
 
 }
