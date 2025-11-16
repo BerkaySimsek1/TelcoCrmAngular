@@ -27,6 +27,9 @@ export class BillingAccountServiceTs {
   getBillingAccountByCustomerId(customerId: string): Observable<BillingAccountResponse[]> {
     return this.httpClient.get<BillingAccountResponse[]>(
       `${this.baseUrl}/api/billing-accounts/findActiveByCustomerId/${customerId}`
-    );
-}
+    );  
+  }
+  deleteBillingAccount(id: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.baseUrl}/api/billing-accounts/${id}`);
+  }
 }

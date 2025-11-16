@@ -1,0 +1,42 @@
+@if (isOpen) {
+  <div class="modal-overlay" (click)="close()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        @if (modalType === 'error') {
+          <div class="warning-icon">⚠</div>
+        }
+      </div>
+
+      <div class="modal-content">
+        <h2 class="modal-title">{{ title }}</h2>
+        <p class="modal-message">{{ message }}</p>
+      </div>
+
+      <div class="modal-footer">
+        @if (shouldShowCancelButton()) {
+          <button 
+            class="btn btn-cancel" 
+            (click)="cancel()"
+            [disabled]="isLoading">
+            NO
+          </button>
+          <button 
+            class="btn btn-confirm"
+            [class.loading]="isLoading"
+            (click)="confirm()"
+            [disabled]="isLoading">
+            YES
+          </button>
+        } @else {
+          <button 
+            class="btn btn-confirm"
+            [class.loading]="isLoading"
+            (click)="close()"
+            [disabled]="isLoading">
+            OK
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
