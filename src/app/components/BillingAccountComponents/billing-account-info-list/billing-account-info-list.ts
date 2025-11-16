@@ -3,21 +3,15 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BillingAccountResponse } from '../../../models/BillingAccountModels/billingAccountResponse';
 import { BillingAccountServiceTs } from '../../../services/billing-account-service.ts';
+import { CustomerProductsComponents } from '../../CustomerProductsComponents/customer-products-components';
 
-interface Product {
-  id: number;
-  productId: string;
-  productName: string;
-  campaignName: string;
-  campaignId: string;
-}
 
 @Component({
   selector: 'app-billing-account-info-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CustomerProductsComponents],
   templateUrl: './billing-account-info-list.html',
-  styleUrl: './billing-account-info-list.scss',
+  styleUrls: ['./billing-account-info-list.scss'],
 })
 export class BillingAccountInfoListComponent implements OnInit {
   billingAccounts = signal<BillingAccountResponse[]>([]);
@@ -28,28 +22,6 @@ export class BillingAccountInfoListComponent implements OnInit {
   itemsPerPage = 4;
   expandedAccountId = signal<number | null>(null);
   
-  // Mock product data - gerçek backend'den gelecek
-  mockProducts: { [key: number]: Product[] } = {
-    1: [
-      { id: 1, productId: 'P001', productName: 'ADSL 8 MB', campaignName: 'DATA MODEM', campaignId: 'C001' },
-      { id: 2, productId: 'P002', productName: 'TV Package', campaignName: 'DIGITAL TV', campaignId: 'C002' },
-    ],
-    2: [
-      { id: 3, productId: 'P003', productName: 'Fiber 100MB', campaignName: 'FIBER INTERNET', campaignId: 'C003' },
-    ],
-    3: [
-      { id: 4, productId: 'P004', productName: 'Mobile Plan', campaignName: 'MOBILE SERVICE', campaignId: 'C004' },
-      { id: 5, productId: 'P005', productName: 'Voice Plan', campaignName: 'CALLING SERVICE', campaignId: 'C005' },
-      { id: 6, productId: 'P006', productName: 'SMS Bundle', campaignName: 'SMS PACKAGE', campaignId: 'C006' },
-    ],
-    4: [
-      { id: 7, productId: 'P007', productName: 'Corporate Plan', campaignName: 'BUSINESS SERVICE', campaignId: 'C007' },
-    ],
-    5: [
-      { id: 8, productId: 'P008', productName: 'Premium Bundle', campaignName: 'ALL-IN-ONE', campaignId: 'C008' },
-      { id: 9, productId: 'P009', productName: 'Cloud Storage', campaignName: 'CLOUD SERVICE', campaignId: 'C009' },
-    ],
-  };
 
   constructor(
     private billingAccountService: BillingAccountServiceTs,
@@ -123,10 +95,6 @@ export class BillingAccountInfoListComponent implements OnInit {
     } else {
       this.expandedAccountId.set(accountId);
     }
-  }
-
-  getProducts(accountId: number): Product[] {
-    return this.mockProducts[accountId] || [];
   }
 
   getStatusClass(status: string): string {
