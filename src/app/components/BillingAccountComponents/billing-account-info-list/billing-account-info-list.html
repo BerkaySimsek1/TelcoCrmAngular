@@ -77,69 +77,32 @@
 
               <!-- Product Details Row -->
               @if (expandedAccountId() === account.id) {
-                <tr class="detail-row" id="ba-detail-row-{{account.id}}">
-                  <td colspan="5">
-                    <div class="detail-content" id="ba-detail-content-{{account.id}}">
-                      <!-- Product Table -->
-                      <div class="product-table-wrapper" id="ba-prod-wrapper-{{account.id}}">
-                        <table class="product-table" id="ba-prod-table-{{account.id}}">
-                          <thead id="ba-prod-head-{{account.id}}">
-                            <tr id="ba-prod-head-row-{{account.id}}">
-                              <th class="product-header" id="ba-prod-col-id-{{account.id}}">Product ID</th>
-                              <th class="product-header" id="ba-prod-col-name-{{account.id}}">Product Name</th>
-                              <th class="product-header" id="ba-prod-col-cname-{{account.id}}">Campaign Name</th>
-                              <th class="product-header" id="ba-prod-col-cid-{{account.id}}">Campaign ID</th>
-                              <th class="product-header" id="ba-prod-col-action-{{account.id}}">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody id="ba-prod-body-{{account.id}}">
-                            @for (product of getProducts(account.id); track product.id) {
-                              <tr class="product-row" id="ba-prod-row-{{account.id}}-{{product.id}}">
-                                <td class="product-cell" id="ba-prod-id-{{account.id}}-{{product.id}}">{{ product.productId }}</td>
-                                <td class="product-cell" id="ba-prod-name-{{account.id}}-{{product.id}}">{{ product.productName }}</td>
-                                <td class="product-cell" id="ba-prod-cname-{{account.id}}-{{product.id}}">{{ product.campaignName }}</td>
-                                <td class="product-cell" id="ba-prod-cid-{{account.id}}-{{product.id}}">{{ product.campaignId }}</td>
-                                <td class="product-cell" id="ba-prod-actions-{{account.id}}-{{product.id}}">
-                                  <div class="product-actions">
-                                    <button class="product-action-btn delete-btn" id="ba-prod-del-{{account.id}}-{{product.id}}" title="Delete">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
-                                      </svg>
-                                    </button>
-                                    <button class="product-action-btn view-btn" id="ba-prod-view-{{account.id}}-{{product.id}}" title="View" (click)="viewProduct(product.id)">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                      </svg>
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            }
-                          </tbody>
-                        </table>
-                      </div>
+            <tr class="detail-row" id="ba-detail-row-{{account.id}}">
+              <td colspan="5">
+                <div class="detail-content" id="ba-detail-content-{{account.id}}">
 
-                      <!-- Action Buttons -->
-                      <div class="detail-actions" id="ba-detail-actions-{{account.id}}">
-                        <button class="detail-action-btn" id="ba-start-sale-{{account.id}}" (click)="startNewSale(account.id)">
-                          Start New Sale
-                        </button>
-                        <button class="detail-action-btn" id="ba-transfer-{{account.id}}" (click)="transfer(account.id)">
-                          Transfer
-                        </button>
-                        <button class="detail-action-btn" id="ba-service-addr-change-{{account.id}}" (click)="serviceAddressChange(account.id)">
-                          Service Address Change
-                        </button>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        }
-      </table>
+                  <app-customer-products-components 
+                    [billingAccountId]="account.id">
+                  </app-customer-products-components>
+
+                  <div class="detail-actions" id="ba-detail-actions-{{account.id}}">
+                    <button class="detail-action-btn" id="ba-start-sale-{{account.id}}" (click)="startNewSale(account.id)">
+                      Start New Sale
+                    </button>
+                    <button class="detail-action-btn" id="ba-transfer-{{account.id}}" (click)="transfer(account.id)">
+                      Transfer
+                    </button>
+                    <button class="detail-action-btn" id="ba-service-addr-change-{{account.id}}" (click)="serviceAddressChange(account.id)">
+                      Service Address Change
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        } </tbody>
+    }
+  </table>
 
       @if (billingAccounts().length === 0) {
         <div class="no-account-message" id="ba-empty">
