@@ -23,6 +23,9 @@ export class AddressService {
     return this.httpClient.post<CreatedAddressResponse>(`${this.baseUrl}/api/addresses`, req);
   }
 
+ getAddressById(id: number): Observable<AddressResponse> {
+    return this.httpClient.get<AddressResponse>(`${this.baseUrl}/api/addresses/${id}`);
+  }
 
   getAddressByCustomerId(customerId: string): Observable<AddressResponse> {
     return this.httpClient.get<AddressResponse>(`${this.baseUrl}/api/addresses/findByCustomerId/${customerId}`);

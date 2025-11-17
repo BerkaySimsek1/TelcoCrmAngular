@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BillingAccountProductResponse } from '../models/SalesProductModels/billingAccountProductResponse'; 
+import { OrderProductDetailResponse } from '../models/SalesProductModels/orderProductDetailResponse';
+
 
 @Injectable({ providedIn: 'root' })
 export class CustomerAccProductService {
@@ -25,5 +27,14 @@ export class CustomerAccProductService {
    */
   deleteProduct(productId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/products/${productId}`);
+  }
+    /**
+   * Ürün detaylarını getirir (MongoDB _id ile)
+   * @param productId MongoDB _id
+   */
+  getProductDetails(productId: string): Observable<OrderProductDetailResponse> {
+    return this.http.get<OrderProductDetailResponse>(
+      `${this.apiUrl}/products/${productId}/details`
+    );
   }
 }

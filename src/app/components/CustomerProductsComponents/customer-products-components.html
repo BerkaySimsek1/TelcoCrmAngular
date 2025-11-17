@@ -57,7 +57,7 @@
                 <button 
                   class="product-action-btn view-btn p-1 text-blue-600 hover:text-blue-800" 
                   title="View" 
-                  (click)="viewProduct(product.productOfferId)">
+                  (click)="viewProduct(product.id)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                     <circle cx="12" cy="12" r="3"/>
@@ -79,15 +79,24 @@
 
   </div>
 
-  <!-- Modal Component -->
+  <!-- Delete Confirmation Modal -->
   <app-delete-confirmation-modal
-    [isOpen]="modalOpen()"
+    [isOpen]="deleteModalOpen()"
     [modalType]="'confirm'"
-    [title]="modalTitle()"
-    [message]="modalMessage()"
-    [isLoading]="modalLoading()"
-    (onConfirm)="onModalConfirm()"
-    (onCancel)="onModalCancel()"
-    (onClose)="onModalClose()">
+    [title]="deleteModalTitle()"
+    [message]="deleteModalMessage()"
+    [isLoading]="deleteModalLoading()"
+    (onConfirm)="onDeleteModalConfirm()"
+    (onCancel)="onDeleteModalCancel()"
+    (onClose)="onDeleteModalClose()">
   </app-delete-confirmation-modal>
+
+  <!-- Product Details Modal -->
+  <app-product-details-modal
+    [isOpen]="detailsModalOpen()"
+    [product]="selectedProductDetails()"
+    [isLoading]="detailsModalLoading()"
+    (onClose)="onDetailsModalClose()">
+  </app-product-details-modal>
+
 </div>
