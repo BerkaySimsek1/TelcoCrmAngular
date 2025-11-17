@@ -1,4 +1,12 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+  ChangeDetectorRef
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrderProductDetailResponse } from '../../../models/SalesProductModels/orderProductDetailResponse';
 import { AddressService } from '../../../services/address-service';
@@ -22,41 +30,68 @@ export class ProductDetailsModalComponent implements OnChanges {
   addressError = false;
   addressErrorMessage = '';
 
-  constructor(private addressService: AddressService) {}
+  constructor(
+    private addressService: AddressService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['isOpen'] && this.isOpen) {
-      document.body.style.overflow = 'hidden';
-      
-      // Modal açıldığında adres bilgisini yükle
-      if (this.product?.addressId) {
-        this.loadAddressDetails(this.product.addressId);
+    if (changes['isOpen']) {
+      if (this.isOpen) {
+        document.body.style.overflow = 'hidden';
+
+        if (this.product) {
+          this.tryLoadAddress();
+        }
       } else {
-        this.addressError = true;
-        this.addressErrorMessage = 'Adres ID bulunamadı';
+        document.body.style.overflow = 'auto';
+        this.resetAddressState();
       }
-    } else if (changes['isOpen'] && !this.isOpen) {
-      document.body.style.overflow = 'auto';
-      // Modal kapandığında adres verilerini temizle
-      this.resetAddressState();
+
+      this.cdr.markForCheck();
     }
+
+    if (changes['product'] && this.isOpen) {
+      this.tryLoadAddress();
+      this.cdr.markForCheck();
+    }
+  }
+
+  private tryLoadAddress(): void {
+    this.addressDetails = null;
+    this.addressLoading = false;
+    this.addressError = false;
+    this.addressErrorMessage = '';
+
+    if (this.product && this.product.addressId != null) {
+      this.loadAddressDetails(this.product.addressId);
+    } else {
+      this.addressError = true;
+      this.addressErrorMessage = 'Adres ID bulunamadı.';
+    }
+
+    this.cdr.markForCheck();
   }
 
   private loadAddressDetails(addressId: number): void {
     this.addressLoading = true;
     this.addressError = false;
     this.addressErrorMessage = '';
+    this.cdr.markForCheck();
 
     this.addressService.getAddressById(addressId).subscribe({
       next: (address: AddressResponse) => {
         this.addressDetails = address;
         this.addressLoading = false;
+        this.addressError = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Adres yüklenirken hata:', err);
         this.addressError = true;
-        this.addressErrorMessage = err.error?.message || 'Adres bilgisi yüklenemedi. Lütfen daha sonra tekrar deneyin.';
+        this.addressErrorMessage =
+          err.error?.message || 'Adres bilgisi yüklenemedi. Lütfen daha sonra tekrar deneyin.';
         this.addressLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -66,6 +101,7 @@ export class ProductDetailsModalComponent implements OnChanges {
     this.addressError = false;
     this.addressErrorMessage = '';
     this.addressLoading = false;
+    this.cdr.markForCheck();
   }
 
   close(): void {
