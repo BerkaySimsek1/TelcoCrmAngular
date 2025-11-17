@@ -36,9 +36,11 @@
               {{ product.productOfferName }}
             </td>
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-              </td>
+              {{ product.campaignName || '-' }}
+            </td>
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-              </td>
+              {{ product.campaignId || '-' }}
+            </td>
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
               {{ product.status }}
             </td>
@@ -76,4 +78,16 @@
     }
 
   </div>
+
+  <!-- Modal Component -->
+  <app-delete-confirmation-modal
+    [isOpen]="modalOpen()"
+    [modalType]="'confirm'"
+    [title]="modalTitle()"
+    [message]="modalMessage()"
+    [isLoading]="modalLoading()"
+    (onConfirm)="onModalConfirm()"
+    (onCancel)="onModalCancel()"
+    (onClose)="onModalClose()">
+  </app-delete-confirmation-modal>
 </div>

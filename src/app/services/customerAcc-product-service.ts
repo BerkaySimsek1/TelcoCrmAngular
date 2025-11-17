@@ -19,4 +19,11 @@ export class CustomerAccProductService {
       `${this.apiUrl}/products-by-billing-account/${billingAccountId}`
     );
   }
+  /**
+   * Ürün silme işlemi
+   * @param productId Silinecek ürünün ID'si
+   */
+  deleteProduct(productId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/products/${productId}`);
+  }
 }

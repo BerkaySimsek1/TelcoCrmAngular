@@ -75,34 +75,33 @@
                 </td>
               </tr>
 
-              <!-- Product Details Row -->
               @if (expandedAccountId() === account.id) {
-            <tr class="detail-row" id="ba-detail-row-{{account.id}}">
-              <td colspan="5">
-                <div class="detail-content" id="ba-detail-content-{{account.id}}">
+                <tr class="detail-row" id="ba-detail-row-{{account.id}}">
+                  <td colspan="5">
+                    <div class="detail-content" id="ba-detail-content-{{account.id}}">
+                      <app-customer-products-components 
+                        [billingAccountId]="account.id">
+                      </app-customer-products-components>
 
-                  <app-customer-products-components 
-                    [billingAccountId]="account.id">
-                  </app-customer-products-components>
-
-                  <div class="detail-actions" id="ba-detail-actions-{{account.id}}">
-                    <button class="detail-action-btn" id="ba-start-sale-{{account.id}}" (click)="startNewSale(account.id)">
-                      Start New Sale
-                    </button>
-                    <button class="detail-action-btn" id="ba-transfer-{{account.id}}" (click)="transfer(account.id)">
-                      Transfer
-                    </button>
-                    <button class="detail-action-btn" id="ba-service-addr-change-{{account.id}}" (click)="serviceAddressChange(account.id)">
-                      Service Address Change
-                    </button>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          }
-        } </tbody>
-    }
-  </table>
+                      <div class="detail-actions" id="ba-detail-actions-{{account.id}}">
+                        <button class="detail-action-btn" id="ba-start-sale-{{account.id}}" (click)="startNewSale(account.id)">
+                          Start New Sale
+                        </button>
+                        <button class="detail-action-btn" id="ba-transfer-{{account.id}}" (click)="transfer(account.id)">
+                          Transfer
+                        </button>
+                        <button class="detail-action-btn" id="ba-service-addr-change-{{account.id}}" (click)="serviceAddressChange(account.id)">
+                          Service Address Change
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        }
+      </table>
 
       @if (billingAccounts().length === 0) {
         <div class="no-account-message" id="ba-empty">
@@ -137,4 +136,16 @@
       </button>
     </div>
   }
+
+  <!-- Modal Component -->
+  <app-delete-confirmation-modal
+    [isOpen]="modalOpen()"
+    [modalType]="modalType()"
+    [title]="modalTitle()"
+    [message]="modalMessage()"
+    [isLoading]="modalLoading()"
+    (onConfirm)="onModalConfirm()"
+    (onCancel)="onModalCancel()"
+    (onClose)="onModalClose()">
+  </app-delete-confirmation-modal>
 </div>
