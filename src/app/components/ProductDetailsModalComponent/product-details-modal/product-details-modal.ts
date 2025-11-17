@@ -67,7 +67,7 @@ export class ProductDetailsModalComponent implements OnChanges {
       this.loadAddressDetails(this.product.addressId);
     } else {
       this.addressError = true;
-      this.addressErrorMessage = 'Adres ID bulunamadı.';
+      this.addressErrorMessage = 'Address ID not found.';
     }
 
     this.cdr.markForCheck();
@@ -89,7 +89,7 @@ export class ProductDetailsModalComponent implements OnChanges {
       error: (err) => {
         this.addressError = true;
         this.addressErrorMessage =
-          err.error?.message || 'Adres bilgisi yüklenemedi. Lütfen daha sonra tekrar deneyin.';
+          err.error?.message || 'Cannot load address info. Please try again later.';
         this.addressLoading = false;
         this.cdr.detectChanges();
       }

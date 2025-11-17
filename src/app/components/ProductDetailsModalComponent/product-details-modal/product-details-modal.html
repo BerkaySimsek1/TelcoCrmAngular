@@ -3,8 +3,8 @@
     <div class="modal-container">
       <!-- Modal Header -->
       <div class="modal-header">
-        <h2 class="modal-title">Ürün Detayları</h2>
-        <button class="close-btn" (click)="close()" title="Kapat">
+        <h2 class="modal-title">Product Details</h2>
+        <button class="close-btn" (click)="close()" title="Close">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -17,30 +17,30 @@
         @if (isLoading) {
           <div class="loading-spinner">
             <div class="spinner"></div>
-            <p>Yükleniyor...</p>
+            <p>Loading...</p>
           </div>
         } @else if (product) {
           <div class="product-details">
             <!-- Temel Bilgiler -->
             <div class="details-section">
-              <h3 class="section-title">Temel Bilgiler</h3>
+              <h3 class="section-title">Product Overview</h3>
               <div class="details-grid">
                 <div class="detail-item">
-                  <label>Ürün Kodu (Offer ID):</label>
+                  <label>Product Offer ID:</label>
                   <span>{{ product.productOfferId }}</span>
                 </div>
                 <div class="detail-item">
-                  <label>Ürün Adı:</label>
+                  <label>Product Offer Name:</label>
                   <span>{{ product.productOfferName }}</span>
                 </div>
                 <div class="detail-item">
-                  <label>Durumu:</label>
+                  <label>State:</label>
                   <span class="status-badge" [ngClass]="'status-' + product.status.toLowerCase()">
                     {{ product.status }}
                   </span>
                 </div>
                 <div class="detail-item">
-                  <label>Fatura Hesabı:</label>
+                  <label>Customer Account ID:</label>
                   <span>{{ product.billingAccountId }}</span>
                 </div>
               </div>
@@ -48,11 +48,11 @@
 
             <!-- Adres Bilgileri -->
             <div class="details-section">
-              <h3 class="section-title">Adres Bilgileri</h3>
+              <h3 class="section-title">Address Information</h3>
               @if (addressLoading) {
                 <div class="loading-spinner-small">
                   <div class="spinner-small"></div>
-                  <p>Adres yükleniyor...</p>
+                  <p>Address Loading...</p>
                 </div>
               } @else if (addressError) {
                 <div class="error-message">
@@ -62,44 +62,44 @@
                 <div class="details-grid">
                   @if (addressDetails.title) {
                     <div class="detail-item">
-                      <label>Adres Başlığı:</label>
+                      <label>Address Title:</label>
                       <span>{{ addressDetails.title }}</span>
                     </div>
                   }
                   @if (addressDetails.street) {
                     <div class="detail-item">
-                      <label>Sokak:</label>
+                      <label>Street:</label>
                       <span>{{ addressDetails.street }}</span>
                     </div>
                   }
                   @if (addressDetails.houseNumber) {
                     <div class="detail-item">
-                      <label>Bina/Daire Numarası:</label>
+                      <label>House/Flat Number:</label>
                       <span>{{ addressDetails.houseNumber }}</span>
                     </div>
                   }
                   @if (addressDetails.cityName) {
                     <div class="detail-item">
-                      <label>Şehir:</label>
+                      <label>City:</label>
                       <span>{{ addressDetails.cityName }}</span>
                     </div>
                   }
                   @if (addressDetails.districtName) {
                     <div class="detail-item">
-                      <label>İlçe:</label>
+                      <label>District:</label>
                       <span>{{ addressDetails.districtName }}</span>
                     </div>
                   }
                   @if (addressDetails.description) {
                     <div class="detail-item full-width">
-                      <label>Açıklama:</label>
+                      <label>Description:</label>
                       <span>{{ addressDetails.description }}</span>
                     </div>
                   }
                 </div>
               } @else {
                 <div class="no-data-small">
-                  <p>Adres bilgisi bulunamadı.</p>
+                  <p>Address information not found.</p>
                 </div>
               }
             </div>
@@ -107,11 +107,11 @@
             <!-- Konfigürasyon -->
             @if (product.configuration && product.configuration.length > 0) {
               <div class="details-section">
-                <h3 class="section-title">Konfigürasyon</h3>
+                <h3 class="section-title">Configuration</h3>
                 <div class="configuration-table">
                   <div class="config-header">
-                    <div class="config-key">Anahtar</div>
-                    <div class="config-value">Değer</div>
+                    <div class="config-key">Key</div>
+                    <div class="config-value">Value</div>
                   </div>
                   @for (config of product.configuration; track config.key) {
                     <div class="config-row">
@@ -125,14 +125,14 @@
           </div>
         } @else {
           <div class="no-data">
-            <p>Ürün bilgisi bulunamadı.</p>
+            <p>Product information not found.</p>
           </div>
         }
       </div>
 
       <!-- Modal Footer -->
       <div class="modal-footer">
-        <button class="btn btn-primary" (click)="close()">Kapat</button>
+        <button class="btn btn-primary" (click)="close()">Close</button>
       </div>
     </div>
   </div>
