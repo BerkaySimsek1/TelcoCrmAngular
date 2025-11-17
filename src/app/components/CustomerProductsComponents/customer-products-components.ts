@@ -21,6 +21,8 @@ export class CustomerProductsComponents implements OnInit {
   modalTitle = signal<string>('');
   modalMessage = signal<string>('');
   modalLoading = signal<boolean>(false);
+
+  // Artık burada OrderProduct / CustomerProduct id tutuyoruz
   selectedProductForDelete = signal<string | null>(null);
 
   constructor(private customerAccProductService: CustomerAccProductService) {} 
@@ -34,17 +36,18 @@ export class CustomerProductsComponents implements OnInit {
     }
   }
 
-  deleteProduct(productId: string): void {
-    this.selectedProductForDelete.set(productId);
+  // Buradaki productId = orderProductId
+  deleteProduct(orderProductId: string): void {
+    this.selectedProductForDelete.set(orderProductId);
     this.modalTitle.set('The product cancellation process will be initiated. Are you sure?');
     this.modalMessage.set('');
     this.modalOpen.set(true);
   }
 
-  private performDelete(productId: string): void {
+  private performDelete(orderProductId: string): void {
     this.modalLoading.set(true);
     
-    this.customerAccProductService.deleteProduct(productId)
+    this.customerAccProductService.deleteProduct(orderProductId)
       .subscribe({
         next: () => {
           console.log('Product deleted successfully');
@@ -52,15 +55,16 @@ export class CustomerProductsComponents implements OnInit {
           this.modalOpen.set(false);
           this.selectedProductForDelete.set(null);
           
-          // Ürünü listeden çıkar
+          // Ürünü listeden id ile çıkar (productOfferId ile değil)
           this.products.update(prods => 
-            prods.filter(p => p.productOfferId !== productId)
+            prods.filter(p => p.id !== orderProductId)
           );
         },
         error: (err) => {
           console.error('Error deleting product:', err);
           this.modalLoading.set(false);
-          this.modalTitle.set('');
+          // Hata durumunda title boş kalmasın
+          this.modalTitle.set('Product could not be deleted');
           this.modalMessage.set('An error occurred while deleting the product. Please try again.');
         }
       });
